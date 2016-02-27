@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AWESOME STARS</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <link rel="stylesheet" type="text/css" href="options.css">
+    <script type="text/javascript" src="utils.js"></script>
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="options.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AWESOME STARS</h1>
+        </header>
+        <div class="row">
+            <section class="six columns">
+                <h4>Rate limiting</h4>
+                <p id="rate-limit">...</p>
+                <h4>Why do you need an access token?</h4>
+                <p>According to <a href="https://developer.github.com/v3/#rate-limiting">GitHub documentation</a>. For requests using Basic Authentication or OAuth (including access token), you can make up to 5,000 requests per hour. For unauthenticated requests, the rate limit allows you to make up to 60 requests per hour. Unauthenticated requests are associated with your IP address, and not the user making requests. Awesome stars can only works properly with an access token.</p>
+                <p>Get an access token at <a href="https://github.com/settings/tokens">GitHub settings page</a>.</p>
+            </section>
+            <section class="six columns">
+                <h4>Options</h4>
+                <form action="" id="options-form">
+                    <label for="access-token">Access token</label>
+                    <input type="password" id="access-token" class="u-full-width">
+                    <input type="submit" class="button-primary" value="Save">
+                    <div id="options-form-state"></div>
+                </form>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
