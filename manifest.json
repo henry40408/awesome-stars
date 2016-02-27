@@ -10,6 +10,9 @@
   },
   "content_scripts": [
     {
+      "css": [
+        "awesome-stars.css"
+      ],
       "js": [
         "jquery.min.js",
         "utils.js",
@@ -23,5 +26,9 @@
   "description": "Peek stars of repository on awesome list.",
   "manifest_version": 2,
   "name": "awesome-stars",
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
   "version": "1.0.0"
 }
