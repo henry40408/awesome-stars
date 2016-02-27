@@ -1,4 +1,6 @@
 {
+  "author": "Heng-Yi Wu",
+  "author_email": "henry40408@gmail.com",
   "background": {
     "scripts": [
       "utils.js",
@@ -25,6 +27,7 @@
     }
   ],
   "description": "Peek stars of repository on awesome list.",
+  "homepage_url": "https://github.com/henry40408/awesome-stars",
   "icons": {
     "128": "assets/awesome-stars.png"
   },
@@ -34,5 +37,6 @@
     "tabs",
     "storage"
   ],
+  "short_name": "awesome-stars",
   "version": "1.0.0"
 }
