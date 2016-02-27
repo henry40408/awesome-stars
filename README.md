@@ -4,7 +4,7 @@ Peek stars of repository on awesome list.
 
 ## Installation
 
-![available in the chrome website store](chrome-store-available.png)
+[![available in the chrome website store](chrome-store-available.png)](https://chrome.google.com/webstore/detail/awesome-stars/lcokkcbdmicofdahlooopcpinogephfb?hl=zh-TW&gl=TW)
 
 ## Screenshots
 
