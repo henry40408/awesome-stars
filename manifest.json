@@ -6,15 +6,16 @@
     ]
   },
   "browser_action": {
+    "default_icon": "assets/awesome-stars.png",
     "default_title": "Awesome stars"
   },
   "content_scripts": [
     {
       "css": [
-        "awesome-stars.css"
+        "content.css"
       ],
       "js": [
-        "jquery.min.js",
+        "libs/jquery.min.js",
         "utils.js",
         "content.js"
       ],
@@ -24,8 +25,11 @@
     }
   ],
   "description": "Peek stars of repository on awesome list.",
+  "icons": {
+    "128": "assets/awesome-stars.png"
+  },
   "manifest_version": 2,
-  "name": "awesome-stars",
+  "name": "Awesome stars",
   "permissions": [
     "tabs",
     "storage"
