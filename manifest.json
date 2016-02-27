@@ -1,0 +1,27 @@
+{
+  "background": {
+    "scripts": [
+      "utils.js",
+      "background.js"
+    ]
+  },
+  "browser_action": {
+    "default_title": "Awesome stars"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "jquery.min.js",
+        "utils.js",
+        "content.js"
+      ],
+      "matches": [
+        "https://github.com/*"
+      ]
+    }
+  ],
+  "description": "Peek stars of repository on awesome list.",
+  "manifest_version": 2,
+  "name": "awesome-stars",
+  "version": "1.0.0"
+}
