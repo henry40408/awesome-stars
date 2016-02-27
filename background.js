@@ -5,18 +5,16 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    var chrome_storage = chrome.storage.sync || chrome.storage.local;
-
     switch (request.type) {
         case GET_ACCESS_TOKEN:
-            chrome_storage.get("access_token", function(data) {
+            chrome.storage.sync.get("access_token", function(data) {
                 sendResponse({
                     access_token: data.access_token || ""
                 });
             })
             break;
         case SET_ACCESS_TOKEN:
-            chrome_storage.set({
+            chrome.storage.sync.set({
                 access_token: request.access_token
             }, function() {
                 sendResponse({

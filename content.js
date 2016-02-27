@@ -8,13 +8,23 @@ function initialize() {
     });
 
     chrome.runtime.sendMessage({
-        type: GET_ACCESS_TOKEN,
-        count: $filtered_readme_a.length.toString()
+        type: GET_ACCESS_TOKEN
     }, function(response) {
         $filtered_readme_a.each(function() {
-            $(this).after($("<span>")
-                .addClass("awesome-stars")
-                .append("\u2605 0"));
+            var $that = $(this);
+
+            var matches = $(this).attr('href').match(GITHUB_LINK_PATTERN);
+            var url = "https://api.github.com/repos/" + matches[1] + "/" + matches[2];
+            var params = {};
+
+            if (response.access_token)
+                params.access_token = response.access_token;
+
+            $.getJSON(url, params, function(json) {
+                $that.after($("<span>")
+                    .addClass("awesome-stars")
+                    .append("\u2605 " + json.stargazers_count));
+            });
         });
     });
 }
