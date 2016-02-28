@@ -29,7 +29,7 @@ Peek stars of repository on awesome list.
 ## Todo
 
 - [ ] Ensure cache works on GitHub API  
-- [ ] Internalization
+- [ ] I18n
 
 ## License
 
