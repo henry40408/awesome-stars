@@ -28,7 +28,7 @@ Peek stars of repository on awesome list.
 
 ## Todo
 
-- [ ] Ensure cache works on GitHub API  
+- [x] Ensure cache works on GitHub API  
 - [ ] I18n
 
 ## License

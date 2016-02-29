@@ -10,23 +10,46 @@ function initialize() {
     });
 
     chrome.runtime.sendMessage({
-        type: GET_ACCESS_TOKEN
+        type: GET_CACHE_ACCESS_TOKEN
     }, function(response) {
         $filtered_readme_a.each(function() {
             var $that = $(this);
 
             var matches = $(this).attr('href').match(GITHUB_LINK_PATTERN);
             var url = "https://api.github.com/repos/" + matches[1] + "/" + matches[2];
-            var params = {};
+            var cached = response.cache[url];
 
-            if (response.access_token)
-                params.access_token = response.access_token;
-
-            $.getJSON(url, params, function(json) {
+            function success_callback(json) {
                 $that.after($("<span>")
                     .addClass("awesome-stars")
                     .append("\u2605 " + json.stargazers_count));
-            });
+
+                var cache = {};
+                cache[url] = json;
+
+                chrome.runtime.sendMessage({
+                    type: SET_CACHE,
+                    cache: JSON.stringify(cache)
+                });
+            }
+
+            if (cached) {
+                $that.after($("<span>")
+                    .addClass("awesome-stars")
+                    .append("\u2605 " + cached.stargazers_count));
+            } else {
+                var params = {};
+
+                if (response.access_token)
+                    params.access_token = response.access_token;
+
+                $.ajax({
+                    dataType: "json",
+                    url: url,
+                    data: params,
+                    success: success_callback
+                });
+            }
         });
     });
 }
