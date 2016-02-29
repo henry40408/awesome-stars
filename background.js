@@ -11,7 +11,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 sendResponse({
                     access_token: data.access_token || ""
                 });
-            })
+            });
             break;
         case SET_ACCESS_TOKEN:
             chrome.storage.sync.set({

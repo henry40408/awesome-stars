@@ -1,5 +1,7 @@
 $(document).ready(function() {
-    document.title.match(/\/awesome-/) && initialize();
+    if (document.title.match(/\/awesome-/)) {
+        initialize();
+    }
 });
 
 function initialize() {
