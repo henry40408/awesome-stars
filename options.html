@@ -22,13 +22,12 @@
                 <p id="rate-limit">...</p>
                 <h4>Why do you need an access token?</h4>
                 <p>According to <a href="https://developer.github.com/v3/#rate-limiting">GitHub documentation</a>. For requests using Basic Authentication or OAuth (including access token), you can make up to 5,000 requests per hour. For unauthenticated requests, the rate limit allows you to make up to 60 requests per hour. Unauthenticated requests are associated with your IP address, and not the user making requests. Awesome stars can only works properly with an access token.</p>
-                <p>Get an access token at <a href="https://github.com/settings/tokens">GitHub settings page</a>. <strong>Please do not select any scopes</strong>.</p>
+                <p><a href="https://github.com/settings/tokens/new?description=awesome-stars%20Chrome%20extension">Get an access token</a> at <a href="https://github.com/settings/tokens">GitHub settings page</a>. <strong>Please DO NOT select any scopes</strong>!</p>
             </section>
             <section class="six columns">
                 <h4>Options</h4>
                 <form action="" id="options-form">
                     <label for="access-token">Access token</label>
-                    <a href="https://github.com/settings/tokens/new?description=awesome-stars%20Chrome%20extension">Generate a new token!</a>
                     <input type="password" id="access-token" class="u-full-width">
                     <input type="submit" class="button-primary" value="Save">
                     <div id="options-form-state"></div>
