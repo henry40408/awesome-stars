@@ -1,6 +1,5 @@
 {
   "author": "Heng-Yi Wu",
-  "author_email": "henry40408@gmail.com",
   "background": {
     "scripts": [
       "utils.js",
