@@ -32,7 +32,7 @@ function initialize() {
                         count >= 500 ? "star-500" :
                         count >= 100 ? "star-100" : ""
                     )
-                    .append("\u2605 " + count));
+                    .append("\u2605 " + numeral(count).format("0,0")));
 
                 var cache = {};
                 cache[url] = json;

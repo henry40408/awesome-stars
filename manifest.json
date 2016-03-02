@@ -17,6 +17,7 @@
       ],
       "js": [
         "libs/jquery.min.js",
+        "libs/numeral.min.js",
         "utils.js",
         "content.js"
       ],
@@ -38,5 +39,5 @@
     "storage"
   ],
   "short_name": "awesome-stars",
-  "version": "1.1.1"
+  "version": "1.2.0"
 }

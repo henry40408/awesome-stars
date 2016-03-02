@@ -1,7 +1,7 @@
 .awesome-stars {
-    border: 1px solid #eee;
+    border: 1px solid darkgray;
     border-radius: .25rem;
-    font-size: .8rem;
+    font-size: .95rem;
     margin: 0 .25rem;
     padding: .1rem .25rem;
 }
@@ -19,7 +19,7 @@
 }
 
 .star-1000 {
-    color: DarkTurquoise;
+    color: darkturquoise;
 }
 
 .star-500 {
