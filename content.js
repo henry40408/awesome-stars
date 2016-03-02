@@ -27,10 +27,7 @@ function initialize() {
                     .addClass(
                         count >= 10000 ? "star-10000" :
                         count >= 5000 ? "star-5000" :
-                        count >= 2500 ? "star-2500" :
-                        count >= 1000 ? "star-1000" :
-                        count >= 500 ? "star-500" :
-                        count >= 100 ? "star-100" : ""
+                        count >= 1000 ? "star-1000" : ""
                     )
                     .append("\u2605 " + numeral(count).format("0,0")));
 

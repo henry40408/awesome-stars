@@ -7,25 +7,13 @@
 }
 
 .star-10000 {
-    color: purple;
+    color: red;
 }
 
 .star-5000 {
-    color: gold;
-}
-
-.star-2500 {
-    color: green;
-}
-
-.star-1000 {
-    color: darkturquoise;
-}
-
-.star-500 {
     color: blue;
 }
 
-.star-100 {
-    color: red;
+.star-1000 {
+    color: green;
 }
