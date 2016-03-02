@@ -20,9 +20,19 @@ function initialize() {
             var cached = response.cache[url];
 
             function success_callback(json) {
+                var count = json.stargazers_count;
+
                 $that.after($("<span>")
                     .addClass("awesome-stars")
-                    .append("\u2605 " + json.stargazers_count));
+                    .addClass(
+                        count >= 10000 ? "star-10000" :
+                        count >= 5000 ? "star-5000" :
+                        count >= 2500 ? "star-2500" :
+                        count >= 1000 ? "star-1000" :
+                        count >= 500 ? "star-500" :
+                        count >= 100 ? "star-100" : ""
+                    )
+                    .append("\u2605 " + count));
 
                 var cache = {};
                 cache[url] = json;

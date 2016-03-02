@@ -5,3 +5,27 @@
     margin: 0 .25rem;
     padding: .1rem .25rem;
 }
+
+.star-10000 {
+    color: purple;
+}
+
+.star-5000 {
+    color: gold;
+}
+
+.star-2500 {
+    color: green;
+}
+
+.star-1000 {
+    color: DarkTurquoise;
+}
+
+.star-500 {
+    color: blue;
+}
+
+.star-100 {
+    color: red;
+}
