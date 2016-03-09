@@ -6,7 +6,7 @@ $(document).ready(function() {
 
     function update_rate_limit() {
         chrome.runtime.sendMessage({
-            type: GET_ACCESS_TOKEN
+            type: GET_OPTION
         }, function(response) {
             var params = {};
 
@@ -14,7 +14,7 @@ $(document).ready(function() {
                 params.access_token = response.access_token;
 
             $.getJSON("https://api.github.com/rate_limit", params, function(json) {
-                $rate_limit.text(json.rate.remaining);
+                $rate_limit.text(numeral(json.rate.remaining).format(","));
             }).error(function() {
                 $rate_limit.text("Unable to retrieve rate limit.");
             });
@@ -22,14 +22,14 @@ $(document).ready(function() {
     }
 
     chrome.runtime.sendMessage({
-        type: GET_ACCESS_TOKEN
+        type: GET_OPTION
     }, function(response) {
         $access_token_field.val(response.access_token);
     });
 
     $options_form.submit(function(e) {
         chrome.runtime.sendMessage({
-            type: SET_ACCESS_TOKEN,
+            type: SET_OPTION,
             access_token: $access_token_field.val()
         }, function(response) {
             $options_form_state.text("Saved!");

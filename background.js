@@ -1,23 +1,20 @@
-chrome.browserAction.onClicked.addListener(function(tab) {
-    chrome.tabs.create({
-        url: "options.html"
-    });
-});
-
 var cache_pool = {};
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     switch (request.type) {
-        case GET_ACCESS_TOKEN:
-            chrome.storage.sync.get("access_token", function(data) {
+        case GET_OPTION:
+            chrome.storage.sync.get("awesome_stars_options", function(value) {
+                value.awesome_stars_options = value.awesome_stars_options || {};
                 sendResponse({
-                    access_token: data.access_token || ""
+                    access_token: value.awesome_stars_options.access_token || ""
                 });
             });
             break;
-        case SET_ACCESS_TOKEN:
+        case SET_OPTION:
             chrome.storage.sync.set({
-                access_token: request.access_token
+                awesome_stars_options: {
+                    access_token: request.access_token,
+                },
             }, function() {
                 sendResponse({
                     data: request.access_token
@@ -25,9 +22,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             });
             break;
         case GET_CACHE_ACCESS_TOKEN:
-            chrome.storage.sync.get("access_token", function(data) {
+            chrome.storage.sync.get("awesome_stars_options", function(value) {
                 sendResponse({
-                    access_token: data.access_token || "",
+                    access_token: value.awesome_stars_options.access_token || "",
                     cache: cache_pool
                 });
             });
