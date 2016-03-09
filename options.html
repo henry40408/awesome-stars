@@ -30,8 +30,15 @@
                 <form action="" id="options-form">
                     <label for="access-token">Access token</label>
                     <input type="password" id="access-token" class="u-full-width">
-                    <input type="submit" class="button-primary" value="Save">
-                    <div id="options-form-state"></div>
+                    <label for="fancy-stars">
+                        <input type="checkbox" id="fancy-stars">
+                        <span class="label-body">Enable Fancy Stars*</span>
+                    </label>
+                    <div>
+                        <input type="submit" class="button-primary" value="Save">
+                        <span id="options-form-state"></span>
+                    </div>
+                    <p>*Fancy Stars: Awesome stars changes its color according to star count: Black for less than 1,000, green for 1,000 to 4,999, blue for 5,000 to 9,999, and red for more than 10,000.</p>
                 </form>
             </section>
         </div>
