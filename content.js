@@ -19,17 +19,22 @@ function initialize() {
             var url = "https://api.github.com/repos/" + matches[1] + "/" + matches[2];
             var cached = response.cache[url];
 
-            function success_callback(json) {
+            function attach_awesome_stars(json) {
                 var count = json.stargazers_count;
 
-                $that.after($("<span>")
-                    .addClass("awesome-stars")
-                    .addClass(
+                var stars = $("<span>").addClass("awesome-stars");
+
+                if (response.fancy_stars === true) {
+                    stars.addClass(
                         count >= 10000 ? "star-10000" :
                         count >= 5000 ? "star-5000" :
                         count >= 1000 ? "star-1000" : ""
-                    )
-                    .append("\u2605 " + numeral(count).format("0,0")));
+                    );
+                }
+
+                stars.append("\u2605 " + numeral(count).format("0,0"));
+
+                $that.after(stars);
 
                 var cache = {};
                 cache[url] = json;
@@ -41,9 +46,9 @@ function initialize() {
             }
 
             if (cached) {
-                $that.after($("<span>")
-                    .addClass("awesome-stars")
-                    .append("\u2605 " + cached.stargazers_count));
+                attach_awesome_stars({
+                    stargazers_count: cached.stargazers_count,
+                });
             } else {
                 var params = {};
 
@@ -54,7 +59,7 @@ function initialize() {
                     dataType: "json",
                     url: url,
                     data: params,
-                    success: success_callback
+                    success: attach_awesome_stars
                 });
             }
         });

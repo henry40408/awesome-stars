@@ -25,9 +25,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             break;
         case GET_CACHE_ACCESS_TOKEN:
             chrome.storage.sync.get("awesome_stars_options", function(value) {
+                var awesome_stars_options = value.awesome_stars_options || {};
+
+                if (typeof awesome_stars_options.fancy_stars === "undefined")
+                    awesome_stars_options.fancy_stars = true;
+
                 sendResponse({
-                    access_token: value.awesome_stars_options.access_token || "",
-                    cache: cache_pool
+                    access_token: awesome_stars_options.access_token || "",
+                    fancy_stars: awesome_stars_options.fancy_stars,
+                    cache: cache_pool,
                 });
             });
             break;
