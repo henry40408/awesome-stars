@@ -1,10 +1,34 @@
 // Enable chromereload by uncommenting this line:
-// import 'chromereload/devonly';
+import 'chromereload/devonly';
 
-chrome.runtime.onInstalled.addListener(function (details) {
-  console.log('previousVersion', details.previousVersion);
+import {
+    RATE_LIMIT
+} from './constants.js';
+
+chrome.runtime.onInstalled.addListener(function(details) {
+    console.log('previousVersion', details.previousVersion);
 });
 
-chrome.browserAction.setBadgeText({text: '\'Allo'});
+chrome.browserAction.setBadgeText({
+    text: '!'
+});
 
-console.log('\'Allo \'Allo! Event Page for Browser Action');
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    switch (request.type) {
+        case RATE_LIMIT:
+            fetch(`https://api.github.com/rate_limit`)
+                .then(resp => resp.json())
+                .then(json => sendResponse({
+                    limit: json.rate.limit,
+                    remaining: json.rate.remaining
+                }));
+            break;
+        default:
+            sendResponse({});
+            break;
+    }
+
+    return true;
+});
+
+console.log('Awesome Stars is ready');
