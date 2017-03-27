@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <meta charset="utf-8" />
-  <title>Popup</title>
-  <link rel="stylesheet" type="text/css" href="../styles/popup.css">
+    <meta charset="utf-8" />
+    <title>Popup</title>
+    <link rel="stylesheet" type="text/css" href="../styles/popup.css">
 </head>
+
 <body>
-  <h1>Awesome Stars</h1>
-  <ul>
-      <li>Rate limit: <span id="rate-limit-remaining">...</span> / <span id="rate-limit-limit">...</span></li>
-  </ul>
-  <script src="../scripts/popup.js"></script>
+    <h1 id="extension-name">Awesome Stars</h1>
+    <div class="ui grid two columns">
+        <div class="row">
+            <div class="column">Rate Limit</div>
+            <div class="column">
+                <strong id="rate-limit-remaining">...</strong> / <strong id="rate-limit-limit">...</strong>
+            </div>
+        </div>
+    </div>
+    <script src="../scripts/popup.js"></script>
 </body>
+
 </html>
