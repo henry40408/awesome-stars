@@ -23,6 +23,7 @@
     "babel-preset-stage-0": "6.x.x",
     "chai": "3.x.x",
     "chromereload": "0.x.x",
+    "css-loader": "^0.28.0",
     "debounce": "1.x.x",
     "del": "2.x.x",
     "eslint": "3.x.x",
@@ -52,9 +53,10 @@
     "yargs": "5.x.x"
   },
   "dependencies": {
-    "bluebird": "^3.5.0",
+    "chrome-promise": "^2.0.2",
     "jquery": "^3.2.0",
     "lodash": "^4.17.4",
+    "normalize-css": "^2.3.1",
     "parse-github-url": "^1.0.0"
   }
 }

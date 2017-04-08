@@ -1,13 +1,42 @@
+html {
+    font-size: 20px;
+}
+
 body {
-    padding: 1rem;
     min-width: 20rem;
 }
 
-#extension-name {
+.extension.name {
     font-weight: 300;
     text-align: center;
 }
 
-#statistics {
-    text-align: center;
+.token.used {
+    text-transform: uppercase;
+}
+
+.statistics {
+    .row {
+        display: flex;
+        flex: 1;
+        flex-wrap: wrap;
+        height: 3rem;
+    }
+
+    .name, .value {
+        align-items: center;
+        display: flex;
+        flex: 0 0 50%;
+        justify-content: center;
+    }
+
+    .name {
+        letter-spacing: .05rem;
+    }
+
+    .value {
+        font-size: 1.5rem;
+        font-weight: 300;
+        letter-spacing: .1rem;
+    }
 }

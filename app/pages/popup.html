@@ -5,19 +5,21 @@
     <meta charset="utf-8" />
     <title>Popup</title>
     <link rel="stylesheet" type="text/css" href="../styles/popup.css">
+    <script src="../scripts/popup.js"></script>
 </head>
 
 <body>
-    <h1 id="extension-name">Awesome Stars</h1>
-    <div class="ui grid two columns">
+    <h1 class="extension name">Awesome Stars</h1>
+    <div class="statistics">
         <div class="row">
-            <div class="column">Rate Limit</div>
-            <div class="column">
-                <strong id="rate-limit-remaining">...</strong> / <strong id="rate-limit-limit">...</strong>
-            </div>
+            <div class="name">Token Used?</div>
+            <div class="token used value"><span id="token-used">...</span></div>
+        </div>
+        <div class="row">
+            <div class="name">Current Rate Limit</div>
+            <div class="value"><span id="rate-limit-remaining">...</span>&nbsp;/&nbsp;<span id="rate-limit-limit">...</span></div>
         </div>
     </div>
-    <script src="../scripts/popup.js"></script>
 </body>
 
 </html>

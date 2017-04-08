@@ -1,15 +1,44 @@
+import 'normalize-css/normalize.css';
+
+import ChromePromise from 'chrome-promise';
+
 import {
+    GET_OPTIONS,
     RATE_LIMIT
 } from './constants';
 
-console.log('Awesome stars is ready');
+const chromep = new ChromePromise();
+const doc = document;
 
-const $rateLimitRemaining = document.getElementById('rate-limit-remaining'),
-    $rateLimitLimit = document.getElementById('rate-limit-limit');
+doc.addEventListener("DOMContentLoaded", main);
 
-chrome.runtime.sendMessage({
-    type: RATE_LIMIT
-}, response => {
-    $rateLimitLimit.innerHTML = response.limit;
-    $rateLimitRemaining.innerHTML = response.remaining;
-});
+function main() {
+    const $tokenUsed = doc.getElementById('token-used');
+    const $rateLimitRemaining = doc.getElementById('rate-limit-remaining');
+    const $rateLimitLimit = doc.getElementById('rate-limit-limit');
+
+    chromep.runtime.sendMessage({
+        type: RATE_LIMIT
+    }).then(response => {
+        $rateLimitLimit.innerHTML = response.limit;
+        $rateLimitRemaining.innerHTML = response.remaining;
+
+        return chromep.runtime.sendMessage({
+            type: GET_OPTIONS
+        });
+    }).then(response => {
+        const {
+            accessToken
+        } = response;
+
+        if (accessToken) {
+            $tokenUsed.style.color = 'green';
+            $tokenUsed.innerHTML = 'Yes';
+        } else {
+            $tokenUsed.style.color = 'red';
+            $tokenUsed.innerHTML = 'No';
+        }
+    });
+
+    return true;
+}
