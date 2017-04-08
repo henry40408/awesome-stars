@@ -8,7 +8,6 @@
 </head>
 
 <body>
-    <div id="status" class="status"></div>
     <div>
         <h1>Why a token?</h1>
         <ul>
@@ -23,13 +22,14 @@
     </div>
     <p>
         <label for="">
-            <h1>GitHub Token</h1>
+            <h1>GitHub Token <span id="access-token-saved" class="saved">saved!</span></h1>
             <input type="password" id="access-token" placeholder="Paste the token">
+            <p>Token status: <span id="token-status">...</span></p>
         </label>
     </p>
     <p>
         <label for="">
-            <h1>Fancy Stars</h1>
+            <h1>Fancy Stars <span id="fancy-stars-saved" class="saved">saved!</span></h1>
             <input type="checkbox" id="fancy-stars">
             Use different colors according to degrees of star count
         </label>
