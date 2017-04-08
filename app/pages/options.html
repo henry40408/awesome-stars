@@ -1,15 +1,40 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <meta charset="utf-8" />
-  <title>Options</title>
-  <link rel="stylesheet" type="text/css" href="../styles/options.css">
+    <meta charset="utf-8" />
+    <title>Options</title>
+    <link rel="stylesheet" type="text/css" href="../styles/options.css">
 </head>
+
 <body>
-  <label>
-    <input type="checkbox" name="examplOption" checked>
-    Example Option
-  </label>
-  <script src="../scripts/options.js"></script>
+    <div id="status" class="status"></div>
+    <div>
+        <h1>Why a token?</h1>
+        <ul>
+            <li><strong>NO</strong> permission needs to be granted to the token.</li>
+            <li>According to <a href="https://developer.github.com/v3/#rate-limiting">GitHub Documentation</a>, only <strong>60</strong> requests is allowed to send in an hour, and it is not enough for getting star count for all repositories in a single awesome curated list.</li>
+            <li>With a token, the extension can send <strong>5,000</strong> requests instead. For better performance and user experience, the extension would also cache the result.</li>
+        </ul>
+    </div>
+    <div>
+        <h1><a href="https://github.com/settings/tokens/new?description=Awesome%20Stars">Create a Token</a></h1>
+        <div>NOTE: <strong>NO</strong> permissions is needed.</div>
+    </div>
+    <p>
+        <label for="">
+            <h1>GitHub Token</h1>
+            <input type="password" id="access-token" placeholder="Paste the token">
+        </label>
+    </p>
+    <p>
+        <label for="">
+            <h1>Fancy Stars</h1>
+            <input type="checkbox" id="fancy-stars">
+            Use different colors according to degrees of star count
+        </label>
+    </p>
+    <script src="../scripts/options.js"></script>
 </body>
+
 </html>

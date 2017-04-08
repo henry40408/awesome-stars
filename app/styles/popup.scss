@@ -15,16 +15,11 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
 }
 
-.help.text {
-    display: none;
-
-    h2 {
-        text-align: center;
-    }
-
-    li {
-        line-height: 2;
-    }
+.open.options {
+    align-items: center;
+    display: flex;
+    height: 3rem;
+    justify-content: center;
 }
 
 .statistics {
