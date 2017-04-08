@@ -16,6 +16,7 @@ function main() {
     const $tokenUsed = doc.getElementById('token-used');
     const $rateLimitRemaining = doc.getElementById('rate-limit-remaining');
     const $rateLimitLimit = doc.getElementById('rate-limit-limit');
+    const $helpText = doc.getElementById('help-text');
 
     chromep.runtime.sendMessage({
         type: RATE_LIMIT
@@ -34,9 +35,11 @@ function main() {
         if (accessToken) {
             $tokenUsed.style.color = 'green';
             $tokenUsed.innerHTML = 'Yes';
+            $helpText.style.display = 'none';
         } else {
             $tokenUsed.style.color = 'red';
             $tokenUsed.innerHTML = 'No';
+            $helpText.style.display = 'block';
         }
     });
 

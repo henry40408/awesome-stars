@@ -4,15 +4,27 @@ html {
 
 body {
     min-width: 20rem;
+    padding: 1rem 2rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 300;
 }
 
 .extension.name {
-    font-weight: 300;
     text-align: center;
 }
 
-.token.used {
-    text-transform: uppercase;
+.help.text {
+    display: none;
+
+    h2 {
+        text-align: center;
+    }
+
+    li {
+        line-height: 2;
+    }
 }
 
 .statistics {
@@ -39,4 +51,8 @@ body {
         font-weight: 300;
         letter-spacing: .1rem;
     }
+}
+
+.token.used {
+    text-transform: uppercase;
 }

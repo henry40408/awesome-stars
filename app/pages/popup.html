@@ -20,6 +20,14 @@
             <div class="value"><span id="rate-limit-remaining">...</span>&nbsp;/&nbsp;<span id="rate-limit-limit">...</span></div>
         </div>
     </div>
+    <div id="help-text" class="help text">
+        <h2>Why a token?</h2>
+        <ul>
+            <li><strong>NO</strong> permission needs to be granted to the token.</li>
+            <li>According to <a href="https://developer.github.com/v3/#rate-limiting">GitHub Documentation</a>, only <strong>60</strong> requests is allowed to send in an hour, and it is not enough for getting star count for all repositories in a single awesome curated list.</li>
+            <li>With a token, the extension can send <strong>5,000</strong> requests instead. For better performance and user experience, the extension would also cache the result.</li>
+        </ul>
+    </div>
 </body>
 
 </html>
