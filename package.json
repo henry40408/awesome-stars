@@ -55,7 +55,6 @@
     "bluebird": "^3.5.0",
     "jquery": "^3.2.0",
     "lodash": "^4.17.4",
-    "parse-github-url": "^1.0.0",
-    "semantic-ui": "^2.2.9"
+    "parse-github-url": "^1.0.0"
   }
 }
