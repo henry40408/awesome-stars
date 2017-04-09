@@ -14,7 +14,7 @@ import args from './lib/args';
 const ENV = args.production ? 'production' : 'development';
 
 gulp.task('scripts', (cb) => {
-    return gulp.src('app/scripts/*.js')
+    return gulp.src(['app/scripts/*.js', 'app/scripts/*.jsx'])
         .pipe(plumber({
             errorHandler: function()  {
                 // Webpack will log the errors
@@ -37,12 +37,12 @@ gulp.task('scripts', (cb) => {
             ] : []),
             module: {
                 preLoaders: [{
-                    test: /\.js$/,
+                    test: /\.jsx?$/,
                     loader: 'eslint-loader',
                     exclude: /node_modules/
                 }],
                 loaders: [{
-                    test: /\.js$/,
+                    test: /\.jsx?$/,
                     loader: 'babel'
                 }, {
                     test: /\.css$/,
