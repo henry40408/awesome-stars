@@ -6,10 +6,15 @@ import ReactDOM from 'react-dom';
 
 import {
     GET_OPTIONS,
-    RATE_LIMIT
+    RATE_LIMIT,
+    TEST_TOKEN,
+    TOKEN
 } from './constants';
 
 // INITIAL
+
+const LOADING = 'LOADING';
+const NA = 'NA';
 
 const chromep = new ChromePromise();
 const doc = document;
@@ -31,32 +36,34 @@ class App extends React.Component {
         this.handleOpenOptions = this.handleOpenOptions.bind(this);
 
         this.state = {
-            rateLimit: 0,
+            rateLimit: NA,
             rateLimitRemaining: 0,
-            tokenUsed: false
+            tokenStatus: LOADING
         }
     }
 
     componentDidMount() {
         return chromep.runtime.sendMessage({
-            type: RATE_LIMIT
+            type: TEST_TOKEN
         }).then(response => {
             this.setState({
-                rateLimit: response.limit,
-                rateLimitRemaining: response.remaining
-            })
-
-            return chromep.runtime.sendMessage({
-                type: GET_OPTIONS
+                tokenStatus: response
             });
-        }).then(response => {
-            const {
-                accessToken
-            } = response;
 
-            this.setState({
-                tokenUsed: !!accessToken
-            });
+            if (response === TOKEN.VALID) {
+                return chromep.runtime.sendMessage({
+                    type: RATE_LIMIT
+                }).then(response => {
+                    this.setState({
+                        rateLimit: response.limit,
+                        rateLimitRemaining: response.remaining
+                    });
+                });
+            } else {
+                this.setState({
+                    rateLimit: NA
+                });
+            }
         });
     }
 
@@ -68,32 +75,59 @@ class App extends React.Component {
         const {
             rateLimit,
             rateLimitRemaining,
-            tokenUsed
+            tokenStatus
         } = this.state;
 
-        const tokenUsedStr = tokenUsed ? 'YES' : 'NO';
-        const tokenUsedStyle = {
-            color: tokenUsed ? 'green' : 'red'
+        let tokenStatusColor,
+            tokenStatusStr,
+            tokenStatusStyle;
+        switch (tokenStatus) {
+            case LOADING:
+                tokenStatusColor = 'black';
+                tokenStatusStr = '...';
+                break;
+            case TOKEN.VALID:
+                tokenStatusColor = 'green';
+                tokenStatusStr = 'valid';
+                break;
+            case TOKEN.INVALID:
+                tokenStatusColor = 'red';
+                tokenStatusStr = 'invalid';
+                break;
+            case TOKEN.EMPTY:
+                tokenStatusColor = 'black';
+                tokenStatusStr = 'not set';
+                break;
+            default:
+                tokenStatusColor = 'black';
+                tokenStatusStr = 'unknown';
+        }
+
+        tokenStatusStyle = {
+            color: tokenStatusColor
         };
+
+        let rateLimitStr;
+        if (rateLimit === NA) {
+            rateLimitStr = 'N/A';
+        } else {
+            rateLimitStr = `${rateLimitRemaining} / ${rateLimit}`;
+        }
 
         return (
             <div>
                 <h1 className="extension name">{'Awesome Stars'}</h1>
                 <div className="statistics">
                     <div className="row">
-                        <div className="name">{'Token Used?'}</div>
-                        <div className="token used value" style={tokenUsedStyle}><span>{tokenUsedStr}</span></div>
+                        <div className="name">{'Token Status'}</div>
+                        <div className="token used value" style={tokenStatusStyle}><span>{tokenStatusStr}</span></div>
                     </div>
                     <div className="row">
                         <div className="name">{'Current Rate Limit'}</div>
-                        <div className="value">
-                            <span>{rateLimitRemaining}</span>
-                            {'/'}
-                            <span>{rateLimit}</span>
-                        </div>
+                        <div className="value">{rateLimitStr}</div>
                     </div>
                 </div>
-                <div className="open options"><a href="javascript: void 0;" onClick={this.handleOpenOptions}>{'Create a Token'}</a></div>
+                <div className="open options"><a href="javascript: void 0;" onClick={this.handleOpenOptions}>{'Settings'}</a></div>
             </div>
         );
     }

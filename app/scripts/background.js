@@ -19,19 +19,7 @@ const chromep = new ChromePromise();
 
 // EVENT HANDLERS
 
-handleGetOptionsAsync(response => {
-    const browserAction = chrome.browserAction;
-    const {
-        accessToken
-    } = response;
-
-    browserAction.setBadgeText({
-        text: accessToken ? '\u2714' : '!'
-    });
-    browserAction.setBadgeBackgroundColor({
-        color: accessToken ? 'blue' : 'red'
-    });
-});
+updateBadge();
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
@@ -75,12 +63,34 @@ function handleGetOptionsAsync(callback) {
 }
 
 function handleRateLimitAsync(callback) {
-    return fetch(`https://api.github.com/rate_limit`)
-        .then(resp => resp.json())
-        .then(json => callback({
-            limit: json.rate.limit,
-            remaining: json.rate.remaining
-        }));
+    return handleGetOptionsAsync(response => {
+        const {
+            accessToken
+        } = response;
+
+        const url = new URL(`https://api.github.com/rate_limit`);
+
+        if (accessToken) {
+            url.searchParams.append('access_token', accessToken);
+        }
+
+        return fetch(url)
+            .then(resp => {
+                if (!resp.ok) {
+                    throw new Error('Request failed');
+                }
+                return resp;
+            })
+            .then(resp => resp.json())
+            .then(json => callback({
+                limit: json.rate.limit,
+                remaining: json.rate.remaining
+            }))
+            .catch(() => callback({
+                limit: -1,
+                remaining: -1
+            }));
+    });
 }
 
 function handleSetOptionsAsync(request, callback) {
@@ -94,6 +104,7 @@ function handleSetOptionsAsync(request, callback) {
     return chromeStorage.set({
         [STORAGE_KEY]: options
     }).then(() => {
+        updateBadge();
         return handleGetOptionsAsync(callback);
     });
 }
@@ -117,5 +128,19 @@ function handleTestTokenAsync(callback) {
                 return callback(TOKEN.VALID);
             })
             .catch(() => callback(TOKEN.INVALID));
+    });
+}
+
+function updateBadge(){
+    return handleTestTokenAsync(response => {
+        const browserAction = chrome.browserAction;
+
+        browserAction.setBadgeText({
+            text: response === TOKEN.VALID ? '\u2714' : '!'
+        });
+
+        browserAction.setBadgeBackgroundColor({
+            color: response === TOKEN.VALID ? 'green' : 'red'
+        });
     });
 }
