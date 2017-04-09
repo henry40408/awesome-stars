@@ -136,7 +136,7 @@ function updateBadge(){
         const browserAction = chrome.browserAction;
 
         browserAction.setBadgeText({
-            text: response === TOKEN.VALID ? '\u2714' : '!'
+            text: response === TOKEN.VALID ? '\u2714' : '\u2715'
         });
 
         browserAction.setBadgeBackgroundColor({

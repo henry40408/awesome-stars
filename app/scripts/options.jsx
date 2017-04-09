@@ -42,7 +42,7 @@ class App extends React.Component {
             accessToken: '',
             fancyStars: false,
             saved: null,
-            tokenStatus: TOKEN.EMPTY
+            tokenStatus: LOADING
         };
     }
 
@@ -79,13 +79,17 @@ class App extends React.Component {
 
             lodash.delay(() => this.setState({
                 saved: null
-            }), 500);
+            }), 1000);
 
             return this.testTokenAsync();
         });
     }
 
     handleFancyStarsClick(checked) {
+        this.setState({
+            fancyStars: checked
+        });
+
         return this.setOptionsAsync({
             fancyStars: checked
         }).then(() => {
@@ -95,7 +99,7 @@ class App extends React.Component {
 
             return lodash.delay(() => this.setState({
                 saved: null
-            }), 500);
+            }), 1000);
         });
     }
 
@@ -126,8 +130,12 @@ class App extends React.Component {
         const {
             accessToken,
             fancyStars,
+            saved,
             tokenStatus
         } = this.state;
+
+        const accessTokenSaved = saved===ACCESS_TOKEN?'Saved!':'';
+        const fancyStarsSaved=saved===FANCY_STARS?'Saved!':'';
 
         let tokenStatusColor,
             tokenStatusStyle,
@@ -144,11 +152,11 @@ class App extends React.Component {
                 break;
             case TOKEN.VALID:
                 tokenStatusColor = 'green';
-                tokenStatusStr = 'valid';
+                tokenStatusStr = '\u2714 valid';
                 break;
             case TOKEN.INVALID:
                 tokenStatusColor = 'red';
-                tokenStatusStr = 'invalid';
+                tokenStatusStr = '\u2718 invalid';
                 break;
             default:
                 tokenStatusColor = 'black';
@@ -190,18 +198,24 @@ class App extends React.Component {
                 </div>
                 <p>
                     <label for="">
-                        <h1>{'GitHub Token '}</h1>
+                        <h1>
+                            {'GitHub Token '}
+                            <small>{accessTokenSaved}</small>
+                        </h1>
                         <input type="password" value={accessToken} placeholder="Paste the token" onChange={e => this.handleAccessTokenChange(e.target.value)} />
-                        <p>
-                            {'Token status: '}
-                            <span style={tokenStatusStyle}>{tokenStatusStr}</span>
-                        </p>
+                        <p style={tokenStatusStyle}>{tokenStatusStr}</p>
                     </label>
                 </p>
                 <p>
                     <label for="">
-                        <h1>{'Fancy Stars '}</h1>
-                        <input type="checkbox" checked={fancyStars} />
+                        <h1>
+                            <span style={{ color: 'red' }}>{'F'}</span>
+                            <span style={{ color: 'blue' }}>{'ancy '}</span>
+                            <span style={{ color: 'green' }}>{'S'}</span>
+                            {'tars '}
+                            <small>{fancyStarsSaved}</small>
+                        </h1>
+                        <input type="checkbox" checked={fancyStars} onClick={e => this.handleFancyStarsClick(e.target.checked)}/>
                         {' Use different colors according to degrees of star count'}
                     </label>
                 </p>
