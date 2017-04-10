@@ -3,23 +3,46 @@ html {
 }
 
 body {
-    min-width: 20rem;
-    padding: 1rem 2rem;
+    min-width: 16rem;
+    padding: .5rem 1rem;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-weight: 300;
+    margin: 1rem;
 }
 
 .extension.name {
     text-align: center;
 }
 
+.open.options,
+.statistics .row {
+    height: 2.5rem;
+}
+
 .open.options {
     align-items: center;
     display: flex;
-    height: 3rem;
     justify-content: center;
+
+    button {
+        background: white;
+        border-radius: 0.2rem;
+        border: 1px solid #ccc;
+        font-size: .8rem;
+        padding: .3rem .6rem;
+
+        &:hover {
+            background: #eee;
+            cursor: pointer;
+        }
+    }
 }
 
 .statistics {
@@ -27,24 +50,19 @@ h1, h2, h3, h4, h5, h6 {
         display: flex;
         flex: 1;
         flex-wrap: wrap;
-        height: 3rem;
     }
 
-    .name, .value {
+    .name,
+    .value {
         align-items: center;
         display: flex;
         flex: 0 0 50%;
         justify-content: center;
     }
 
-    .name {
-        letter-spacing: .05rem;
-    }
-
     .value {
         font-size: 1.5rem;
         font-weight: 300;
-        letter-spacing: .1rem;
     }
 }
 

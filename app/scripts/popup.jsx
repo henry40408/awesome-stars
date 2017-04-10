@@ -1,5 +1,3 @@
-import 'normalize-css/normalize.css';
-
 import ChromePromise from 'chrome-promise';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -30,8 +28,7 @@ doc.addEventListener('DOMContentLoaded', main);
 // COMPONENTS
 
 class App extends React.Component {
-  static handleOpenOptions(e) {
-    e.preventDefault();
+  static handleOpenOptions() {
     return chromep.runtime.openOptionsPage();
   }
 
@@ -126,7 +123,7 @@ class App extends React.Component {
             <div className="value">{rateLimitStr}</div>
           </div>
         </div>
-        <div className="open options"><a href onClick={this.handleOpenOptions}>{'Settings'}</a></div>
+        <div className="open options"><button onClick={App.handleOpenOptions}>{'Settings'}</button></div>
       </div>
     );
   }
