@@ -2,6 +2,7 @@
 // eslint-disable-next-line
 import 'chromereload/devonly';
 
+import Bluebird from 'bluebird';
 import ChromePromise from 'chrome-promise';
 import lodash from 'lodash';
 
@@ -20,89 +21,93 @@ const chromep = new ChromePromise();
 
 // LOCAL FUNCTIONS
 
-function handleGetOptionsAsync(callback) {
+function handleGetOptionsAsync() {
   const chromeStorage = chromep.storage.local;
 
-  return chromeStorage.get(STORAGE_KEY).then((value) => {
-    const options = lodash.get(value, STORAGE_KEY, {});
-    const accessToken = lodash.get(options, 'access_token', '');
-    const fancyStars = lodash.get(options, 'fancy_stars', true);
+  return chromeStorage.get(STORAGE_KEY)
+    .then((value) => {
+      const options = lodash.get(value, STORAGE_KEY, {});
+      const accessToken = lodash.get(options, 'access_token', '');
+      const fancyStars = lodash.get(options, 'fancy_stars', true);
 
-    return callback({
-      accessToken,
-      fancyStars,
+      return Bluebird.resolve({
+        accessToken,
+        fancyStars,
+      });
     });
-  });
 }
 
-function handleTestTokenAsync(callback) {
-  return handleGetOptionsAsync((options) => {
-    const accessToken = options.accessToken;
+function handleTestTokenAsync() {
+  return handleGetOptionsAsync()
+    .then((options) => {
+      const accessToken = options.accessToken;
 
-    if (accessToken === '') {
-      return callback(TOKEN.EMPTY);
-    }
+      if (accessToken === '') {
+        return Bluebird.resolve(TOKEN.EMPTY);
+      }
 
-    const url = new URL('https://api.github.com/rate_limit');
-    url.searchParams.append('access_token', accessToken);
-
-    return fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(TOKEN.INVALID);
-        }
-        return callback(TOKEN.VALID);
-      })
-      .catch(() => callback(TOKEN.INVALID));
-  });
-}
-
-function updateBadge() {
-  return handleTestTokenAsync((response) => {
-    const browserAction = chrome.browserAction;
-
-    browserAction.setBadgeText({
-      text: response === TOKEN.VALID ? '\u2714' : '\u2715',
-    });
-
-    browserAction.setBadgeBackgroundColor({
-      color: response === TOKEN.VALID ? 'green' : 'red',
-    });
-  });
-}
-
-function handleRateLimitAsync(callback) {
-  return handleGetOptionsAsync((options) => {
-    const {
-      accessToken,
-    } = options;
-
-    const url = new URL('https://api.github.com/rate_limit');
-
-    if (accessToken) {
+      const url = new URL('https://api.github.com/rate_limit');
       url.searchParams.append('access_token', accessToken);
-    }
 
-    return fetch(url)
-      .then((resp) => {
-        if (!resp.ok) {
-          throw new Error('Request failed');
-        }
-        return resp;
-      })
-      .then(resp => resp.json())
-      .then(json => callback({
-        limit: json.rate.limit,
-        remaining: json.rate.remaining,
-      }))
-      .catch(() => callback({
-        limit: -1,
-        remaining: -1,
-      }));
-  });
+      return fetch(url)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(TOKEN.INVALID);
+          }
+          return Bluebird.resolve(TOKEN.VALID);
+        })
+        .catch(() => Bluebird.resolve(TOKEN.INVALID));
+    });
 }
 
-function handleSetOptionsAsync(request, callback) {
+function updateBadgeAsync() {
+  return handleTestTokenAsync()
+    .then((response) => {
+      const browserAction = chrome.browserAction;
+
+      browserAction.setBadgeText({
+        text: response === TOKEN.VALID ? '\u2714' : '\u2715',
+      });
+
+      browserAction.setBadgeBackgroundColor({
+        color: response === TOKEN.VALID ? 'green' : 'red',
+      });
+    });
+}
+
+function handleRateLimitAsync() {
+  return handleGetOptionsAsync()
+    .then((options) => {
+      const {
+        accessToken,
+      } = options;
+
+      const url = new URL('https://api.github.com/rate_limit');
+
+      if (accessToken) {
+        url.searchParams.append('access_token', accessToken);
+      }
+
+      return fetch(url)
+        .then((resp) => {
+          if (!resp.ok) {
+            throw new Error('Request failed');
+          }
+          return resp;
+        })
+        .then(resp => resp.json())
+        .then(json => Bluebird.resolve({
+          limit: json.rate.limit,
+          remaining: json.rate.remaining,
+        }))
+        .catch(() => Bluebird.resolve({
+          limit: -1,
+          remaining: -1,
+        }));
+    });
+}
+
+function handleSetOptionsAsync(request) {
   const chromeStorage = chromep.storage.local;
 
   const options = {
@@ -113,27 +118,27 @@ function handleSetOptionsAsync(request, callback) {
   return chromeStorage.set({
     [STORAGE_KEY]: options,
   }).then(() => {
-    updateBadge();
-    return handleGetOptionsAsync(callback);
+    updateBadgeAsync();
+    return handleGetOptionsAsync();
   });
 }
 
 function main() {
-  updateBadge();
+  updateBadgeAsync();
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
       case GET_OPTIONS:
-        handleGetOptionsAsync(sendResponse);
+        handleGetOptionsAsync().then(sendResponse);
         break;
       case RATE_LIMIT:
-        handleRateLimitAsync(sendResponse);
+        handleRateLimitAsync().then(sendResponse);
         break;
       case SET_OPTIONS:
-        handleSetOptionsAsync(request, sendResponse);
+        handleSetOptionsAsync(request).then(sendResponse);
         break;
       case TEST_TOKEN:
-        handleTestTokenAsync(sendResponse);
+        handleTestTokenAsync().then(sendResponse);
         break;
       default:
         sendResponse({});
