@@ -194,13 +194,15 @@ class App extends React.Component {
             {' permissions is needed.'}
           </div>
         </div>
-        <h1>
-          {'GitHub Token '}
-          <small>{accessTokenSaved}</small>
-        </h1>
         <label htmlFor="access-token">
-          <input id="access-token" type="password" value={accessToken} placeholder="Paste the token" onChange={e => this.handleAccessTokenChange(e.target.value)} />
-          <p style={tokenStatusStyle}>{tokenStatusStr}</p>
+          <h1>
+            {'GitHub Token '}
+            <small>{accessTokenSaved}</small>
+          </h1>
+          <div className="access token row">
+            <input id="access-token" className="access token" type="password" value={accessToken} placeholder="Paste the token" onChange={e => this.handleAccessTokenChange(e.target.value)} />
+            <div className="access token status" style={tokenStatusStyle}>{tokenStatusStr}</div>
+          </div>
         </label>
         <h1>
           <span style={{ color: 'red' }}>{'F'}</span>

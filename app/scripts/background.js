@@ -65,12 +65,30 @@ function updateBadgeAsync() {
     .then((response) => {
       const browserAction = chrome.browserAction;
 
+      let color;
+      let text;
+
+      switch (response) {
+        case TOKEN.VALID:
+          color = 'green';
+          text = '\u2714';
+          break;
+        case TOKEN.INVALID:
+          color = 'red';
+          text = '\u2715';
+          break;
+        default:
+          color = 'black';
+          text = '?';
+          break;
+      }
+
       browserAction.setBadgeText({
-        text: response === TOKEN.VALID ? '\u2714' : '\u2715',
+        text,
       });
 
       browserAction.setBadgeBackgroundColor({
-        color: response === TOKEN.VALID ? 'green' : 'red',
+        color,
       });
     });
 }
