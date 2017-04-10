@@ -123,7 +123,12 @@ class App extends React.Component {
             <div className="value">{rateLimitStr}</div>
           </div>
         </div>
-        <div className="open options"><button onClick={App.handleOpenOptions}>{'Settings'}</button></div>
+        <div className="open options">
+          <button onClick={App.handleOpenOptions}>
+            <i className="fa fa-wrench" />
+            {' Settings'}
+          </button>
+        </div>
       </div>
     );
   }

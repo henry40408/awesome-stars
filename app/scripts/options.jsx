@@ -194,29 +194,25 @@ class App extends React.Component {
             {' permissions is needed.'}
           </div>
         </div>
-        <p>
-          <label htmlFor="access-token">
-            <h1>
-              {'GitHub Token '}
-              <small>{accessTokenSaved}</small>
-            </h1>
-            <input id="access-token" type="password" value={accessToken} placeholder="Paste the token" onChange={e => this.handleAccessTokenChange(e.target.value)} />
-            <p style={tokenStatusStyle}>{tokenStatusStr}</p>
-          </label>
-        </p>
-        <p>
-          <label htmlFor="fancy-stars">
-            <h1>
-              <span style={{ color: 'red' }}>{'F'}</span>
-              <span style={{ color: 'blue' }}>{'ancy '}</span>
-              <span style={{ color: 'green' }}>{'S'}</span>
-              {'tars '}
-              <small>{fancyStarsSaved}</small>
-            </h1>
-            <input id="fancy-stars" type="checkbox" checked={fancyStars} onClick={e => this.handleFancyStarsClick(e.target.checked)} />
-            {' Use different colors according to degrees of star count'}
-          </label>
-        </p>
+        <h1>
+          {'GitHub Token '}
+          <small>{accessTokenSaved}</small>
+        </h1>
+        <label htmlFor="access-token">
+          <input id="access-token" type="password" value={accessToken} placeholder="Paste the token" onChange={e => this.handleAccessTokenChange(e.target.value)} />
+          <p style={tokenStatusStyle}>{tokenStatusStr}</p>
+        </label>
+        <h1>
+          <span style={{ color: 'red' }}>{'F'}</span>
+          <span style={{ color: 'blue' }}>{'ancy '}</span>
+          <span style={{ color: 'green' }}>{'S'}</span>
+          {'tars '}
+          <small>{fancyStarsSaved}</small>
+        </h1>
+        <label htmlFor="fancy-stars">
+          <input id="fancy-stars" type="checkbox" checked={fancyStars} onClick={e => this.handleFancyStarsClick(e.target.checked)} />
+          {' Use different colors according to degrees of star count'}
+        </label>
       </div>
     );
   }
