@@ -5,9 +5,12 @@ import 'chromereload/devonly';
 import Bluebird from 'bluebird';
 import ChromePromise from 'chrome-promise';
 import lodash from 'lodash';
+import ParseGithubUrl from 'parse-github-url';
+import LRU from 'lru-cache';
 
 import {
   GET_OPTIONS,
+  GET_STARS,
   RATE_LIMIT,
   SET_OPTIONS,
   STORAGE_KEY,
@@ -17,7 +20,13 @@ import {
 
 // INITIAL
 
+const LRU_OPTIONS = {
+  max: 5000,
+  maxAge: 1000 * 60 * 60 * 24,
+};
+
 const chromep = new ChromePromise();
+const cache = new LRU(LRU_OPTIONS);
 
 // LOCAL FUNCTIONS
 
@@ -118,6 +127,46 @@ function handleSetOptionsAsync(request) {
   });
 }
 
+function handleGetStarsAsync(request) {
+  const { url: rawUrl } = request;
+  const { repo } = ParseGithubUrl(rawUrl);
+
+  if (repo !== null) {
+    const item = cache.get(rawUrl);
+
+    if (item) {
+      const { stars } = item;
+      return Bluebird.resolve(stars);
+    }
+
+    return Bluebird.resolve(lodash.sample([100, 1000, 7500, 10000]));
+
+    // return handleGetOptionsAsync()
+    //   .then((options) => {
+    //     const { accessToken } = options;
+
+    //     const url = new URL(`https://api.github.com/repos/${repo}`);
+    //     url.searchParams.append('access_token', accessToken);
+
+    //     return fetch(url);
+    //   })
+    //   .then((resp) => {
+    //     if (!resp.ok) {
+    //       throw new Error('Request failed');
+    //     }
+    //     return resp;
+    //   })
+    //   .then(resp => resp.json())
+    //   .then((json) => {
+    //     const { stargazers_count } = json;
+    //     cache.set(rawUrl, { stars: stargazers_count });
+    //     return Bluebird.resolve(stargazers_count);
+    //   });
+  }
+
+  return Bluebird.resolve(null);
+}
+
 function main() {
   updateBadgeAsync();
 
@@ -134,6 +183,9 @@ function main() {
         break;
       case TEST_TOKEN:
         handleTestTokenAsync().then(sendResponse);
+        break;
+      case GET_STARS:
+        handleGetStarsAsync(request).then(sendResponse);
         break;
       default:
         sendResponse({});

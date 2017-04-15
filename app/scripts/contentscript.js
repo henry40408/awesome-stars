@@ -1,33 +1,69 @@
+import ChromePromise from 'chrome-promise';
 import ParseGithubUrl from 'parse-github-url';
 import jQuery from 'jquery';
 import lodash from 'lodash';
 
-function transformElementToLink(element) {
-  const parsedHref = ParseGithubUrl(element.href) || {};
-  const isInPage = (parsedHref.hash || '') !== '';
-  const isRepo = (parsedHref.host || '').match(/github\.com/i);
+import { GET_OPTIONS, GET_STARS } from './constants';
 
-  return {
-    ...parsedHref,
-    el: element,
-    isInPage,
-    isRepo,
-  };
+const chromep = new ChromePromise();
+
+function transformElementToLink(element) {
+  const parsed = ParseGithubUrl(element.href) || {};
+  const isInPage = (parsed.hash || '') !== '';
+  const isRepo = (parsed.host || '').match(/github\.com/i);
+
+  return { parsed, el: element, isInPage, isRepo };
 }
 
-function appendGithubStars(link) {
-  const {
-    owner,
-    name,
-  } = link;
+function backgroundColorFromStars(stars, fancyStars) {
+  if (!fancyStars) {
+    return 'grey';
+  }
 
-  const shieldUrl = `https://img.shields.io/github/stars/${owner}/${name}.png?style=social&label=Star`;
-  const stars = jQuery('<img>').attr('src', shieldUrl);
-  const el = jQuery(link.el).after(stars).after('&nbsp;');
+  let backgroundColor;
 
-  return {
-    ...link,
-    el,
+  if (stars >= 10000) {
+    backgroundColor = 'red';
+  } else if (stars >= 5000) {
+    backgroundColor = 'blue';
+  } else if (stars >= 1000) {
+    backgroundColor = 'green';
+  } else {
+    backgroundColor = 'grey';
+  }
+
+  return backgroundColor;
+}
+
+function starElement(stars, fancyStars) {
+  const styles = {
+    fontSize: '.6875rem',
+    padding: '.1rem .3rem',
+  };
+
+  const labelDiv = jQuery('<span>').css({
+    ...styles,
+    backgroundColor: 'darkgray',
+    color: 'white',
+  }).append('stars');
+
+  const starsDiv = jQuery('<span>').css({
+    ...styles,
+    backgroundColor: backgroundColorFromStars(stars, fancyStars),
+    color: 'white',
+  }).append(stars);
+
+  return jQuery('<span>').append(labelDiv).append(starsDiv);
+}
+
+function appendGithubStarsWithOptions(options) {
+  return function appendGithubStars(link) {
+    const { fancyStars } = options;
+    const { parsed, el } = link;
+
+    return chromep.runtime
+      .sendMessage({ type: GET_STARS, url: parsed.href })
+      .then(stars => jQuery(el).after(starElement(stars, fancyStars)).after('&nbsp;'));
   };
 }
 
@@ -42,11 +78,12 @@ function parseLinks() {
   // - Filter GitHub repository and in-page links from Links
   // - Append ellipsis to the element in Links and transform Link into Promise
   //    - Promise would resolve ellipsis into GitHub buttons
-  return lodash.chain(jQuery('a', readmeSection))
-    .map(transformElementToLink)
-    .filter(isRepoInsteadOfInPage)
-    .map(appendGithubStars)
-    .value();
+  return chromep.runtime.sendMessage({ type: GET_OPTIONS })
+    .then(options => lodash.chain(jQuery('a', readmeSection))
+      .map(transformElementToLink)
+      .filter(isRepoInsteadOfInPage)
+      .map(appendGithubStarsWithOptions(options))
+      .value());
 }
 
 function main() {

@@ -1,4 +1,5 @@
 export const GET_OPTIONS = 'GET_OPTIONS';
+export const GET_STARS = 'GET_STARS';
 export const RATE_LIMIT = 'RATE_LIMIT';
 export const SET_OPTIONS = 'SET_OPTIONS';
 export const TEST_TOKEN = 'TEST_TOKEN';

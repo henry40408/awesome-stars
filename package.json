@@ -62,6 +62,7 @@
     "chrome-promise": "^2.0.2",
     "jquery": "^3.2.0",
     "lodash": "^4.17.4",
+    "lru-cache": "^4.0.2",
     "parse-github-url": "^1.0.0",
     "react": "^15.5.3",
     "react-dom": "^15.5.3"
