@@ -37,27 +37,41 @@ function handleGetOptionsAsync() {
     });
 }
 
-function handleTestTokenAsync() {
+function handleRateLimitAsync() {
   return handleGetOptionsAsync()
     .then((options) => {
-      const accessToken = options.accessToken;
-
-      if (accessToken === '') {
-        return Bluebird.resolve(TOKEN.EMPTY);
-      }
+      const { accessToken } = options;
 
       const url = new URL('https://api.github.com/rate_limit');
-      url.searchParams.append('access_token', accessToken);
+      if (accessToken) {
+        url.searchParams.append('access_token', accessToken);
+      }
 
       return fetch(url)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(TOKEN.INVALID);
+        .then((resp) => {
+          if (!resp.ok) {
+            throw new Error('Request failed');
           }
-          return Bluebird.resolve(TOKEN.VALID);
+          return resp;
         })
-        .catch(() => Bluebird.resolve(TOKEN.INVALID));
+        .then(resp => resp.json())
+        .then(json => Bluebird.resolve({
+          limit: json.resources.core.limit,
+          remaining: json.resources.core.remaining,
+        }))
+        .catch(() => Bluebird.resolve({ limit: -1, remaining: -1 }));
     });
+}
+
+function handleTestTokenAsync() {
+  return handleRateLimitAsync()
+    .then((rateLimit) => {
+      if (rateLimit.limit === -1) {
+        throw new Error(TOKEN.INVALID);
+      }
+      return Bluebird.resolve(TOKEN.VALID);
+    })
+    .catch(() => Bluebird.resolve(TOKEN.INVALID));
 }
 
 function updateBadgeAsync() {
@@ -83,45 +97,8 @@ function updateBadgeAsync() {
           break;
       }
 
-      browserAction.setBadgeText({
-        text,
-      });
-
-      browserAction.setBadgeBackgroundColor({
-        color,
-      });
-    });
-}
-
-function handleRateLimitAsync() {
-  return handleGetOptionsAsync()
-    .then((options) => {
-      const {
-        accessToken,
-      } = options;
-
-      const url = new URL('https://api.github.com/rate_limit');
-
-      if (accessToken) {
-        url.searchParams.append('access_token', accessToken);
-      }
-
-      return fetch(url)
-        .then((resp) => {
-          if (!resp.ok) {
-            throw new Error('Request failed');
-          }
-          return resp;
-        })
-        .then(resp => resp.json())
-        .then(json => Bluebird.resolve({
-          limit: json.rate.limit,
-          remaining: json.rate.remaining,
-        }))
-        .catch(() => Bluebird.resolve({
-          limit: -1,
-          remaining: -1,
-        }));
+      browserAction.setBadgeText({ text });
+      browserAction.setBadgeBackgroundColor({ color });
     });
 }
 

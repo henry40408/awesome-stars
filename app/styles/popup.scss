@@ -3,7 +3,7 @@ html {
 }
 
 body {
-    min-width: 16rem;
+    min-width: 20rem;
     padding: .5rem 1rem;
 }
 
@@ -23,7 +23,7 @@ h6 {
 
 .open.options,
 .statistics .row {
-    height: 2.5rem;
+    height: 3rem;
 }
 
 .open.options {
@@ -61,7 +61,7 @@ h6 {
     }
 
     .value {
-        font-size: 1.5rem;
+        font-size: 1rem;
         font-weight: 300;
     }
 }
