@@ -4,7 +4,9 @@ Peek stars of repository on awesome list.
 
 ## Installation
 
-	$ npm install
+```bash
+$ npm install
+```
 
 ## Usage
 
@@ -21,7 +23,9 @@ There are two kinds of entryfiles that create bundles.
 
 ### Build
 
-    $ gulp
+```bash
+$ gulp
+```
 
 
 | Option         | Description                                                                                                                                           |
@@ -44,32 +48,30 @@ Zips your `dist` directory and saves it in the `packages` directory.
 Increments version number of `manifest.json` and `package.json`,
 commits the change to git and adds a git tag.
 
-
-    $ gulp patch      // => 0.0.X
-
-or
-
-    $ gulp feature    // => 0.X.0
+```bash
+$ gulp patch      // => 0.0.X
+```
 
 or
 
-    $ gulp release    // => X.0.0
+```bash
+$ gulp feature    // => 0.X.0
+```
 
+or
+
+```bash
+$ gulp release    // => X.0.0
+```
 
 ## Globals
 
-The build tool also defines a variable named `ENV` in your scripts. It will be set to `development` unless you use the `--production` option.
-
+The build tool also defines a variable named `process.env.NODE_ENV` in your scripts. It will be set to `development` unless you use the `--production` option.
 
 **Example:** `./app/background.js`
 
-	if(ENV === 'development'){
-		console.log('We are in development mode!');
-	}
-
-
-
-
-
-
-
+```javascript
+if (process && process.env.NODE_ENV === 'development') {
+  console.log('We are in development mode!');
+}
+```
