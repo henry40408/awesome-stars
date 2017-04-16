@@ -1,0 +1,71 @@
+html {
+    font-size: 20px;
+}
+
+body {
+    min-width: 20rem;
+    padding: .5rem 1rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 300;
+    margin: 1rem;
+}
+
+.extension.name {
+    text-align: center;
+}
+
+.open.options,
+.statistics .row {
+    height: 3rem;
+}
+
+.open.options {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+
+    button {
+        background: white;
+        border-radius: 0.2rem;
+        border: 1px solid #ccc;
+        font-size: .8rem;
+        padding: .3rem .6rem;
+
+        &:hover {
+            background: #eee;
+            cursor: pointer;
+        }
+    }
+}
+
+.statistics {
+    .row {
+        display: flex;
+        flex: 1;
+        flex-wrap: wrap;
+    }
+
+    .name,
+    .value {
+        align-items: center;
+        display: flex;
+        flex: 0 0 50%;
+        justify-content: center;
+    }
+
+    .value {
+        font-size: 1rem;
+        font-weight: 300;
+    }
+}
+
+.token.used {
+    text-transform: uppercase;
+}

@@ -1,42 +1,77 @@
-# Awesome stars
+# awesome stars
 
 Peek stars of repository on awesome list.
 
 ## Installation
 
-[![available in the chrome website store](chrome-store-available.png)](https://chrome.google.com/webstore/detail/awesome-stars/lcokkcbdmicofdahlooopcpinogephfb?hl=zh-TW&gl=TW)
+```bash
+$ npm install
+```
 
-## How to use
+## Usage
 
-- `English` [HOW TO USE](docs/HOW_TO_USE.md)
-- `繁體中文` [Awesome stars-Github Awesome系列好幫手](https://softnshare.wordpress.com/2016/02/28/awesome-stars-github-awesome%E7%B3%BB%E5%88%97%E5%A5%BD%E5%B9%AB%E6%89%8B/) by [SOFT & SHARE](https://softnshare.wordpress.com/)
+Run `$ gulp --watch` and load the `dist`-directory into chrome.
 
-## Screenshots
+## Entryfiles (bundles)
 
-### Node.js
+There are two kinds of entryfiles that create bundles.
 
-[https://github.com/sindresorhus/awesome-nodejs](https://github.com/sindresorhus/awesome-nodejs)
+1. All js-files in the root of the `./app/scripts` directory
+2. All css-,scss- and less-files in the root of the `./app/styles` directory
 
-![Node.js screenshot](screenshots/nodejs.png)
+## Tasks
 
-### PHP
+### Build
 
-[https://github.com/ziadoz/awesome-php](https://github.com/ziadoz/awesome-php)
+```bash
+$ gulp
+```
 
-![PHP screenshot](screenshots/php.png)
 
-### Swift
+| Option         | Description                                                                                                                                           |
+|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `--watch`      | Starts a livereload server and watches all assets. <br>To reload the extension on change include `livereload.js` in your bundle.                      |
+| `--production` | Minifies all assets                                                                                                                                   |
+| `--verbose`    | Log additional data to the console.                                                                                                                   |
+| `--vendor`     | Compile the extension for different vendors (chrome, firefox, opera)  Default: chrome                                                                 |
+| `--sourcemaps` | Force the creation of sourcemaps. Default: !production                                                                                                |
 
-[https://github.com/matteocrippa/awesome-swift](https://github.com/matteocrippa/awesome-swift)
 
-![Swift screenshot](screenshots/swift.png)
+### pack
 
-## Todo
+Zips your `dist` directory and saves it in the `packages` directory.
 
-- [x] English version of How to use
-- [x] Ensure cache works on GitHub API  
-- [ ] I18n
+    $ gulp pack --vendor=firefox
 
-## License
+### Version
 
-MIT
+Increments version number of `manifest.json` and `package.json`,
+commits the change to git and adds a git tag.
+
+```bash
+$ gulp patch      // => 0.0.X
+```
+
+or
+
+```bash
+$ gulp feature    // => 0.X.0
+```
+
+or
+
+```bash
+$ gulp release    // => X.0.0
+```
+
+## Globals
+
+The build tool also defines a variable named `process.env.NODE_ENV` in your scripts. It will be set to `development` unless you use the `--production` option.
+
+**Example:** `./app/background.js`
+
+```javascript
+if (process && process.env.NODE_ENV === 'development') {
+  console.log('We are in development mode!');
+}
+```

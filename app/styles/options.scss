@@ -1,0 +1,19 @@
+.access.token {
+    flex: 0 0 80%;
+
+    &.row {
+        display: flex;
+        flex: 1;
+    }
+
+    &.status {
+        align-items: center;
+        display: flex;
+        flex: 0 0 20%;
+        padding: 0 1rem;
+    }
+}
+
+.saved {
+    display: none;
+}

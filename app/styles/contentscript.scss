@@ -1,0 +1,22 @@
+.stars {
+    font-size: .9rem;
+
+    &.name {
+        background-color: black;
+        color: white;
+        padding: .2rem;
+    }
+
+    &.name::before { content: '\00a0'; }
+    &.name::after { content: '\00a0'; }
+
+    &.value { padding: .2rem; }
+
+    &.value::before { content: '\00a0'; }
+    &.value::after { content: '\00a0'; }
+
+    &.value.blue { background-color: blue; color: white; }
+    &.value.grey { background-color: grey; color: white; }
+    &.value.green { background-color: green; color: white; }
+    &.value.red { background-color: red; color: white; }
+}
