@@ -43,7 +43,7 @@ function starElement(stars, fancyStars) {
 
   const labelDiv = jQuery('<span>').css({
     ...styles,
-    backgroundColor: 'darkgray',
+    backgroundColor: 'black',
     color: 'white',
   }).append('stars');
 

@@ -1,3 +1,4 @@
+export const GET_CACHE_ITEMCOUNT = 'GET_CACHE_ITEMCOUNT';
 export const GET_OPTIONS = 'GET_OPTIONS';
 export const GET_STARS = 'GET_STARS';
 export const RATE_LIMIT = 'RATE_LIMIT';

@@ -9,6 +9,7 @@ import ParseGithubUrl from 'parse-github-url';
 import LRU from 'lru-cache';
 
 import {
+  GET_CACHE_ITEMCOUNT,
   GET_OPTIONS,
   GET_STARS,
   RATE_LIMIT,
@@ -145,32 +146,34 @@ function handleGetStarsAsync(request) {
       return Bluebird.resolve(stars);
     }
 
-    return Bluebird.resolve(lodash.sample([100, 1000, 7500, 10000]));
+    return handleGetOptionsAsync()
+      .then((options) => {
+        const { accessToken } = options;
 
-    // return handleGetOptionsAsync()
-    //   .then((options) => {
-    //     const { accessToken } = options;
+        const url = new URL(`https://api.github.com/repos/${repo}`);
+        url.searchParams.append('access_token', accessToken);
 
-    //     const url = new URL(`https://api.github.com/repos/${repo}`);
-    //     url.searchParams.append('access_token', accessToken);
-
-    //     return fetch(url);
-    //   })
-    //   .then((resp) => {
-    //     if (!resp.ok) {
-    //       throw new Error('Request failed');
-    //     }
-    //     return resp;
-    //   })
-    //   .then(resp => resp.json())
-    //   .then((json) => {
-    //     const { stargazers_count } = json;
-    //     cache.set(rawUrl, { stars: stargazers_count });
-    //     return Bluebird.resolve(stargazers_count);
-    //   });
+        return fetch(url);
+      })
+      .then((resp) => {
+        if (!resp.ok) {
+          throw new Error('Request failed');
+        }
+        return resp;
+      })
+      .then(resp => resp.json())
+      .then((json) => {
+        const { stargazers_count } = json;
+        cache.set(rawUrl, { stars: stargazers_count });
+        return Bluebird.resolve(stargazers_count);
+      });
   }
 
   return Bluebird.resolve(null);
+}
+
+function getCacheItemCountAsync() {
+  return Bluebird.resolve(cache.itemCount);
 }
 
 function main() {
@@ -178,6 +181,9 @@ function main() {
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
+      case GET_CACHE_ITEMCOUNT:
+        getCacheItemCountAsync().then(sendResponse);
+        break;
       case GET_OPTIONS:
         handleGetOptionsAsync().then(sendResponse);
         break;

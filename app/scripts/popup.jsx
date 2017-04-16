@@ -1,9 +1,10 @@
 import lodash from 'lodash';
+import Bluebird from 'bluebird';
 import ChromePromise from 'chrome-promise';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { RATE_LIMIT, TEST_TOKEN, TOKEN } from './constants';
+import { GET_CACHE_ITEMCOUNT, RATE_LIMIT, TEST_TOKEN, TOKEN } from './constants';
 
 // INITIAL
 
@@ -65,6 +66,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
+      cacheItemCount: 0,
       rateLimit: NA,
       rateLimitRemaining: 0,
       tokenStatus: LOADING,
@@ -72,27 +74,28 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    return chromep.runtime
-      .sendMessage({ type: TEST_TOKEN })
-      .then((response) => {
-        this.setState({ tokenStatus: response });
+    return Bluebird.all([
+      chromep.runtime.sendMessage({ type: GET_CACHE_ITEMCOUNT }),
+      chromep.runtime.sendMessage({ type: TEST_TOKEN }),
+    ]).spread((cacheItemCount, tokenStatus) => {
+      this.setState({ cacheItemCount, tokenStatus });
 
-        if ([TOKEN.EMPTY, TOKEN.VALID].indexOf(response) >= 0) {
-          return chromep.runtime
-            .sendMessage({ type: RATE_LIMIT }).then((rateLimit) => {
-              this.setState({
-                rateLimit: rateLimit.limit,
-                rateLimitRemaining: rateLimit.remaining,
-              });
+      if ([TOKEN.EMPTY, TOKEN.VALID].indexOf(tokenStatus) >= 0) {
+        return chromep.runtime
+          .sendMessage({ type: RATE_LIMIT }).then((rateLimit) => {
+            this.setState({
+              rateLimit: rateLimit.limit,
+              rateLimitRemaining: rateLimit.remaining,
             });
-        }
+          });
+      }
 
-        return this.setState({ rateLimit: NA });
-      });
+      return this.setState({ rateLimit: NA });
+    });
   }
 
   render() {
-    const { rateLimit, rateLimitRemaining, tokenStatus } = this.state;
+    const { cacheItemCount, rateLimit, rateLimitRemaining, tokenStatus } = this.state;
     const { tokenStatusColor, tokenStatusStr } = App.fromTokenStatus(tokenStatus);
     const tokenStatusStyle = { color: tokenStatusColor };
     const rateLimitStr = rateLimit === NA ? 'N/A' : `${rateLimitRemaining} / ${rateLimit}`;
@@ -112,6 +115,10 @@ class App extends React.Component {
           <div className="row">
             <div className="name">{'Current Rate Limit'}</div>
             <div className="value">{`${rateLimitStr}${rateLimitPercStr}`}</div>
+          </div>
+          <div className="row">
+            <div className="name">{'# of Cached Items'}</div>
+            <div className="value">{cacheItemCount}</div>
           </div>
         </div>
         <div className="open options">
