@@ -57,7 +57,11 @@ function updateRateLimit(remaining, limit) {
 }
 
 function getRateLimit() {
-  return cache.get(LRU_RATELIMIT);
+  const rateLimit = cache.get(LRU_RATELIMIT);
+  if (process && process.env.NODE_ENV === 'development') {
+    console.log('cached %cRATE_LIMIT%c hit', 'color: green', 'color: black');
+  }
+  return rateLimit;
 }
 
 function handleRateLimitAsync() {
@@ -75,7 +79,9 @@ function handleRateLimitAsync() {
         return Bluebird.resolve(cachedRateLimit);
       }
 
-      console.log(`fetch ${url}`);
+      if (process && process.env.NDOE_ENV === 'development') {
+        console.log(`fetch RATE_LIMIT %c${url}`, 'color: blue');
+      }
       return fetch(url)
         .then((resp) => {
           if (!resp.ok) {
@@ -162,6 +168,9 @@ function handleGetStarsAsync(request) {
     const item = cache.get(rawUrl);
 
     if (item) {
+      if (process && process.env.NODE_ENV === 'development') {
+        console.log(`cached STARGAZERS_COUNT for %c${rawUrl}%c hit`, 'color: green', 'color: black');
+      }
       const { stars } = item;
       return Bluebird.resolve(stars);
     }
@@ -173,7 +182,9 @@ function handleGetStarsAsync(request) {
         const url = new URL(`https://api.github.com/repos/${repo}`);
         url.searchParams.append('access_token', accessToken);
 
-        console.log(`fetch ${url}`);
+        if (process && process.env.NODE_ENV === 'development') {
+          console.log(`fetch STARGAZERS_COUNT %c${url}`, 'color: blue');
+        }
         return fetch(url);
       })
       .then((resp) => {
