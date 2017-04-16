@@ -36,24 +36,10 @@ function backgroundColorFromStars(stars, fancyStars) {
 }
 
 function starElement(stars, fancyStars) {
-  const styles = {
-    fontSize: '.6875rem',
-    padding: '.1rem .3rem',
-  };
-
-  const labelDiv = jQuery('<span>').css({
-    ...styles,
-    backgroundColor: 'black',
-    color: 'white',
-  }).append('stars');
-
-  const starsDiv = jQuery('<span>').css({
-    ...styles,
-    backgroundColor: backgroundColorFromStars(stars, fancyStars),
-    color: 'white',
-  }).append(stars);
-
-  return jQuery('<span>').append(labelDiv).append(starsDiv);
+  const backgroundColor = backgroundColorFromStars(stars, fancyStars);
+  const labelDiv = jQuery('<span>').addClass('stars name').append('stars');
+  const starsDiv = jQuery('<span>').addClass(`stars value ${backgroundColor}`).append(stars);
+  return jQuery('<span>').addClass('stars').append(labelDiv).append(starsDiv);
 }
 
 function appendGithubStarsWithOptions(options) {

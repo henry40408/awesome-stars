@@ -21,6 +21,9 @@ import {
 
 // INITIAL
 
+const LRU_RATELIMIT = 'RATE_LIMIT';
+const LRU_RATELIMIT_MAXAGE = 1000 * 60 * 5;
+
 const LRU_OPTIONS = {
   max: 5000,
   maxAge: 1000 * 60 * 60 * 24,
@@ -47,6 +50,16 @@ function handleGetOptionsAsync() {
     });
 }
 
+function updateRateLimit(remaining, limit) {
+  const rateLimit = { remaining, limit };
+  cache.set(LRU_RATELIMIT, rateLimit, LRU_RATELIMIT_MAXAGE);
+  return rateLimit;
+}
+
+function getRateLimit() {
+  return cache.get(LRU_RATELIMIT);
+}
+
 function handleRateLimitAsync() {
   return handleGetOptionsAsync()
     .then((options) => {
@@ -57,6 +70,12 @@ function handleRateLimitAsync() {
         url.searchParams.append('access_token', accessToken);
       }
 
+      const cachedRateLimit = getRateLimit();
+      if (cachedRateLimit) {
+        return Bluebird.resolve(cachedRateLimit);
+      }
+
+      console.log(`fetch ${url}`);
       return fetch(url)
         .then((resp) => {
           if (!resp.ok) {
@@ -65,10 +84,11 @@ function handleRateLimitAsync() {
           return resp;
         })
         .then(resp => resp.json())
-        .then(json => Bluebird.resolve({
-          limit: json.resources.core.limit,
-          remaining: json.resources.core.remaining,
-        }))
+        .then((json) => {
+          const { remaining, limit } = json.resources.core;
+          const rateLimit = updateRateLimit(remaining, limit);
+          return Bluebird.resolve(rateLimit);
+        })
         .catch(() => Bluebird.resolve({ limit: -1, remaining: -1 }));
     });
 }
@@ -153,12 +173,18 @@ function handleGetStarsAsync(request) {
         const url = new URL(`https://api.github.com/repos/${repo}`);
         url.searchParams.append('access_token', accessToken);
 
+        console.log(`fetch ${url}`);
         return fetch(url);
       })
       .then((resp) => {
         if (!resp.ok) {
           throw new Error('Request failed');
         }
+
+        const remaining = resp.headers.get('X-RateLimit-Remaining');
+        const limit = resp.headers.get('X-RateLimit-Limit');
+        updateRateLimit(remaining, limit);
+
         return resp;
       })
       .then(resp => resp.json())
@@ -166,14 +192,16 @@ function handleGetStarsAsync(request) {
         const { stargazers_count } = json;
         cache.set(rawUrl, { stars: stargazers_count });
         return Bluebird.resolve(stargazers_count);
-      });
+      })
+      .catch(lodash.noop);
   }
 
   return Bluebird.resolve(null);
 }
 
 function getCacheItemCountAsync() {
-  return Bluebird.resolve(cache.itemCount);
+  // NOTE exclude cached rate limit
+  return Bluebird.resolve(cache.itemCount - 1 > 0 ? cache.itemCount : 0);
 }
 
 function main() {
