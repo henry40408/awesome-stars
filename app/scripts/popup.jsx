@@ -77,7 +77,7 @@ class App extends React.Component {
       .then((response) => {
         this.setState({ tokenStatus: response });
 
-        if (response === TOKEN.VALID) {
+        if ([TOKEN.EMPTY, TOKEN.VALID].indexOf(response) >= 0) {
           return chromep.runtime
             .sendMessage({ type: RATE_LIMIT }).then((rateLimit) => {
               this.setState({

@@ -73,14 +73,20 @@ function handleRateLimitAsync() {
 }
 
 function handleTestTokenAsync() {
-  return handleRateLimitAsync()
-    .then((rateLimit) => {
-      if (rateLimit.limit === -1) {
-        throw new Error(TOKEN.INVALID);
-      }
+  return Bluebird.all([
+    handleGetOptionsAsync(),
+    handleRateLimitAsync(),
+  ]).spread((options, rateLimit) => {
+    if (options.accessToken === '') {
+      return Bluebird.resolve(TOKEN.EMPTY);
+    }
+
+    if (rateLimit.limit >= 0) {
       return Bluebird.resolve(TOKEN.VALID);
-    })
-    .catch(() => Bluebird.resolve(TOKEN.INVALID));
+    }
+
+    return Bluebird.resolve(TOKEN.INVALID);
+  });
 }
 
 function updateBadgeAsync() {
