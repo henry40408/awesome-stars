@@ -30,25 +30,22 @@ function appendStarTag(el) {
 }
 
 function iterateAllLinks() {
-  jQuery('a', '#readme').each(function () {
-    const href = jQuery(this).attr('href');
+  const aElements = jQuery('li > a', '#readme');
+
+  return lodash.each(aElements, (el) => {
+    const href = jQuery(el).attr('href');
     const parsedHref = ParseGithubURL(href);
 
-    if (lodash.isNull(parsedHref)) {
-      return;
-    }
-
-    if (lodash.isString(parsedHref.repo)) {
-      console.log(parsedHref.repo);
-      appendStarTag(this);
+    if (!lodash.isNull(parsedHref)) {
+      if (lodash.isString(parsedHref.repo)) {
+        appendStarTag(el);
+      }
     }
   });
 }
 
 jQuery(document).ready(() => {
-  if (!window.location.href.match(/awesome/i)) {
-    return;
+  if (window.location.href.match(/awesome/i)) {
+    iterateAllLinks();
   }
-
-  return iterateAllLinks();
 });
