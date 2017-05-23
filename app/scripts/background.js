@@ -1,5 +1,6 @@
 // Enable chromereload by uncommenting this line:
-// import 'chromereload/devonly';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import 'chromereload/devonly';
 
 chrome.browserAction.setBadgeText({ text: '\'Allo' });
 

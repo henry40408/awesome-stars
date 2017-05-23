@@ -35,5 +35,8 @@
       "run_at": "document_end",
       "all_frames": false
     }
+  ],
+  "web_accessible_resources": [
+    "images/orange-star.svg"
   ]
 }

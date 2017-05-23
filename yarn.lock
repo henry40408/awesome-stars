@@ -3338,6 +3338,10 @@ jpegtran-bin@^3.0.0:
     bin-wrapper "^3.0.0"
     logalot "^2.0.0"
 
+jquery@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.2.1.tgz#5c4d9de652af6cd0a770154a631bba12b015c787"
+
 js-base64@^2.1.8:
   version "2.1.9"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.1.9.tgz#f0e80ae039a4bd654b5f281fc93f04a914a7fcce"
@@ -3792,7 +3796,7 @@ lodash.values@~2.4.1:
   dependencies:
     lodash.keys "~2.4.1"
 
-lodash@^4.0.0, lodash@^4.2.0, lodash@^4.3.0:
+lodash@^4.0.0, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.3.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -4325,6 +4329,10 @@ parse-filepath@^1.0.1:
     is-absolute "^0.2.3"
     map-cache "^0.2.0"
     path-root "^0.1.1"
+
+parse-github-url@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/parse-github-url/-/parse-github-url-1.0.0.tgz#d0c50b592d5a252c61a8540a421dfe8e571cf45a"
 
 parse-glob@^3.0.4:
   version "3.0.4"
