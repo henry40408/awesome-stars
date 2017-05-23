@@ -11,16 +11,16 @@ const StarURL = {
 const Style = {
   STAR: {
     'background-color': 'transparent',
-    'margin': '0 .25rem 0 0',
+    margin: '0 .25rem 0 0',
   },
   TAG: {
     'background-color': '#3F3F3F',
     'border-radius': '12.5px',
-    'color': 'white',
+    color: 'white',
     'font-size': '.75rem',
-    'margin': '0 .25rem',
-    'padding': '5px 7px',
-  }
+    margin: '0 0 0 .25rem',
+    padding: '5px 7px',
+  },
 };
 
 function appendStarTag(el) {
@@ -29,7 +29,7 @@ function appendStarTag(el) {
   return jQuery(el).after($tag);
 }
 
-jQuery(document).ready(() => {
+function iterateAllLinks() {
   jQuery('a', '#readme').each(function () {
     const href = jQuery(this).attr('href');
     const parsedHref = ParseGithubURL(href);
@@ -43,4 +43,12 @@ jQuery(document).ready(() => {
       appendStarTag(this);
     }
   });
+}
+
+jQuery(document).ready(() => {
+  if (!window.location.href.match(/awesome/i)) {
+    return;
+  }
+
+  return iterateAllLinks();
 });
