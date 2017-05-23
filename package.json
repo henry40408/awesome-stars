@@ -30,7 +30,7 @@
     "gulp": "3.x.x",
     "gulp-bump": "2.x.x",
     "gulp-cache": "0.x.x",
-    "gulp-clean-css": "2.x.x",
+    "gulp-clean-css": "3.x.x",
     "gulp-filter": "4.x.x",
     "gulp-git": "1.x.x",
     "gulp-if": "2.x.x",
