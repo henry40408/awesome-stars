@@ -11,14 +11,14 @@
 
 <body>
   <div class="container">
-    <header class="row">
+    <header class="row header">
       <div class="twelve columns">
         <img src="../images/options-logo.png" alt="Awesome Stars Logo">
         <h1 class="title">Awesome Stars</h1>
         <div class="subtitle">Awesome Stars is a chrome extension that shows you stars of repository on awesome list.</div>
       </div>
     </header>
-    <section class="row">
+    <section class="row body">
       <div class="six columns levels-help">
         <div class="levels-help-description">
           <h2>How hot are those stars</h2>
@@ -36,29 +36,33 @@
       </div>
       <div class="six columns">
         <h2>Setup access token</h2>
-        <div class="row">
+        <div class="row access-token-form">
           <div class="nine columns">
             <input type="text" class="access-token-field" id="access-token" />
           </div>
           <div class="three columns access-token-save-button-wrapper">
             <button class="access-token-save-button">SAVE</button>
           </div>
+          <div class="twelve columns access-token-field-help">
+            <div><a href="#">Get an access token</a> from <a href="#">GitHub settings page</a></div>
+            <div class="alert-text">Please DO NOT select any scopes!</div>
+          </div>
         </div>
-        <div><a href="#">Get an access token</a> from <a href="#">GitHub settings page</a></div>
-        <div>Please DO NOT select any scopes!</div>
         <h2>Rate limit</h2>
-        <div class="row">
-          <div class="eleven columns">&nbsp;</div>
-          <div class="one column">5,000</div>
+        <div class="row progress-bar-wrapper">
+          <div class="nine columns progress-bar">&nbsp;</div>
+          <div class="three columns progress-bar-text">--</div>
+          <div class="twelve columns progress-bar-help small-text">
+            For requests using Basic Authentication or OAuth (including access token), you can make up to 5,000 requests per hour.
+          </div>
         </div>
-        <div>For requests using Basic Authentication or OAuth (including access token), you can make up to 5,000 requests per hour.</div>
         <h3>Why do you need an access token?</h3>
-        <div>According to <a href="#">GitHub documentation</a>. For unauthenticated requests, the rate limit allows you to make up to 60 requests per hour. Unauthenticated requests are associated with your IP address, and not the user making requests. Awesome
+        <div class="small-text">According to <a href="#">GitHub documentation</a>. For unauthenticated requests, the rate limit allows you to make up to 60 requests per hour. Unauthenticated requests are associated with your IP address, and not the user making requests. Awesome
           stars can only works properly with an access token.</div>
       </div>
     </section>
-    <footer>
-      <div>2017 All rights reserved. Made by hengyi.wu with &#10084;.</div>
+    <footer class="footer">
+      <div>2017 All rights reserved. Made by Henry Wu with &#10084;.</div>
     </footer>
   </div>
   <script src="../scripts/options.js"></script>
