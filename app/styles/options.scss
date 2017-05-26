@@ -171,6 +171,10 @@ input.access-token-field[type=text] {
   }
 }
 
+.access-token-save-button:hover {
+  color: $white;
+}
+
 .alert-text {
   color: $red;
 }

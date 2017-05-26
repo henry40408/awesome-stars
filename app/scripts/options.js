@@ -1,6 +1,7 @@
 import lodash from 'lodash';
 import numeral from 'numeral';
 
+import { Client } from 'chomex';
 import $ from 'jquery';
 import anime from 'animejs';
 
@@ -11,30 +12,54 @@ const Color = {
 };
 
 $(window).bind('load', () => {
-  const rateLimit = lodash.random(0, 5000);
+  const client = new Client(chrome.runtime);
 
-  let finalBGColor;
-  switch (true) {
-    case (rateLimit < 100):
-      finalBGColor = Color.RED;
-      break;
-    case (rateLimit >= 100 && rateLimit < 2400):
-      finalBGColor = Color.ORANGE;
-      break;
-    default:
-      finalBGColor = Color.GREEN;
+  const Elem = {
+    ACCESS_TOKEN_FIELD: $('#access-token-field'),
+    ACCESS_TOKEN_SAVE_BUTTON: $('#access-token-save-button'),
+  };
+
+  function fetchAccessTokenAsync() {
+    return client.message('/access-token/get').then((response) => {
+      if (lodash.isString(response.data)) {
+        Elem.ACCESS_TOKEN_FIELD.val(response.data);
+      }
+    });
   }
 
-  const percent = parseInt((rateLimit / 5000) * 100, 10);
-  anime({
-    targets: '.progress-bar-filled',
-    backgroundColor: finalBGColor,
-    easing: 'easeInOutQuad',
-    width: `${percent}%`,
-    complete: () => {
-      $('.progress-bar-text')
-        .css({ color: finalBGColor })
-        .text(`${numeral(rateLimit).format('0,0')}`);
-    },
+  Elem.ACCESS_TOKEN_SAVE_BUTTON.click(() => {
+    const accessToken = Elem.ACCESS_TOKEN_FIELD.val();
+    if (!lodash.isEmpty(accessToken)) {
+      client.message('/access-token/set', { accessToken }).then(fetchAccessTokenAsync);
+    }
   });
+
+  fetchAccessTokenAsync();
+
+  // const rateLimit = lodash.random(0, 5000);
+
+  // let finalBGColor;
+  // switch (true) {
+  //   case (rateLimit < 100):
+  //     finalBGColor = Color.RED;
+  //     break;
+  //   case (rateLimit >= 100 && rateLimit < 2400):
+  //     finalBGColor = Color.ORANGE;
+  //     break;
+  //   default:
+  //     finalBGColor = Color.GREEN;
+  // }
+
+  // const percent = parseInt((rateLimit / 5000) * 100, 10);
+  // anime({
+  //   targets: '.progress-bar-filled',
+  //   backgroundColor: finalBGColor,
+  //   easing: 'easeInOutQuad',
+  //   width: `${percent}%`,
+  //   complete: () => {
+  //     $('.progress-bar-text')
+  //       .css({ color: finalBGColor })
+  //       .text(`${numeral(rateLimit).format('0,0')}`);
+  //   },
+  // });
 });

@@ -33,5 +33,6 @@
     "images/options-background.svg",
     "images/options-logo.png",
     "images/orange-star.svg"
-  ]
+  ],
+  "permissions": ["storage"]
 }
