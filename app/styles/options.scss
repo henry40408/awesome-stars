@@ -2,6 +2,7 @@
 
 $blue:#c4f7ff;
 $dark-gray:#222222;
+$green:#d4fc45;
 $orange:#ecab20;
 $red:#ff3e00;
 $white:#ffffff;
@@ -156,6 +157,12 @@ input.access-token-field[type=text] {
 
 .progress-bar-help {
   margin: .5rem 0 0;
+}
+
+.progress-bar-filled {
+  background-color: $red;
+  height: 100%;
+  width: 0%;
 }
 
 .progress-bar-text {
