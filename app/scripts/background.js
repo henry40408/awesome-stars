@@ -5,10 +5,12 @@ import 'chromereload/devonly';
 import lodash from 'lodash';
 import { Router } from 'chomex';
 import ChromePromise from 'chrome-promise';
+import GitHub from 'github-api';
 
 const router = new Router();
 const chromep = new ChromePromise();
 const storage = chromep.storage.local;
+const gh = new GitHub();
 
 const Key = {
   ACCESS_TOKEN: 'ACCESS_TOKEN',
@@ -50,6 +52,19 @@ router.on('/access-token/set', (message) => {
   };
 
   return storage.set(payload).then(() => true);
+});
+
+router.on('/rate-limit', () => {
+  const rateLimit = gh.getRateLimit();
+
+  return rateLimit.getRateLimit().then((response) => {
+    const remaining = lodash.get(response, 'data.resources.core.remaining', 0);
+    const limit = lodash.get(response, 'data.resources.core.limit', 0);
+
+    log('/rate-limit called with response:', remaining, limit);
+
+    return { limit, remaining };
+  });
 });
 
 chrome.runtime.onMessage.addListener(router.listener());
