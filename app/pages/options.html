@@ -19,7 +19,7 @@
       </div>
     </header>
     <section class="row body">
-      <div class="six columns levels-help">
+      <div class="six columns left-panel levels-help">
         <div class="levels-help-description">
           <h2>How hot are those stars</h2>
           <div>There are four levels for the stars of repository. Awesome stars changes its color according to star count:</div>
@@ -34,33 +34,37 @@
           <img src="../images/stars-curve.svg" alt="Awesome Stars Curve">
         </div>
       </div>
-      <div class="six columns">
-        <h2>Setup access token</h2>
-        <div class="row access-token-form">
-          <div class="nine columns">
-            <input type="text" class="access-token-field" id="access-token" />
-          </div>
-          <div class="three columns access-token-save-button-wrapper">
-            <button class="access-token-save-button">SAVE</button>
-          </div>
-          <div class="twelve columns access-token-field-help">
-            <div><a href="#">Get an access token</a> from <a href="#">GitHub settings page</a></div>
-            <div class="alert-text">Please DO NOT select any scopes!</div>
-          </div>
-        </div>
-        <h2>Rate limit</h2>
-        <div class="row progress-bar-wrapper">
-          <div class="nine columns progress-bar">
-            <div class="progress-bar-filled">&nbsp;</div>
-          </div>
-          <div class="three columns progress-bar-text">--</div>
-          <div class="twelve columns progress-bar-help small-text">
-            For requests using Basic Authentication or OAuth (including access token), you can make up to 5,000 requests per hour.
+      <div class="six columns right-panel">
+        <div class="access-token-form">
+          <h2>Setup access token</h2>
+          <div class="row">
+            <div class="nine columns">
+              <input type="text" class="access-token-field" id="access-token" />
+            </div>
+            <div class="three columns access-token-save-button-wrapper">
+              <button class="access-token-save-button">SAVE</button>
+            </div>
+            <div class="twelve columns access-token-field-help">
+              <div><a href="#">Get an access token</a> from <a href="#">GitHub settings page</a></div>
+              <div class="alert-text">Please DO NOT select any scopes!</div>
+            </div>
           </div>
         </div>
-        <h3>Why do you need an access token?</h3>
-        <div class="small-text">According to <a href="#">GitHub documentation</a>. For unauthenticated requests, the rate limit allows you to make up to 60 requests per hour. Unauthenticated requests are associated with your IP address, and not the user making requests. Awesome
-          stars can only works properly with an access token.</div>
+        <div class="progress-bar-wrapper">
+          <h2>Rate limit</h2>
+          <div class="row">
+            <div class="nine columns progress-bar">
+              <div class="progress-bar-filled">&nbsp;</div>
+            </div>
+            <div class="three columns progress-bar-text">--</div>
+            <div class="twelve columns progress-bar-help small-text">
+              For requests using Basic Authentication or OAuth (including access token), you can make up to 5,000 requests per hour.
+            </div>
+          </div>
+          <h3>Why do you need an access token?</h3>
+          <div class="small-text">According to <a href="#">GitHub documentation</a>. For unauthenticated requests, the rate limit allows you to make up to 60 requests per hour. Unauthenticated requests are associated with your IP address, and not the user making requests. Awesome
+            stars can only works properly with an access token.</div>
+        </div>
       </div>
     </section>
     <footer class="footer">

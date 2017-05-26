@@ -66,7 +66,7 @@ a {
 
 .footer {
   font-size: .75rem;
-  margin: 9.125rem 0 2.625rem;
+  margin: 2.625rem 0;
   text-align: center;
 }
 
@@ -121,8 +121,12 @@ input.access-token-field[type=text] {
   margin: 1.25rem 0 0;
 }
 
+.right-panel {
+  position: relative;
+}
+
 .access-token-form {
-  margin: 0 0 3.5625rem;
+  position: absolute;
 }
 
 .access-token-save-button-wrapper {
@@ -176,7 +180,7 @@ input.access-token-field[type=text] {
 }
 
 .progress-bar-wrapper {
-  margin: 0 0 1.5rem;
+  margin: 15.2625rem 0 1.5rem;
 }
 
 .small-text {
