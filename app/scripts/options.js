@@ -14,9 +14,8 @@ $(document).ready(() => {
     PROGRESS_BAR_TEXT: $('.progress-bar-text'),
   };
 
-  Elem.ACCESS_TOKEN_SAVE_BUTTON.click(() => sendAccessTokenAsync(Elem.ACCESS_TOKEN_FIELD,
-    Elem.ACCESS_TOKEN_SAVE_BUTTON));
+  Elem.ACCESS_TOKEN_SAVE_BUTTON.click(() => sendAccessTokenAsync(Elem));
 
-  fetchAccessTokenAsync(Elem.ACCESS_TOKEN_FIELD);
-  fetchRateLimitAsync(Elem.PROGRESS_BAR_FILLED, Elem.PROGRESS_BAR_TEXT);
+  fetchAccessTokenAsync(Elem);
+  fetchRateLimitAsync(Elem);
 });

@@ -26,11 +26,11 @@ function colorFromPercentage(percentage) {
 
 // Exported Functions //
 
-exports.fetchAccessTokenAsync = $accessTokenField => client
+exports.fetchAccessTokenAsync = Elem => client
   .message('/access-token/get')
-  .then(({ data }) => $accessTokenField.val(data));
+  .then(({ data }) => Elem.ACCESS_TOKEN_FIELD.val(data));
 
-exports.fetchRateLimitAsync = ($progressBarFilled, $progressBarText) => client
+exports.fetchRateLimitAsync = Elem => client
   .message('/rate-limit')
   .then((response) => {
     const { remaining, limit } = response.data;
@@ -39,17 +39,19 @@ exports.fetchRateLimitAsync = ($progressBarFilled, $progressBarText) => client
     const finalBGColor = colorFromPercentage(percentage);
     const textStyle = { color: finalBGColor };
 
+    const $progressBarFilled = Elem.PROGRESS_BAR_FILLED;
+    $progressBarFilled.css({ width: '0%' });
     anime({
       targets: $progressBarFilled.get(0),
       backgroundColor: finalBGColor,
       easing: 'easeInOutQuad',
       width: `${percentage}%`,
-      begin: () => $progressBarText.css(textStyle).text(formattedRateLimit),
+      begin: () => Elem.PROGRESS_BAR_TEXT.css(textStyle).text(formattedRateLimit),
     });
   });
 
-exports.sendAccessTokenAsync = ($accessTokenField, $accessTokenSaveButton) => {
-  const accessToken = $accessTokenField.val();
+exports.sendAccessTokenAsync = (Elem) => {
+  const accessToken = Elem.ACCESS_TOKEN_FIELD.val();
 
   if (lodash.isEmpty(accessToken)) {
     return;
@@ -57,9 +59,11 @@ exports.sendAccessTokenAsync = ($accessTokenField, $accessTokenSaveButton) => {
 
   client.message('/access-token/set', { accessToken })
     .then(() => {
+      const $accessTokenSaveButton = Elem.ACCESS_TOKEN_SAVE_BUTTON;
       const origin = $accessTokenSaveButton.text();
       $accessTokenSaveButton.text('saved!');
       setTimeout(() => $accessTokenSaveButton.text(origin), 750);
     })
-    .then(exports.fetchAccessTokenAsync($accessTokenField));
+    .then(exports.fetchAccessTokenAsync(Elem))
+    .then(exports.fetchRateLimitAsync(Elem));
 };
