@@ -56,17 +56,21 @@ router.on('/access-token/set', (message) => {
 });
 
 router.on('/rate-limit', () => loadAccessTokenAsync().then((accessToken) => {
+  gh = new GitHub();
+
   if (!lodash.isEmpty(accessToken)) {
     gh = new GitHub({ token: accessToken });
   }
 
   const rateLimit = gh.getRateLimit();
-  return rateLimit.getRateLimit().then((response) => {
-    const remaining = lodash.get(response, 'data.resources.core.remaining', 0);
-    const limit = lodash.get(response, 'data.resources.core.limit', 0);
-    log('/rate-limit called with response:', remaining, limit);
-    return { limit, remaining };
-  });
+  return rateLimit.getRateLimit()
+    .then((response) => {
+      const remaining = lodash.get(response, 'data.resources.core.remaining', 0);
+      const limit = lodash.get(response, 'data.resources.core.limit', 0);
+      log('/rate-limit called with response:', remaining, limit);
+      return { limit, remaining };
+    })
+    .catch(() => ({ limit: 0, remaining: 0 }));
 }));
 
 chrome.runtime.onMessage.addListener(router.listener());

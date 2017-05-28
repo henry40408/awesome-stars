@@ -1,6 +1,5 @@
 import anime from 'animejs';
 import { Client } from 'chomex';
-import lodash from 'lodash';
 import numeral from 'numeral';
 
 const Color = {
@@ -35,10 +34,19 @@ exports.fetchRateLimitAsync = Elem => client
   .then((response) => {
     const { remaining, limit } = response.data;
     const formattedRateLimit = numeral(remaining).format('0,0');
-    const percentage = parseInt((remaining / limit) * 100, 10);
+
+    if (limit === 0) {
+      Elem.ACCESS_TOKEN_INVALID.show();
+    }
+
+    let percentage = 0;
+    if (limit > 0) {
+      Elem.ACCESS_TOKEN_INVALID.hide();
+      percentage = parseInt((remaining / limit) * 100, 10);
+    }
+
     const finalBGColor = colorFromPercentage(percentage);
     const textStyle = { color: finalBGColor };
-
     const $progressBarFilled = Elem.PROGRESS_BAR_FILLED;
     $progressBarFilled.css({ width: '0%' });
     anime({
@@ -52,10 +60,6 @@ exports.fetchRateLimitAsync = Elem => client
 
 exports.sendAccessTokenAsync = (Elem) => {
   const accessToken = Elem.ACCESS_TOKEN_FIELD.val();
-
-  if (lodash.isEmpty(accessToken)) {
-    return;
-  }
 
   client.message('/access-token/set', { accessToken })
     .then(() => {

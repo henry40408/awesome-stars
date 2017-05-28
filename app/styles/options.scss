@@ -146,6 +146,10 @@ input.access-token-field[type=text] {
   }
 }
 
+.access-token-invalid {
+  margin: .25rem 0 0;
+}
+
 .access-token-save-button-wrapper {
   @media (min-width: $tablet) {
     align-items: center;
