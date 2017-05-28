@@ -31,14 +31,8 @@ chrome.browserAction.onClicked.addListener(() => {
 });
 
 router.on('/access-token/get', () => storage.get(Key.ACCESS_TOKEN).then((result) => {
-  const accessToken = result[Key.ACCESS_TOKEN];
-
+  const accessToken = lodash.get(result, Key.ACCESS_TOKEN, '');
   log('/access-token/get called with response: ', accessToken);
-
-  if (!lodash.isString(accessToken)) {
-    return null;
-  }
-
   return accessToken;
 }));
 
