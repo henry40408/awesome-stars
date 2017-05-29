@@ -19,24 +19,20 @@
       "19": "images/icon-19.png",
       "38": "images/icon-38.png"
     },
-    "default_title": "__MSG_browserActionTitle__",
-    "default_popup": "pages/popup.html"
+    "default_title": "__MSG_browserActionTitle__"
   },
   "options_page": "pages/options.html",
-  "options_ui": {
-    "page": "pages/options.html",
-    "chrome_style": true
-  },
-  "content_scripts": [
-    {
-      "matches": ["https://github.com/*"],
-      "css": ["styles/contentscript.css"],
-      "js": ["scripts/contentscript.js"],
-      "run_at": "document_end",
-      "all_frames": false
-    }
-  ],
+  "content_scripts": [{
+    "matches": ["https://github.com/*"],
+    "css": ["styles/contentscript.css"],
+    "js": ["scripts/contentscript.js"],
+    "run_at": "document_end",
+    "all_frames": false
+  }],
   "web_accessible_resources": [
+    "images/options-background.svg",
+    "images/options-logo.png",
     "images/orange-star.svg"
-  ]
+  ],
+  "permissions": ["storage"]
 }
