@@ -77,6 +77,8 @@ chrome.browserAction.onClicked.addListener(() => {
   return window.open(chrome.runtime.getURL('options.html')); // Reasonable fallback.
 });
 
+fetchRateLimitAsync();
+
 // Message Router //
 
 const router = new Router();
