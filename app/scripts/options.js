@@ -6,6 +6,8 @@ import {
   sendAccessTokenAsync,
 } from './utils/options';
 
+// Event Listeners //
+
 $(document).ready(() => {
   const Elem = {
     ACCESS_TOKEN_FIELD: $('#access-token-field'),

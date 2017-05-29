@@ -2,11 +2,7 @@ import anime from 'animejs';
 import { Client } from 'chomex';
 import numeral from 'numeral';
 
-const Color = {
-  RED: '#ff3e00',
-  ORANGE: '#ecab20',
-  GREEN: '#d4fc45',
-};
+import { TextColor } from '../constants';
 
 const client = new Client(chrome.runtime);
 
@@ -15,11 +11,11 @@ const client = new Client(chrome.runtime);
 function colorFromPercentage(percentage) {
   switch (true) {
     case (percentage < 2):
-      return Color.RED;
+      return TextColor.RED;
     case (percentage >= 2 && percentage < 48):
-      return Color.ORANGE;
+      return TextColor.ORANGE;
     default:
-      return Color.GREEN;
+      return TextColor.GREEN;
   }
 }
 
