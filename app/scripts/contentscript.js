@@ -59,6 +59,16 @@ function colorsFromStarCount(starCount) {
 }
 
 function appendStarTagAsync(el, owner, name) {
+  const $count = jQuery('<span>').text('...');
+  const $star = jQuery('<img>')
+    .css(Style.STAR)
+    .attr('src', starFromColor(Color.WHITE));
+  const $tag = jQuery('<span>')
+    .css({ ...Style.TAG, color: TextColor.WHITE })
+    .append($star).append($count);
+
+  jQuery(el).after($tag);
+
   return client.message('/stars/get', { owner, name })
     .then((response) => {
       const starCount = response.data;
@@ -68,16 +78,9 @@ function appendStarTagAsync(el, owner, name) {
         formattedStarCount = numeral(starCount).format('0,0');
       }
 
-      const $star = jQuery('<img>')
-        .css(Style.STAR)
-        .attr('src', starFromColor(colorsFromStarCount(starCount).star));
-
-      const $tag = jQuery('<span>')
-        .css({ ...Style.TAG, color: colorsFromStarCount(starCount).text })
-        .append($star)
-        .append(formattedStarCount);
-
-      jQuery(el).after($tag);
+      $star.css(Style.STAR).attr('src', starFromColor(colorsFromStarCount(starCount).star));
+      $tag.css({ ...Style.TAG, color: colorsFromStarCount(starCount).text });
+      $count.text(formattedStarCount);
     });
 }
 
