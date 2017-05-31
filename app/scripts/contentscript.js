@@ -7,7 +7,7 @@ import ParseGithubURL from 'parse-github-url';
 
 import { TextColor } from './constants';
 
-const CHUNK_LEN = 20;
+const CHUNK_LEN = 200;
 
 const Color = {
   BLUE: 'blue',
@@ -80,7 +80,7 @@ function appendStarTagAsync(el, owner, name) {
 
       $star.css(Style.STAR).attr('src', starFromColor(colorsFromStarCount(starCount).star));
       $tag.css({ ...Style.TAG, color: colorsFromStarCount(starCount).text });
-      $count.text(formattedStarCount);
+      $count[0].innerHTML = formattedStarCount;
     });
 }
 
