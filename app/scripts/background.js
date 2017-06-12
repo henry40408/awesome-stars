@@ -1,19 +1,21 @@
+import Bluebird from 'bluebird';
 import lodash from 'lodash';
-import { Router } from 'chomex';
 import ChromePromise from 'chrome-promise';
+import { Router } from 'chomex';
 import GitHub from 'github-api';
 import LRU from 'lru-cache';
+import moment from 'moment';
 import numeral from 'numeral';
 
-// Enable chromereload by uncommenting this line:
-if (process.env.NODE_ENV === 'development') {
+const DEVELOPMENT = 'development';
+const LRU_OPTIONS = { max: 5000, maxAge: 24 * 60 * 60 * 1000 };
+
+if (process.env.NODE_ENV === DEVELOPMENT) {
   // eslint-disable-next-line global-require,import/no-extraneous-dependencies
   require('chromereload/devonly');
 }
 
-const Key = { ACCESS_TOKEN: 'ACCESS_TOKEN' };
-const LRU_OPTIONS = { max: 5000, maxAge: 24 * 60 * 60 * 1000 };
-
+const Keys = { ACCESS_TOKEN: 'ACCESS_TOKEN' };
 const cache = LRU(LRU_OPTIONS);
 const chromep = new ChromePromise();
 const storage = chromep.storage.local;
@@ -21,22 +23,23 @@ const storage = chromep.storage.local;
 // Local Functions //
 
 function log(...args) {
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === DEVELOPMENT) {
+    const argsWithMoment = [`[${moment().format()}]`, ...args];
     // eslint-disable-next-line no-console
-    console.log.apply(null, args);
+    console.log.apply(null, argsWithMoment);
   }
 }
 
 function loadAccessTokenAsync() {
-  return storage.get(Key.ACCESS_TOKEN).then((result) => {
-    const accessToken = lodash.get(result, Key.ACCESS_TOKEN, '');
-    log('Chrome Extension storage responds with access token:', accessToken);
+  return storage.get(Keys.ACCESS_TOKEN).then((result) => {
+    const accessToken = lodash.get(result, Keys.ACCESS_TOKEN, '');
+    log('storage responds with access token', accessToken);
     return accessToken;
   });
 }
 
 function updateBadge(str) {
-  log('badge text updated:', str);
+  log('badge text updated', str);
   chrome.browserAction.setBadgeText({ text: str });
 }
 
@@ -51,15 +54,19 @@ function fetchRateLimitAsync() {
     const rateLimit = gh.getRateLimit();
     return rateLimit.getRateLimit()
       .then((response) => {
+        let format;
+
         const remaining = lodash.get(response, 'data.resources.core.remaining', 0);
         const limit = lodash.get(response, 'data.resources.core.limit', 0);
 
-        log('GitHub API responds with rate limit:', remaining, limit);
+        log('github responds with rate limit', remaining, limit);
 
-        let format = '0.0a';
         if (remaining < 1000) {
           format = '0a';
+        } else {
+          format = '0.0a';
         }
+
         updateBadge(numeral(remaining).format(format));
 
         return { limit, remaining };
@@ -68,13 +75,53 @@ function fetchRateLimitAsync() {
   });
 }
 
+function getStarCountAsync(owner, name, options = {}) {
+  const { accessToken } = options;
+  const cacheKey = JSON.stringify({ name, owner });
+  const cachedDetails = cache.get(cacheKey);
+
+  let gh;
+
+  if (accessToken) {
+    gh = new GitHub({ token: accessToken });
+  } else {
+    gh = new GitHub();
+  }
+
+  if (!cachedDetails) {
+    const repo = gh.getRepo(owner, name);
+
+    let starCount;
+    return repo.getDetails()
+      .then(response => response.data)
+      .then((json) => {
+        cache.set(cacheKey, json);
+        log('github responds a JSON object', json);
+        starCount = parseInt(json.stargazers_count, 10);
+        return fetchRateLimitAsync();
+      })
+      .then(() => starCount)
+      .catch(() => -1);
+  }
+
+  log('getStarCountAsync responds with cached detail', cachedDetails);
+  return Bluebird.resolve(parseInt(cachedDetails.stargazers_count, 10));
+}
+
+function setAccessTokenAsync(accessToken) {
+  const payload = lodash.set({}, Keys.ACCESS_TOKEN, accessToken);
+  return storage.set(payload).then(() => true);
+}
+
 // Event Listeners //
 
 chrome.browserAction.onClicked.addListener(() => {
-  if (chrome.runtime.openOptionsPage) { // New way to open options pages, if supported (Chrome 42+).
+  if (chrome.runtime.openOptionsPage) {
+    // New way to open options pages, if supported (Chrome 42+).
     return chrome.runtime.openOptionsPage();
   }
-  return window.open(chrome.runtime.getURL('options.html')); // Reasonable fallback.
+  // Reasonable fallback.
+  return window.open(chrome.runtime.getURL('options.html'));
 });
 
 fetchRateLimitAsync();
@@ -87,51 +134,22 @@ router.on('/access-token/get', () => loadAccessTokenAsync());
 
 router.on('/access-token/set', (message) => {
   const { accessToken } = message;
-  log('/access-token/set called with request:', accessToken);
-  const payload = lodash.set({}, Key.ACCESS_TOKEN, accessToken);
-  return storage.set(payload).then(() => true);
+  log('/access-token/set called with request', accessToken);
+  return setAccessTokenAsync(accessToken);
 });
 
-router.on('/rate-limit', fetchRateLimitAsync);
+router.on('/rate-limit', () => fetchRateLimitAsync());
 
 router.on('/stars/get', message => loadAccessTokenAsync().then((accessToken) => {
-  let gh = new GitHub();
-
-  if (accessToken) {
-    gh = new GitHub({ token: accessToken });
-  }
+  log('/stars/get called with request', message);
 
   const { owner, name } = message;
 
-  log('/stars/get called with request:', message);
-
-  if (!lodash.isString(owner) || lodash.isEmpty(owner) ||
-    !lodash.isString(name) || lodash.isEmpty(name)) {
-    return 0;
+  if (lodash.isEmpty(owner) || lodash.isEmpty(name)) {
+    return Bluebird.resolve(0);
   }
 
-  const cacheKey = JSON.stringify({ name, owner });
-  const cachedDetails = cache.get(cacheKey);
-
-  if (!cachedDetails) {
-    const repo = gh.getRepo(owner, name);
-
-    let starCount;
-    return repo.getDetails()
-      .then(response => response.data)
-      .then((json) => {
-        cache.set(cacheKey, json);
-        log('GitHub API responds a JSON object:', json);
-        starCount = parseInt(json.stargazers_count, 10);
-
-        return fetchRateLimitAsync();
-      })
-      .then(() => starCount)
-      .catch(() => -1);
-  }
-
-  log('/stars/get responds with cached detail', cachedDetails);
-  return parseInt(cachedDetails.stargazers_count, 10);
+  return getStarCountAsync(owner, name, { accessToken });
 }));
 
 chrome.runtime.onMessage.addListener(router.listener());
