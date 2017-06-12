@@ -7,6 +7,7 @@ import moment from 'moment';
 import numeral from 'numeral';
 
 const DEVELOPMENT = 'development';
+const COLORS = { BRIGHT_BLUE: '#4a94fa', RED: '#ff0000' };
 const KEYS = { ACCESS_TOKEN: 'ACCESS_TOKEN' };
 const LRU_OPTIONS = { max: 5000, maxAge: 24 * 60 * 60 * 1000 }; // TTL = 24 hours
 const NA = '@@NA';
@@ -38,7 +39,7 @@ async function loadAccessTokenAsync() {
 }
 
 function updateBadge(strOrSignal) {
-    const color = strOrSignal === NA ? 'red' : 'brightblue';
+    const color = strOrSignal === NA ? COLORS.RED : COLORS.BRIGHT_BLUE;
     const text = strOrSignal === NA ? 'N/A' : strOrSignal;
 
     log('badge text updated to', text);
