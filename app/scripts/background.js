@@ -9,6 +9,7 @@ import numeral from 'numeral';
 const DEVELOPMENT = 'development';
 const KEYS = { ACCESS_TOKEN: 'ACCESS_TOKEN' };
 const LRU_OPTIONS = { max: 5000, maxAge: 24 * 60 * 60 * 1000 }; // TTL = 24 hours
+const NA = '@@NA';
 
 if (process.env.NODE_ENV === DEVELOPMENT) {
     // eslint-disable-next-line global-require,import/no-extraneous-dependencies
@@ -36,9 +37,13 @@ async function loadAccessTokenAsync() {
     return accessToken;
 }
 
-function updateBadge(str) {
-    log('badge text updated', str);
-    chrome.browserAction.setBadgeText({ text: str });
+function updateBadge(strOrSignal) {
+    const color = strOrSignal === NA ? 'red' : 'brightblue';
+    const text = strOrSignal === NA ? 'N/A' : strOrSignal;
+
+    log('badge text updated to', text);
+    chrome.browserAction.setBadgeBackgroundColor({ color });
+    chrome.browserAction.setBadgeText({ text });
 }
 
 async function fetchRateLimitAsync() {
@@ -58,6 +63,7 @@ async function fetchRateLimitAsync() {
 
         return { limit, remaining };
     } catch (e) {
+        updateBadge(NA);
         return { limit: 0, remaining: 0 };
     }
 }
@@ -94,6 +100,7 @@ async function setAccessTokenAsync(accessToken) {
         [KEYS.ACCESS_TOKEN]: accessToken,
     };
     await storage.set(payload);
+    await fetchRateLimitAsync();
     return true;
 }
 
