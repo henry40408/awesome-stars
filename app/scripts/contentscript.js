@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird';
 import { Client } from 'chomex';
 import jQuery from 'jquery';
 import lodash from 'lodash';
@@ -9,7 +8,6 @@ import { TextColor } from './constants';
 
 // Constants //
 
-const CHUNK_LEN = 200;
 const COLORS = { BLUE: 'blue', ORANGE: 'orange', WHITE: 'white', YELLOW: 'yellow' };
 const STYLES = {
     STAR: {
@@ -18,10 +16,10 @@ const STYLES = {
     },
     TAG: {
         'background-color': '#3F3F3F',
-        'border-radius': '12.5px',
+        'border-radius': '.78125rem',
         'font-size': '.75rem',
         margin: '0 0 0 .25rem',
-        padding: '5px 7px',
+        padding: '.3125rem .625rem .3125rem .4375rem',
     },
 };
 
@@ -32,13 +30,8 @@ const client = new Client(chrome.runtime);
 // Local Functions //
 
 function starFromColor(rawColor) {
-    const available = lodash.values(COLORS);
-
-    let color = rawColor;
-    if (!lodash.includes(available, color)) {
-        color = COLORS.BLUE;
-    }
-
+    const availableColors = lodash.values(COLORS);
+    const color = lodash.includes(availableColors, rawColor) ? rawColor : COLORS.BLUE;
     return chrome.extension.getURL(`images/star-${color}.svg`);
 }
 
@@ -55,53 +48,46 @@ function colorsFromStarCount(starCount) {
     }
 }
 
-function appendStarTagAsync(el, owner, name) {
+async function appendStarTagAsync(el, owner, name) {
     const $count = jQuery('<span>').text('...');
-    const $star = jQuery('<img>')
-        .css(STYLES.STAR)
+
+    const $star = jQuery('<img>').css(STYLES.STAR)
         .attr('src', starFromColor(COLORS.WHITE));
-    const $tag = jQuery('<span>')
-        .css({ ...STYLES.TAG, color: TextColor.WHITE })
+
+    const $tag = jQuery('<span>').css({ ...STYLES.TAG, color: TextColor.WHITE })
         .append($star).append($count);
 
     jQuery(el).after($tag);
 
-    return client.message('/stars/get', { owner, name })
-        .then((response) => {
-            const starCount = response.data;
+    const { data: starCount } = await client.message('/stars/get', { owner, name });
+    const formattedStarCount = starCount > 0 ? numeral(starCount).format('0,0') : 'N/A';
 
-            let formattedStarCount = 'N/A';
-            if (starCount > 0) {
-                formattedStarCount = numeral(starCount).format('0,0');
-            }
-
-            $star.css(STYLES.STAR).attr('src', starFromColor(colorsFromStarCount(starCount).star));
-            $tag.css({ ...STYLES.TAG, color: colorsFromStarCount(starCount).text });
-            $count[0].innerHTML = formattedStarCount;
-        });
+    $star.css(STYLES.STAR).attr('src', starFromColor(colorsFromStarCount(starCount).star));
+    $tag.css({ ...STYLES.TAG, color: colorsFromStarCount(starCount).text });
+    $count[0].innerHTML = formattedStarCount;
 }
 
-function iterateAllLinks() {
+async function iterateAllLinks() {
     const aElements = jQuery('li > a', '#readme');
 
-    const validElements = lodash.reject(aElements, (el) => {
+    const validElements = lodash.filter(aElements, (el) => {
         const href = jQuery(el).attr('href');
         const parsedHref = ParseGithubURL(href);
-        return lodash.isNull(parsedHref) ||
-            parsedHref.host !== 'github.com' ||
-            lodash.isNull(parsedHref.repo);
+
+        if (parsedHref && parsedHref.host === 'github.com' && parsedHref.repo) {
+            return true;
+        }
+
+        return false;
     });
 
-    const grouped = lodash.chunk(validElements, CHUNK_LEN);
-
-    // NOTE
-    // 1. iterates groups one by one
-    // 2. iterates elements in group synchronously
-    return Bluebird.mapSeries(grouped, group => Bluebird.map(group, (el) => {
+    async function elementIteratee(el) {
         const href = jQuery(el).attr('href');
         const { owner, name } = ParseGithubURL(href);
         return appendStarTagAsync(el, owner, name);
-    }));
+    }
+
+    lodash.each(validElements, elementIteratee);
 }
 
 // Event Listeners //
