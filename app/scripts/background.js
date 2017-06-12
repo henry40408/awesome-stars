@@ -7,15 +7,19 @@ import moment from 'moment';
 import numeral from 'numeral';
 
 const DEVELOPMENT = 'development';
+if (process.env.NODE_ENV === DEVELOPMENT) {
+    // eslint-disable-next-line global-require,import/no-extraneous-dependencies
+    require('chromereload/devonly');
+}
+
+// Constants //
+
 const COLORS = { BRIGHT_BLUE: '#4a94fa', RED: '#ff0000' };
 const KEYS = { ACCESS_TOKEN: 'ACCESS_TOKEN' };
 const LRU_OPTIONS = { max: 5000, maxAge: 24 * 60 * 60 * 1000 }; // TTL = 24 hours
 const NA = '@@NA';
 
-if (process.env.NODE_ENV === DEVELOPMENT) {
-    // eslint-disable-next-line global-require,import/no-extraneous-dependencies
-    require('chromereload/devonly');
-}
+// Semi-global Variables //
 
 const cache = LRU(LRU_OPTIONS);
 const chromep = new ChromePromise();
