@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird';
 import { Client } from 'chomex';
 import jQuery from 'jquery';
 import lodash from 'lodash';
@@ -7,110 +6,94 @@ import ParseGithubURL from 'parse-github-url';
 
 import { TextColor } from './constants';
 
-const CHUNK_LEN = 200;
+// Constants //
 
-const Color = {
-  BLUE: 'blue',
-  ORANGE: 'orange',
-  WHITE: 'white',
-  YELLOW: 'yellow',
+const COLORS = { BLUE: 'blue', ORANGE: 'orange', WHITE: 'white', YELLOW: 'yellow' };
+const STYLES = {
+    STAR: {
+        'background-color': 'transparent',
+        margin: '0 .25rem 0 0',
+    },
+    TAG: {
+        'background-color': '#3F3F3F',
+        'border-radius': '.78125rem',
+        'font-size': '.75rem',
+        margin: '0 0 0 .25rem',
+        padding: '.3125rem .625rem .3125rem .4375rem',
+    },
 };
 
-const Style = {
-  STAR: {
-    'background-color': 'transparent',
-    margin: '0 .25rem 0 0',
-  },
-  TAG: {
-    'background-color': '#3F3F3F',
-    'border-radius': '12.5px',
-    'font-size': '.75rem',
-    margin: '0 0 0 .25rem',
-    padding: '5px 7px',
-  },
-};
+// Semi-global Variables //
 
 const client = new Client(chrome.runtime);
 
 // Local Functions //
 
 function starFromColor(rawColor) {
-  const available = lodash.values(Color);
-
-  let color = rawColor;
-  if (!lodash.includes(available, color)) {
-    color = Color.BLUE;
-  }
-
-  return chrome.extension.getURL(`images/star-${color}.svg`);
+    const availableColors = lodash.values(COLORS);
+    const color = lodash.includes(availableColors, rawColor) ? rawColor : COLORS.BLUE;
+    return chrome.extension.getURL(`images/star-${color}.svg`);
 }
 
 function colorsFromStarCount(starCount) {
-  switch (true) {
-    case (starCount >= 10000):
-      return { star: Color.ORANGE, text: TextColor.ORANGE };
-    case (starCount < 10000 && starCount >= 5000):
-      return { star: Color.YELLOW, text: TextColor.YELLOW };
-    case (starCount < 5000 && starCount >= 1000):
-      return { star: Color.WHITE, text: TextColor.WHITE };
-    default:
-      return { star: Color.BLUE, text: TextColor.BLUE };
-  }
+    switch (true) {
+        case (starCount >= 10000):
+            return { star: COLORS.ORANGE, text: TextColor.ORANGE };
+        case (starCount < 10000 && starCount >= 5000):
+            return { star: COLORS.YELLOW, text: TextColor.YELLOW };
+        case (starCount < 5000 && starCount >= 1000):
+            return { star: COLORS.WHITE, text: TextColor.WHITE };
+        default:
+            return { star: COLORS.BLUE, text: TextColor.BLUE };
+    }
 }
 
-function appendStarTagAsync(el, owner, name) {
-  const $count = jQuery('<span>').text('...');
-  const $star = jQuery('<img>')
-    .css(Style.STAR)
-    .attr('src', starFromColor(Color.WHITE));
-  const $tag = jQuery('<span>')
-    .css({ ...Style.TAG, color: TextColor.WHITE })
-    .append($star).append($count);
+async function appendStarTagAsync(el, owner, name) {
+    const $count = jQuery('<span>').text('...');
 
-  jQuery(el).after($tag);
+    const $star = jQuery('<img>').css(STYLES.STAR)
+        .attr('src', starFromColor(COLORS.WHITE));
 
-  return client.message('/stars/get', { owner, name })
-    .then((response) => {
-      const starCount = response.data;
+    const $tag = jQuery('<span>').css({ ...STYLES.TAG, color: TextColor.WHITE })
+        .append($star).append($count);
 
-      let formattedStarCount = 'N/A';
-      if (starCount > 0) {
-        formattedStarCount = numeral(starCount).format('0,0');
-      }
+    jQuery(el).after($tag);
 
-      $star.css(Style.STAR).attr('src', starFromColor(colorsFromStarCount(starCount).star));
-      $tag.css({ ...Style.TAG, color: colorsFromStarCount(starCount).text });
-      $count[0].innerHTML = formattedStarCount;
+    const { data: starCount } = await client.message('/stars/get', { owner, name });
+    const formattedStarCount = starCount > 0 ? numeral(starCount).format('0,0') : 'N/A';
+
+    $star.css(STYLES.STAR).attr('src', starFromColor(colorsFromStarCount(starCount).star));
+    $tag.css({ ...STYLES.TAG, color: colorsFromStarCount(starCount).text });
+    $count[0].innerHTML = formattedStarCount;
+}
+
+async function iterateAllLinks() {
+    const aElements = jQuery('li > a', '#readme');
+
+    const validElements = lodash.filter(aElements, (el) => {
+        const href = jQuery(el).attr('href');
+        const parsedHref = ParseGithubURL(href);
+
+        if (parsedHref && parsedHref.host === 'github.com' && parsedHref.repo) {
+            return true;
+        }
+
+        return false;
     });
-}
 
-function iterateAllLinks() {
-  const aElements = jQuery('li > a', '#readme');
+    async function elementIteratee(el) {
+        const href = jQuery(el).attr('href');
+        const { owner, name } = ParseGithubURL(href);
+        return appendStarTagAsync(el, owner, name);
+    }
 
-  const validElements = lodash.reject(aElements, (el) => {
-    const href = jQuery(el).attr('href');
-    const parsedHref = ParseGithubURL(href);
-    return lodash.isNull(parsedHref) ||
-      parsedHref.host !== 'github.com' ||
-      lodash.isNull(parsedHref.repo);
-  });
-
-  const grouped = lodash.chunk(validElements, CHUNK_LEN);
-
-  // NOTE
-  // 1. iterates groups one by one
-  // 2. iterates elements in group synchronously
-  return Bluebird.mapSeries(grouped, group => Bluebird.map(group, (el) => {
-    const href = jQuery(el).attr('href');
-    const { owner, name } = ParseGithubURL(href);
-    return appendStarTagAsync(el, owner, name);
-  }));
+    lodash.each(validElements, elementIteratee);
 }
 
 // Event Listeners //
 
 jQuery(document).ready(() => {
-  if (window.location.href.match(/awesome/i)) {
-    iterateAllLinks();
-  }
+    if (window.location.href.match(/awesome/i)) {
+        iterateAllLinks();
+    }
 });
