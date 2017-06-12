@@ -32,7 +32,10 @@
   "web_accessible_resources": [
     "images/options-background.svg",
     "images/options-logo.png",
-    "images/orange-star.svg"
+    "images/star-blue.svg",
+    "images/star-orange.svg",
+    "images/star-white.svg",
+    "images/star-yellow.svg"
   ],
   "permissions": ["storage"]
 }
