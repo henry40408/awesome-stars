@@ -99,8 +99,8 @@ async function setAccessTokenAsync(accessToken) {
     const payload = {
         [KEYS.ACCESS_TOKEN]: accessToken,
     };
-    await storage.set(payload);
-    await fetchRateLimitAsync();
+    storage.set(payload);
+    fetchRateLimitAsync();
     return true;
 }
 
