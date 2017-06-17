@@ -21,57 +21,54 @@ function colorFromPercentage(percentage) {
   }
 }
 
-// Exported Functions //
-
-function fetchAccessTokenAsync(Elem) {
-  return client
-    .message('/access-token/get')
-    .then(({ data }) => Elem.ACCESS_TOKEN_FIELD.val(data));
+async function fetchAccessTokenAsync(elems) {
+  const { data } = await client.message('/access-token/get');
+  return elems.ACCESS_TOKEN_FIELD.val(data);
 }
 
-function fetchRateLimitAsync(Elem) {
-  return client
-    .message('/rate-limit')
-    .then((response) => {
-      const { remaining, limit } = response.data;
-      const formattedRateLimit = numeral(remaining).format('0,0');
+async function fetchRateLimitAsync(elems) {
+  const response = await client.message('/rate-limit');
+  const { remaining, limit } = response.data;
+  const formattedRateLimit = numeral(remaining).format('0,0');
 
-      if (limit === 0) {
-        Elem.ACCESS_TOKEN_INVALID.show();
-      }
+  if (limit === 0) {
+    elems.ACCESS_TOKEN_INVALID.show();
+  }
 
-      let percentage = 0;
-      if (limit > 0) {
-        Elem.ACCESS_TOKEN_INVALID.hide();
-        percentage = parseInt((remaining / limit) * 100, 10);
-      }
+  let percentage = 0;
 
-      const finalBGColor = colorFromPercentage(percentage);
-      const textStyle = { color: finalBGColor };
-      const $progressBarFilled = Elem.PROGRESS_BAR_FILLED;
-      $progressBarFilled.css({ width: '0%' });
-      anime({
-        targets: $progressBarFilled.get(0),
-        backgroundColor: finalBGColor,
-        easing: 'easeInOutQuad',
-        width: `${percentage}%`,
-        begin: () => Elem.PROGRESS_BAR_TEXT.css(textStyle).text(formattedRateLimit),
-      });
-    });
+  if (limit > 0) {
+    elems.ACCESS_TOKEN_INVALID.hide();
+    percentage = parseInt((remaining / limit) * 100, 10);
+  }
+
+  const finalbackgroundColor = colorFromPercentage(percentage);
+  const textStyle = { color: finalbackgroundColor };
+  const $progressBarFilled = elems.PROGRESS_BAR_FILLED;
+
+  $progressBarFilled.css({ width: '0%' });
+
+  anime({
+    targets: $progressBarFilled.get(0),
+    backgroundColor: finalbackgroundColor,
+    easing: 'easeInOutQuad',
+    width: `${percentage}%`,
+    begin: () => elems.PROGRESS_BAR_TEXT.css(textStyle).text(formattedRateLimit),
+  });
 }
 
-function sendAccessTokenAsync(Elem) {
-  const accessToken = Elem.ACCESS_TOKEN_FIELD.val();
+async function sendAccessTokenAsync(elems) {
+  const accessToken = elems.ACCESS_TOKEN_FIELD.val();
 
-  return client.message('/access-token/set', { accessToken })
-    .then(() => {
-      const $accessTokenSaveButton = Elem.ACCESS_TOKEN_SAVE_BUTTON;
-      const origin = $accessTokenSaveButton.text();
-      $accessTokenSaveButton.text('saved!');
-      setTimeout(() => $accessTokenSaveButton.text(origin), 750);
-    })
-    .then(exports.fetchAccessTokenAsync(Elem))
-    .then(exports.fetchRateLimitAsync(Elem));
+  await client.message('/access-token/set', { accessToken });
+
+  const $accessTokenSaveButton = elems.ACCESS_TOKEN_SAVE_BUTTON;
+  const origin = $accessTokenSaveButton.text();
+  $accessTokenSaveButton.text('saved!');
+  setTimeout(() => $accessTokenSaveButton.text(origin), 750);
+
+  await fetchAccessTokenAsync(elems);
+  await fetchRateLimitAsync(elems);
 }
 
 // Event Listeners //
