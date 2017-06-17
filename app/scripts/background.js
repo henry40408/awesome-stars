@@ -1,12 +1,10 @@
-import Bluebird from 'bluebird';
 import lodash from 'lodash';
 import { Router } from 'chomex';
+import ChromePromise from 'chrome-promise';
 import GitHub from 'github-api';
 import LRU from 'lru-cache';
 import moment from 'moment';
 import numeral from 'numeral';
-
-Bluebird.promisifyAll(chrome.storage.local);
 
 if (process.env.NODE_ENV === 'development') {
   // eslint-disable-next-line global-require,import/no-extraneous-dependencies
@@ -34,8 +32,8 @@ const NA = Symbol('@@NA');
 // Cache & Storage //
 
 const cache = LRU(LRU_OPTIONS);
-
-const localStorage = chrome.storage.local;
+const chromep = new ChromePromise();
+const localStorage = chromep.storage.local;
 
 // Local Functions //
 
