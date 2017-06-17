@@ -29,13 +29,13 @@ const STYLES = {
   },
 };
 
-// Semi-global Variables //
+// Chrome Message Client //
 
 const client = new Client(chrome.runtime);
 
 // Local Functions //
 
-function starFromColor(rawColor) {
+function starPathFromColor(rawColor) {
   const availableColors = lodash.values(COLORS);
   const color = lodash.includes(availableColors, rawColor) ? rawColor : COLORS.BLUE;
   return chrome.extension.getURL(`images/star-${color}.svg`);
@@ -57,10 +57,12 @@ function colorsFromStarCount(starCount) {
 async function appendStarTagAsync(el, owner, name) {
   const $count = jQuery('<span>').text('...');
 
-  const $star = jQuery('<img>').css(STYLES.STAR)
-    .attr('src', starFromColor(COLORS.WHITE));
+  const $star = jQuery('<img>')
+    .css(STYLES.STAR)
+    .attr('src', starPathFromColor(COLORS.WHITE));
 
-  const $tag = jQuery('<span>').css({ ...STYLES.TAG, color: TextColor.WHITE })
+  const $tag = jQuery('<span>')
+    .css({ ...STYLES.TAG, color: TextColor.WHITE })
     .append($star).append($count);
 
   jQuery(el).after($tag);
@@ -68,32 +70,34 @@ async function appendStarTagAsync(el, owner, name) {
   const { data: starCount } = await client.message('/stars/get', { owner, name });
   const formattedStarCount = starCount > 0 ? numeral(starCount).format('0,0') : 'N/A';
 
-  $star.css(STYLES.STAR).attr('src', starFromColor(colorsFromStarCount(starCount).star));
-  $tag.css({ ...STYLES.TAG, color: colorsFromStarCount(starCount).text });
+  const { star, text } = colorsFromStarCount(starCount);
+  $star.css(STYLES.STAR).attr('src', starPathFromColor(star));
+  $tag.css({ ...STYLES.TAG, color: text });
+
   $count[0].innerHTML = formattedStarCount;
 }
 
 async function iterateAllLinks() {
-  const aElements = jQuery('li > a', '#readme');
+  const linkInListElems = jQuery('li > a', '#readme');
 
-  const validElements = lodash.filter(aElements, (el) => {
-    const href = jQuery(el).attr('href');
-    const parsedHref = ParseGithubURL(href);
+  const elemParsedUrls = lodash.reduce(linkInListElems, (acc, elem) => {
+    const rawUrl = jQuery(elem).attr('href');
+    const parsedUrl = ParseGithubURL(rawUrl);
 
-    if (parsedHref && parsedHref.host === 'github.com' && parsedHref.repo) {
-      return true;
+    let newAcc = acc;
+    if (parsedUrl && parsedUrl.host === 'github.com' && parsedUrl.repo) {
+      newAcc = lodash.concat(acc, { elem, parsedUrl });
     }
 
-    return false;
-  });
+    return newAcc;
+  }, []);
 
-  async function elementIteratee(el) {
-    const href = jQuery(el).attr('href');
-    const { owner, name } = ParseGithubURL(href);
-    return appendStarTagAsync(el, owner, name);
+  async function elementIteratee(elemParsedUrl) {
+    const { elem, parsedHref: { owner, name } } = elemParsedUrl;
+    return appendStarTagAsync(elem, owner, name);
   }
 
-  lodash.each(validElements, elementIteratee);
+  lodash.each(elemParsedUrls, elementIteratee);
 }
 
 // Event Listeners //

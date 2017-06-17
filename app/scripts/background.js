@@ -31,6 +31,8 @@ const LRU_OPTIONS = {
 
 const NA = Symbol('@@NA');
 
+// Cache & Storage //
+
 const cache = LRU(LRU_OPTIONS);
 
 const localStorage = chrome.storage.local;
@@ -48,7 +50,9 @@ function log(...args) {
 async function loadAccessTokenAsync() {
   const result = await localStorage.get(KEYS.ACCESS_TOKEN);
   const accessToken = lodash.get(result, KEYS.ACCESS_TOKEN, '');
+
   log('storage responds with access token', accessToken);
+
   return accessToken;
 }
 
@@ -57,6 +61,7 @@ function updateBadge(strOrSignal) {
   const text = strOrSignal === NA ? 'N/A' : strOrSignal;
 
   log('badge text updated to', text);
+
   chrome.browserAction.setBadgeBackgroundColor({ color });
   chrome.browserAction.setBadgeText({ text });
 }
@@ -91,8 +96,8 @@ async function getStarCountAsync(owner, name, options = {}) {
   if (!cachedDetails) {
     try {
       const github = accessToken ? new GitHub({ token: accessToken }) : new GitHub();
-      const repo = github.getRepo(owner, name);
-      const { data: json } = await repo.getDetails();
+      const repoWrapper = github.getRepo(owner, name);
+      const { data: json } = await repoWrapper.getDetails();
 
       cache.set(cacheKey, json);
 
@@ -114,8 +119,11 @@ async function setAccessTokenAsync(accessToken) {
   const payload = {
     [KEYS.ACCESS_TOKEN]: accessToken,
   };
+
   localStorage.set(payload);
+
   fetchRateLimitAsync();
+
   return true;
 }
 
@@ -131,12 +139,14 @@ async function getStarsRouteAsync(message) {
     return getStarCountAsync(owner, name, { accessToken });
   }
 
-  return 0;
+  return -1;
 }
 
 async function setAccessTokenRouteAsync(message) {
   const { accessToken } = message;
+
   log('/access-token/set called with request', accessToken);
+
   return setAccessTokenAsync(accessToken);
 }
 
@@ -153,7 +163,7 @@ chrome.browserAction.onClicked.addListener(() => {
 
 fetchRateLimitAsync();
 
-// Message Router //
+// Chrome Message Server //
 
 const router = new Router();
 
