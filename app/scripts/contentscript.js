@@ -8,92 +8,102 @@ import { TextColor } from './constants';
 
 // Constants //
 
-const COLORS = { BLUE: 'blue', ORANGE: 'orange', WHITE: 'white', YELLOW: 'yellow' };
-const STYLES = {
-    STAR: {
-        'background-color': 'transparent',
-        margin: '0 .25rem 0 0',
-    },
-    TAG: {
-        'background-color': '#3F3F3F',
-        'border-radius': '.78125rem',
-        'font-size': '.75rem',
-        margin: '0 0 0 .25rem',
-        padding: '.3125rem .625rem .3125rem .4375rem',
-    },
+const COLORS = {
+  BLUE: 'blue',
+  ORANGE: 'orange',
+  WHITE: 'white',
+  YELLOW: 'yellow',
 };
 
-// Semi-global Variables //
+const STYLES = {
+  STAR: {
+    'background-color': 'transparent',
+    margin: '0 .25rem 0 0',
+  },
+  TAG: {
+    'background-color': '#3F3F3F',
+    'border-radius': '.78125rem',
+    'font-size': '.75rem',
+    margin: '0 0 0 .25rem',
+    padding: '.3125rem .625rem .3125rem .4375rem',
+  },
+};
+
+// Chrome Message Client //
 
 const client = new Client(chrome.runtime);
 
 // Local Functions //
 
-function starFromColor(rawColor) {
-    const availableColors = lodash.values(COLORS);
-    const color = lodash.includes(availableColors, rawColor) ? rawColor : COLORS.BLUE;
-    return chrome.extension.getURL(`images/star-${color}.svg`);
+function starPathFromColor(rawColor) {
+  const availableColors = lodash.values(COLORS);
+  const color = lodash.includes(availableColors, rawColor) ? rawColor : COLORS.BLUE;
+  return chrome.extension.getURL(`images/star-${color}.svg`);
 }
 
 function colorsFromStarCount(starCount) {
-    switch (true) {
-        case (starCount >= 10000):
-            return { star: COLORS.ORANGE, text: TextColor.ORANGE };
-        case (starCount < 10000 && starCount >= 5000):
-            return { star: COLORS.YELLOW, text: TextColor.YELLOW };
-        case (starCount < 5000 && starCount >= 1000):
-            return { star: COLORS.WHITE, text: TextColor.WHITE };
-        default:
-            return { star: COLORS.BLUE, text: TextColor.BLUE };
-    }
+  switch (true) {
+    case (starCount >= 10000):
+      return { star: COLORS.ORANGE, text: TextColor.ORANGE };
+    case (starCount < 10000 && starCount >= 5000):
+      return { star: COLORS.YELLOW, text: TextColor.YELLOW };
+    case (starCount < 5000 && starCount >= 1000):
+      return { star: COLORS.WHITE, text: TextColor.WHITE };
+    default:
+      return { star: COLORS.BLUE, text: TextColor.BLUE };
+  }
 }
 
 async function appendStarTagAsync(el, owner, name) {
-    const $count = jQuery('<span>').text('...');
+  const $count = jQuery('<span>').text('...');
 
-    const $star = jQuery('<img>').css(STYLES.STAR)
-        .attr('src', starFromColor(COLORS.WHITE));
+  const $star = jQuery('<img>')
+    .css(STYLES.STAR)
+    .attr('src', starPathFromColor(COLORS.WHITE));
 
-    const $tag = jQuery('<span>').css({ ...STYLES.TAG, color: TextColor.WHITE })
-        .append($star).append($count);
+  const $tag = jQuery('<span>')
+    .css({ ...STYLES.TAG, color: TextColor.WHITE })
+    .append($star).append($count);
 
-    jQuery(el).after($tag);
+  jQuery(el).after($tag);
 
-    const { data: starCount } = await client.message('/stars/get', { owner, name });
-    const formattedStarCount = starCount > 0 ? numeral(starCount).format('0,0') : 'N/A';
+  const { data: starCount } = await client.message('/stars/get', { owner, name });
+  const formattedStarCount = starCount > 0 ? numeral(starCount).format('0,0') : 'N/A';
 
-    $star.css(STYLES.STAR).attr('src', starFromColor(colorsFromStarCount(starCount).star));
-    $tag.css({ ...STYLES.TAG, color: colorsFromStarCount(starCount).text });
-    $count[0].innerHTML = formattedStarCount;
+  const { star, text } = colorsFromStarCount(starCount);
+  $star.css(STYLES.STAR).attr('src', starPathFromColor(star));
+  $tag.css({ ...STYLES.TAG, color: text });
+
+  $count[0].innerHTML = formattedStarCount;
 }
 
 async function iterateAllLinks() {
-    const aElements = jQuery('li > a', '#readme');
+  const linkInListElems = jQuery('li > a', '#readme');
 
-    const validElements = lodash.filter(aElements, (el) => {
-        const href = jQuery(el).attr('href');
-        const parsedHref = ParseGithubURL(href);
+  const elemParsedUrls = lodash.reduce(linkInListElems, (acc, elem) => {
+    const rawUrl = jQuery(elem).attr('href');
+    const parsedUrl = ParseGithubURL(rawUrl);
 
-        if (parsedHref && parsedHref.host === 'github.com' && parsedHref.repo) {
-            return true;
-        }
-
-        return false;
-    });
-
-    async function elementIteratee(el) {
-        const href = jQuery(el).attr('href');
-        const { owner, name } = ParseGithubURL(href);
-        return appendStarTagAsync(el, owner, name);
+    let newAcc = acc;
+    if (parsedUrl && parsedUrl.host === 'github.com' && parsedUrl.repo) {
+      newAcc = lodash.concat(acc, { elem, parsedUrl });
     }
 
-    lodash.each(validElements, elementIteratee);
+    return newAcc;
+  }, []);
+
+  async function elementIteratee(elemParsedUrl) {
+    const { elem, parsedHref: { owner, name } } = elemParsedUrl;
+    return appendStarTagAsync(elem, owner, name);
+  }
+
+  lodash.each(elemParsedUrls, elementIteratee);
 }
 
 // Event Listeners //
 
 jQuery(document).ready(() => {
-    if (window.location.href.match(/awesome/i)) {
-        iterateAllLinks();
-    }
+  if (window.location.href.match(/awesome/i)) {
+    iterateAllLinks();
+  }
 });
