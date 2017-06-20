@@ -30,7 +30,9 @@ async function fetchAccessTokenAsync(elems) {
 }
 
 async function fetchRateLimitAsync(elems) {
+  const $accessTokenSaveButton = elems.ACCESS_TOKEN_SAVE_BUTTON;
   const $progressBarFilled = elems.PROGRESS_BAR_FILLED;
+  $accessTokenSaveButton.attr('disabled', true);
   $progressBarFilled.css({ width: '0%' });
 
   const { data } = await messageClient.message('/rate-limit');
@@ -49,7 +51,7 @@ async function fetchRateLimitAsync(elems) {
   $progressBarFilled.css({ background: colorFromPercentage(0) });
 
   // NOTE returns finished Promise of animation
-  return anime({
+  await anime({
     backgroundColor: finalbackgroundColor,
     duration: 750,
     easing: 'easeInOutQuad',
@@ -57,6 +59,8 @@ async function fetchRateLimitAsync(elems) {
     width: `${percentage}%`,
     begin: () => elems.PROGRESS_BAR_TEXT.css(textStyle).text(formattedRateLimit),
   }).finished;
+
+  return $accessTokenSaveButton.attr('disabled', false);
 }
 
 async function sendAccessTokenAsync(elems) {
@@ -64,13 +68,13 @@ async function sendAccessTokenAsync(elems) {
   const accessToken = elems.ACCESS_TOKEN_FIELD.val();
   const originLabel = $accessTokenSaveButton.text();
 
-  $accessTokenSaveButton.attr('disabled', true).text('saved!');
+  $accessTokenSaveButton.text('saved!');
 
   await messageClient.message('/access-token/set', { accessToken });
   fetchAccessTokenAsync(elems);
   await fetchRateLimitAsync(elems);
 
-  return $accessTokenSaveButton.attr('disabled', false).text(originLabel);
+  return $accessTokenSaveButton.text(originLabel);
 }
 
 jQuery(document).ready(() => {
