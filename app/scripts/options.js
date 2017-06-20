@@ -31,14 +31,9 @@ async function fetchRateLimitAsync(elems) {
   const { remaining, limit } = response.data;
   const formattedRateLimit = numeral(remaining).format('0,0');
 
-  if (limit === 0) {
-    elems.ACCESS_TOKEN_INVALID.show();
-  }
-
   let percentage = 0;
 
   if (limit > 0) {
-    elems.ACCESS_TOKEN_INVALID.hide();
     percentage = parseInt((remaining / limit) * 100, 10);
   }
 
@@ -76,13 +71,11 @@ async function sendAccessTokenAsync(elems) {
 jQuery(document).ready(() => {
   const Elem = {
     ACCESS_TOKEN_FIELD: jQuery('#access-token-field'),
-    ACCESS_TOKEN_INVALID: jQuery('.access-token-invalid'),
     ACCESS_TOKEN_SAVE_BUTTON: jQuery('#access-token-save-button'),
     PROGRESS_BAR_FILLED: jQuery('.progress-bar-filled'),
     PROGRESS_BAR_TEXT: jQuery('.progress-bar-text'),
   };
 
-  Elem.ACCESS_TOKEN_INVALID.hide();
   Elem.ACCESS_TOKEN_SAVE_BUTTON.click(() => sendAccessTokenAsync(Elem));
 
   fetchAccessTokenAsync(Elem);

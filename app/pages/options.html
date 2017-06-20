@@ -41,14 +41,20 @@
           <div class="row">
             <div class="nine columns">
               <input type="text" class="access-token-field" id="access-token-field" />
-              <div class="alert-text access-token-invalid">Access token might be invalid!</div>
             </div>
             <div class="three columns access-token-save-button-wrapper">
               <button class="access-token-save-button" id="access-token-save-button">SAVE</button>
             </div>
-            <div class="twelve columns access-token-field-help">
-              <div><a href="https://github.com/settings/tokens/new?description=Awesome%20stars" target="_blank">Get an access token</a> from <a href="https://github.com/settings/tokens" target="_blank">GitHub settings page</a></div>
-              <div class="alert-text">Please DO NOT select any scopes!</div>
+            <div class="twelve columns">
+              <div class="access-token-status">
+                <span>access token status</span>
+                <span id="access-token-valid" class="access-token valid">valid</span>
+                <span id="access-token-invalid" class="access-token invalid">invalid</span>
+              </div>
+              <div class="access-token-field-help">
+                <div><a href="https://github.com/settings/tokens/new?description=Awesome%20stars" target="_blank">Get an access token</a> from <a href="https://github.com/settings/tokens" target="_blank">GitHub settings page</a></div>
+                <div class="alert-text">Please DO NOT select any scopes!</div>
+              </div>
             </div>
           </div>
         </div>

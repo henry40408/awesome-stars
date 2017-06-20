@@ -75,8 +75,7 @@ a {
   }
 }
 
-.left-panel,
-.right-panel {
+.left-panel {
   position: relative;
 }
 
@@ -136,18 +135,17 @@ input.access-token-field[type=text] {
   }
 }
 
-.access-token-field-help {
-  margin: 1.25rem 0 0;
+.access-token-field-help,
+.progress-bar-wrapper {
+  margin: .5rem 0;
+}
+
+.access-token-status {
+  margin: 1rem 0 .5rem;
 }
 
 .access-token-form {
-  @media (min-width: $tablet) {
-    position: absolute;
-  }
-}
-
-.access-token-invalid {
-  margin: .25rem 0 0;
+  margin: 0 0 2rem;
 }
 
 .access-token-save-button-wrapper {
@@ -180,8 +178,16 @@ input.access-token-field[type=text] {
   color: $white;
 }
 
-.alert-text {
-  color: $red;
+.access-token {
+  border-radius: .5rem;
+  padding: .15625rem .4375rem;
+  &.invalid {
+    background-color: $red;
+  }
+  &.valid {
+    background-color: $green;
+    color: $dark-gray;
+  }
 }
 
 .progress-bar {
@@ -190,7 +196,7 @@ input.access-token-field[type=text] {
 }
 
 .progress-bar-help {
-  margin: .5rem 0 0;
+  margin: .5rem 0 1rem;
 }
 
 .progress-bar-filled {
@@ -208,13 +214,6 @@ input.access-token-field[type=text] {
     justify-content: center;
     margin: 0;
     width: 26%;
-  }
-}
-
-.progress-bar-wrapper {
-  margin: 2rem 0 .75rem;
-  @media (min-width: $tablet) {
-    margin: 13.7625rem 0 1.5rem;
   }
 }
 
