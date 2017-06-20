@@ -1463,6 +1463,10 @@ currently-unhandled@^0.4.1:
   dependencies:
     array-find-index "^1.0.1"
 
+custom-error@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/custom-error/-/custom-error-0.2.1.tgz#ddbf21cbba9f3beb5357335e0576b4c9534a08fe"
+
 d@1:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/d/-/d-1.0.0.tgz#754bb5bfe55451da69a58b94d45f4c5b0462d58f"

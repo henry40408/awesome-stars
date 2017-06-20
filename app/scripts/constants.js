@@ -6,3 +6,5 @@ exports.TextColor = {
   WHITE: '#ffffff',
   YELLOW: '#f9ef14',
 };
+
+exports.ERROR = '@@ERROR';
