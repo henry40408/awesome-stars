@@ -4,11 +4,9 @@ import anime from 'animejs';
 import { Client } from 'chomex';
 import numeral from 'numeral';
 
-import { TextColor } from './constants';
+import { ERROR, TextColor } from './constants';
 
-const client = new Client(chrome.runtime);
-
-// Local Functions //
+const messageClient = new Client(chrome.runtime);
 
 function colorFromPercentage(percentage) {
   switch (true) {
@@ -22,51 +20,58 @@ function colorFromPercentage(percentage) {
 }
 
 async function fetchAccessTokenAsync(elems) {
-  const { data } = await client.message('/access-token/get');
+  const { data } = await messageClient.message('/access-token/get');
+
+  if (data === ERROR) {
+    return elems.ACCESS_TOKEN_FIELD.val('N/A');
+  }
+
   return elems.ACCESS_TOKEN_FIELD.val(data);
 }
 
 async function fetchRateLimitAsync(elems) {
-  const response = await client.message('/rate-limit');
-  const { remaining, limit } = response.data;
-  const formattedRateLimit = numeral(remaining).format('0,0');
-
-  let percentage = 0;
-
-  if (limit > 0) {
-    percentage = parseInt((remaining / limit) * 100, 10);
-  }
-
-  const finalbackgroundColor = colorFromPercentage(percentage);
-  const textStyle = { color: finalbackgroundColor };
   const $progressBarFilled = elems.PROGRESS_BAR_FILLED;
-
   $progressBarFilled.css({ width: '0%' });
 
-  anime({
-    targets: $progressBarFilled.get(0),
+  const { data } = await messageClient.message('/rate-limit');
+
+  if (data === ERROR) {
+    elems.PROGRESS_BAR_TEXT.css({ color: colorFromPercentage(0) }).text('N/A');
+    return false;
+  }
+
+  const { remaining, limit } = data;
+  const formattedRateLimit = numeral(remaining).format('0,0');
+  const percentage = limit > 0 ? parseInt((remaining / limit) * 100, 10) : 0;
+  const finalbackgroundColor = colorFromPercentage(percentage);
+  const textStyle = { color: finalbackgroundColor };
+
+  $progressBarFilled.css({ background: colorFromPercentage(0) });
+
+  // NOTE returns finished Promise of animation
+  return anime({
     backgroundColor: finalbackgroundColor,
+    duration: 750,
     easing: 'easeInOutQuad',
+    targets: $progressBarFilled.get(0),
     width: `${percentage}%`,
     begin: () => elems.PROGRESS_BAR_TEXT.css(textStyle).text(formattedRateLimit),
-  });
+  }).finished;
 }
 
 async function sendAccessTokenAsync(elems) {
-  const accessToken = elems.ACCESS_TOKEN_FIELD.val();
-
-  await client.message('/access-token/set', { accessToken });
-
   const $accessTokenSaveButton = elems.ACCESS_TOKEN_SAVE_BUTTON;
+  const accessToken = elems.ACCESS_TOKEN_FIELD.val();
   const origin = $accessTokenSaveButton.text();
-  $accessTokenSaveButton.text('saved!');
-  setTimeout(() => $accessTokenSaveButton.text(origin), 750);
 
+  $accessTokenSaveButton.attr('disabled', true).text('saved!');
+
+  await messageClient.message('/access-token/set', { accessToken });
   await fetchAccessTokenAsync(elems);
   await fetchRateLimitAsync(elems);
-}
 
-// Event Listeners //
+  return $accessTokenSaveButton.attr('disabled', false).text(origin);
+}
 
 jQuery(document).ready(() => {
   const Elem = {

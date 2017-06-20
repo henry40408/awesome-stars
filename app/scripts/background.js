@@ -1,3 +1,4 @@
+import CustomError from 'custom-error';
 import lodash from 'lodash';
 import { Router } from 'chomex';
 import ChromePromise from 'chrome-promise';
@@ -6,14 +7,14 @@ import LRU from 'lru-cache';
 import moment from 'moment';
 import numeral from 'numeral';
 
+import { ERROR } from './constants';
+
 if (process.env.NODE_ENV === 'development') {
   // eslint-disable-next-line global-require,import/no-extraneous-dependencies
   require('chromereload/devonly');
 }
 
-// Constants //
-
-const BADGE_BG_COLORS = {
+const BADGE_COLORS = {
   BRIGHT_BLUE: '#4a94fa',
   RED: '#ff0000',
 };
@@ -33,13 +34,11 @@ const STORAGE_KEYS = {
   ACCESS_TOKEN: 'ACCESS_TOKEN',
 };
 
-// Cache & Storage //
+const RateLimitError = CustomError('RateLimitError');
 
-const cache = LRU(LRU_OPTIONS);
-const chromep = new ChromePromise();
-const localStorage = chromep.storage.local;
+const lruCache = LRU(LRU_OPTIONS);
 
-// Local Functions //
+const chromePromise = new ChromePromise();
 
 function log(...args) {
   if (process.env.NODE_ENV === 'development') {
@@ -49,18 +48,19 @@ function log(...args) {
 }
 
 async function loadAccessTokenAsync() {
-  const result = await localStorage.get(STORAGE_KEYS.ACCESS_TOKEN);
-  const accessToken = lodash.get(result, STORAGE_KEYS.ACCESS_TOKEN, '');
+  const result = await chromePromise.storage.local.get(STORAGE_KEYS.ACCESS_TOKEN);
+  const accessToken = lodash.get(result, STORAGE_KEYS.ACCESS_TOKEN, null);
 
   log('storage responds with access token', accessToken);
 
   return accessToken;
 }
 
-function updateBadge(textOrSignal) {
-  const color = textOrSignal === NA ? BADGE_BG_COLORS.RED : BADGE_BG_COLORS.BRIGHT_BLUE;
-  const text = textOrSignal === NA ? 'N/A' : textOrSignal;
+function updateBadge(maybeText) {
+  const color = maybeText === NA ? BADGE_COLORS.RED : BADGE_COLORS.BRIGHT_BLUE;
+  const text = maybeText === NA ? 'N/A' : maybeText;
 
+  log('badge color updated to', color);
   log('badge text updated to', text);
 
   chrome.browserAction.setBadgeBackgroundColor({ color });
@@ -68,28 +68,33 @@ function updateBadge(textOrSignal) {
 }
 
 async function genGitHub() {
-  const cachedGithub = cache.get(CACHE_KEYS.GITHUB);
+  const cachedGithubAdapter = lruCache.get(CACHE_KEYS.GITHUB);
 
-  if (!cachedGithub) {
+  if (!cachedGithubAdapter) {
     const accessToken = await loadAccessTokenAsync();
-    const github = accessToken ? new GitHub({ token: accessToken }) : new GitHub();
+    const githubAdapter = new GitHub({ token: accessToken });
 
-    cache.set(CACHE_KEYS.GITHUB, github);
+    log('new GitHub adapter generated with access token', accessToken);
 
-    return github;
+    lruCache.set(CACHE_KEYS.GITHUB, githubAdapter);
+    return githubAdapter;
   }
 
-  return cachedGithub;
+  return cachedGithubAdapter;
 }
 
 async function fetchRateLimitAsync() {
   const github = await genGitHub();
-  const rateLimit = github.getRateLimit();
+  const rateLimitWrapper = github.getRateLimit();
 
   try {
-    const response = await rateLimit.getRateLimit();
-    const remaining = lodash.get(response, 'data.resources.core.remaining', 0);
-    const limit = lodash.get(response, 'data.resources.core.limit', 0);
+    const response = await rateLimitWrapper.getRateLimit();
+    const remaining = lodash.get(response, 'data.resources.core.remaining', null);
+    const limit = lodash.get(response, 'data.resources.core.limit', null);
+
+    if (!remaining || !limit) {
+      throw new RateLimitError();
+    }
 
     log('github responds with rate limit', remaining, limit);
 
@@ -99,13 +104,13 @@ async function fetchRateLimitAsync() {
     return { limit, remaining };
   } catch (e) {
     updateBadge(NA);
-    return { limit: 0, remaining: 0 };
+    return ERROR;
   }
 }
 
-async function getStarCountAsync(owner, name) {
+async function fetchStarCountAsync(owner, name) {
   const cacheKey = JSON.stringify({ name, owner });
-  const cachedDetails = cache.get(cacheKey);
+  const cachedDetails = lruCache.get(cacheKey);
 
   if (!cachedDetails) {
     try {
@@ -113,7 +118,7 @@ async function getStarCountAsync(owner, name) {
       const repoWrapper = github.getRepo(owner, name);
       const { data: json } = await repoWrapper.getDetails();
 
-      cache.set(cacheKey, json);
+      lruCache.set(cacheKey, json);
 
       log('github responds a JSON object', json);
 
@@ -121,7 +126,7 @@ async function getStarCountAsync(owner, name) {
 
       return parseInt(json.stargazers_count, 10);
     } catch (e) {
-      return -1;
+      return ERROR;
     }
   }
 
@@ -134,38 +139,16 @@ async function setAccessTokenAsync(accessToken) {
     [STORAGE_KEYS.ACCESS_TOKEN]: accessToken,
   };
 
-  localStorage.set(payload);
+  chromePromise.storage.local.set(payload);
 
-  cache.del(CACHE_KEYS.GITHUB);
+  // NOTE Force GitHub adapter to be re-generated
+  lruCache.del(CACHE_KEYS.GITHUB);
 
   fetchRateLimitAsync();
 
+  // NOTE fire and forget route returns nothing
   return true;
 }
-
-// Routes //
-
-async function getStarsRouteAsync(message) {
-  const { owner, name } = message;
-
-  log('/stars/get called with request', message);
-
-  if (owner && name) {
-    return getStarCountAsync(owner, name);
-  }
-
-  return -1;
-}
-
-async function setAccessTokenRouteAsync(message) {
-  const { accessToken } = message;
-
-  log('/access-token/set called with request', accessToken);
-
-  return setAccessTokenAsync(accessToken);
-}
-
-// Event Listeners //
 
 chrome.browserAction.onClicked.addListener(() => {
   if (chrome.runtime.openOptionsPage) {
@@ -178,16 +161,36 @@ chrome.browserAction.onClicked.addListener(() => {
 
 fetchRateLimitAsync();
 
-// Chrome Message Server //
+function logMiddleware(route, fn) {
+  return (message) => {
+    log(route, 'called with', message);
+    return fn(message);
+  };
+}
 
-const router = new Router();
+function registerRoute(router, route, fn) {
+  return router.on(route, logMiddleware(route, fn));
+}
 
-router.on('/access-token/get', () => loadAccessTokenAsync());
+const messageRouter = new Router();
 
-router.on('/access-token/set', message => setAccessTokenRouteAsync(message));
+registerRoute(messageRouter, '/access-token/get', () => loadAccessTokenAsync());
 
-router.on('/rate-limit', () => fetchRateLimitAsync());
+registerRoute(messageRouter, '/access-token/set', (message) => {
+  const { accessToken } = message;
+  return setAccessTokenAsync(accessToken);
+});
 
-router.on('/stars/get', message => getStarsRouteAsync(message));
+registerRoute(messageRouter, '/rate-limit', () => fetchRateLimitAsync());
 
-chrome.runtime.onMessage.addListener(router.listener());
+registerRoute(messageRouter, '/stars/get', (message) => {
+  const { owner, name } = message;
+
+  if (owner && name) {
+    return fetchStarCountAsync(owner, name);
+  }
+
+  return -1;
+});
+
+chrome.runtime.onMessage.addListener(messageRouter.listener());

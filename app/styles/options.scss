@@ -2,6 +2,7 @@
 
 $blue:#c4f7ff;
 $dark-gray:#222222;
+$gray:#999999;
 $green:#d4fc45;
 $orange:#ecab20;
 $red:#ff3e00;
@@ -170,6 +171,9 @@ input.access-token-field[type=text] {
     padding: 0;
     text-align: center;
     width: 5.0625rem;
+  }
+  &:disabled {
+    background-color: $gray;
   }
 }
 

@@ -4,9 +4,7 @@ import lodash from 'lodash';
 import numeral from 'numeral';
 import ParseGithubURL from 'parse-github-url';
 
-import { TextColor } from './constants';
-
-// Constants //
+import { ERROR, TextColor } from './constants';
 
 const COLORS = {
   BLUE: 'blue',
@@ -29,11 +27,7 @@ const STYLES = {
   },
 };
 
-// Chrome Message Client //
-
-const client = new Client(chrome.runtime);
-
-// Local Functions //
+const messageClient = new Client(chrome.runtime);
 
 function starPathFromColor(rawColor) {
   const availableColors = lodash.values(COLORS);
@@ -67,14 +61,26 @@ async function appendStarTagAsync(el, owner, name) {
 
   jQuery(el).after($tag);
 
-  const { data: starCount } = await client.message('/stars/get', { owner, name });
-  const formattedStarCount = starCount > 0 ? numeral(starCount).format('0,0') : 'N/A';
+  const { data: starCountOrError } = await messageClient.message('/stars/get', { owner, name });
 
-  const { star, text } = colorsFromStarCount(starCount);
+  if (starCountOrError === ERROR) {
+    $count[0].innerHTML = 'N/A';
+    return starCountOrError;
+  }
+
+  const formattedStarCount = starCountOrError > 0 ? numeral(starCountOrError).format('0,0') : 'N/A';
+
+  const { star, text } = colorsFromStarCount(starCountOrError);
   $star.css(STYLES.STAR).attr('src', starPathFromColor(star));
   $tag.css({ ...STYLES.TAG, color: text });
 
   $count[0].innerHTML = formattedStarCount;
+
+  return starCountOrError;
+}
+
+function isTarget(parsedUrl) {
+  return parsedUrl && parsedUrl.host === 'github.com' && parsedUrl.owner && parsedUrl.name;
 }
 
 async function iterateAllLinks() {
@@ -85,22 +91,20 @@ async function iterateAllLinks() {
     const parsedUrl = ParseGithubURL(rawUrl);
 
     let newAcc = acc;
-    if (parsedUrl && parsedUrl.host === 'github.com' && parsedUrl.repo) {
+    if (isTarget(parsedUrl)) {
       newAcc = lodash.concat(acc, { elem, parsedUrl });
     }
 
     return newAcc;
   }, []);
 
-  async function elementIteratee(elemParsedUrl) {
+  async function elementIterator(elemParsedUrl) {
     const { elem, parsedHref: { owner, name } } = elemParsedUrl;
     return appendStarTagAsync(elem, owner, name);
   }
 
-  lodash.each(elemParsedUrls, elementIteratee);
+  lodash.each(elemParsedUrls, elementIterator);
 }
-
-// Event Listeners //
 
 jQuery(document).ready(() => {
   if (window.location.href.match(/awesome/i)) {
