@@ -13,13 +13,13 @@ if (process.env.NODE_ENV === 'development') {
 
 // Constants //
 
-const COLORS = {
+const BADGE_BG_COLORS = {
   BRIGHT_BLUE: '#4a94fa',
   RED: '#ff0000',
 };
 
-const KEYS = {
-  ACCESS_TOKEN: 'ACCESS_TOKEN',
+const CACHE_KEYS = {
+  GITHUB: '@@github',
 };
 
 const LRU_OPTIONS = {
@@ -27,7 +27,11 @@ const LRU_OPTIONS = {
   maxAge: 24 * 60 * 60 * 1000, // TTL = 24 hours
 };
 
-const NA = Symbol('@@NA');
+const NA = '@@NA';
+
+const STORAGE_KEYS = {
+  ACCESS_TOKEN: 'ACCESS_TOKEN',
+};
 
 // Cache & Storage //
 
@@ -39,24 +43,23 @@ const localStorage = chromep.storage.local;
 
 function log(...args) {
   if (process.env.NODE_ENV === 'development') {
-    const argsWithMoment = [`[${moment().format()}]`, ...args];
     // eslint-disable-next-line no-console
-    console.log.apply(null, argsWithMoment);
+    console.log.apply(null, [`[${moment().format()}]`, ...args]);
   }
 }
 
 async function loadAccessTokenAsync() {
-  const result = await localStorage.get(KEYS.ACCESS_TOKEN);
-  const accessToken = lodash.get(result, KEYS.ACCESS_TOKEN, '');
+  const result = await localStorage.get(STORAGE_KEYS.ACCESS_TOKEN);
+  const accessToken = lodash.get(result, STORAGE_KEYS.ACCESS_TOKEN, '');
 
   log('storage responds with access token', accessToken);
 
   return accessToken;
 }
 
-function updateBadge(strOrSignal) {
-  const color = strOrSignal === NA ? COLORS.RED : COLORS.BRIGHT_BLUE;
-  const text = strOrSignal === NA ? 'N/A' : strOrSignal;
+function updateBadge(textOrSignal) {
+  const color = textOrSignal === NA ? BADGE_BG_COLORS.RED : BADGE_BG_COLORS.BRIGHT_BLUE;
+  const text = textOrSignal === NA ? 'N/A' : textOrSignal;
 
   log('badge text updated to', text);
 
@@ -64,9 +67,23 @@ function updateBadge(strOrSignal) {
   chrome.browserAction.setBadgeText({ text });
 }
 
+async function genGitHub() {
+  const cachedGithub = cache.get(CACHE_KEYS.GITHUB);
+
+  if (!cachedGithub) {
+    const accessToken = await loadAccessTokenAsync();
+    const github = accessToken ? new GitHub({ token: accessToken }) : new GitHub();
+
+    cache.set(CACHE_KEYS.GITHUB, github);
+
+    return github;
+  }
+
+  return cachedGithub;
+}
+
 async function fetchRateLimitAsync() {
-  const accessToken = await loadAccessTokenAsync();
-  const github = accessToken ? new GitHub({ token: accessToken }) : new GitHub();
+  const github = await genGitHub();
   const rateLimit = github.getRateLimit();
 
   try {
@@ -86,14 +103,13 @@ async function fetchRateLimitAsync() {
   }
 }
 
-async function getStarCountAsync(owner, name, options = {}) {
-  const { accessToken } = options;
+async function getStarCountAsync(owner, name) {
   const cacheKey = JSON.stringify({ name, owner });
   const cachedDetails = cache.get(cacheKey);
 
   if (!cachedDetails) {
     try {
-      const github = accessToken ? new GitHub({ token: accessToken }) : new GitHub();
+      const github = await genGitHub();
       const repoWrapper = github.getRepo(owner, name);
       const { data: json } = await repoWrapper.getDetails();
 
@@ -115,10 +131,12 @@ async function getStarCountAsync(owner, name, options = {}) {
 
 async function setAccessTokenAsync(accessToken) {
   const payload = {
-    [KEYS.ACCESS_TOKEN]: accessToken,
+    [STORAGE_KEYS.ACCESS_TOKEN]: accessToken,
   };
 
   localStorage.set(payload);
+
+  cache.del(CACHE_KEYS.GITHUB);
 
   fetchRateLimitAsync();
 
@@ -128,13 +146,12 @@ async function setAccessTokenAsync(accessToken) {
 // Routes //
 
 async function getStarsRouteAsync(message) {
-  const accessToken = await loadAccessTokenAsync();
   const { owner, name } = message;
 
   log('/stars/get called with request', message);
 
   if (owner && name) {
-    return getStarCountAsync(owner, name, { accessToken });
+    return getStarCountAsync(owner, name);
   }
 
   return -1;
