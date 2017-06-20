@@ -62,27 +62,27 @@ async function fetchRateLimitAsync(elems) {
 async function sendAccessTokenAsync(elems) {
   const $accessTokenSaveButton = elems.ACCESS_TOKEN_SAVE_BUTTON;
   const accessToken = elems.ACCESS_TOKEN_FIELD.val();
-  const origin = $accessTokenSaveButton.text();
+  const originLabel = $accessTokenSaveButton.text();
 
   $accessTokenSaveButton.attr('disabled', true).text('saved!');
 
   await messageClient.message('/access-token/set', { accessToken });
-  await fetchAccessTokenAsync(elems);
+  fetchAccessTokenAsync(elems);
   await fetchRateLimitAsync(elems);
 
-  return $accessTokenSaveButton.attr('disabled', false).text(origin);
+  return $accessTokenSaveButton.attr('disabled', false).text(originLabel);
 }
 
 jQuery(document).ready(() => {
-  const Elem = {
+  const ELEMENTS = {
     ACCESS_TOKEN_FIELD: jQuery('#access-token-field'),
     ACCESS_TOKEN_SAVE_BUTTON: jQuery('#access-token-save-button'),
     PROGRESS_BAR_FILLED: jQuery('.progress-bar-filled'),
     PROGRESS_BAR_TEXT: jQuery('.progress-bar-text'),
   };
 
-  Elem.ACCESS_TOKEN_SAVE_BUTTON.click(() => sendAccessTokenAsync(Elem));
+  ELEMENTS.ACCESS_TOKEN_SAVE_BUTTON.click(() => sendAccessTokenAsync(ELEMENTS));
 
-  fetchAccessTokenAsync(Elem);
-  fetchRateLimitAsync(Elem);
+  fetchAccessTokenAsync(ELEMENTS);
+  fetchRateLimitAsync(ELEMENTS);
 });
