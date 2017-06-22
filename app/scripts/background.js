@@ -1,8 +1,8 @@
 import CustomError from 'custom-error';
-import lodash from 'lodash';
 import { Router } from 'chomex';
 import ChromePromise from 'chrome-promise';
 import GitHub from 'github-api';
+import get from 'lodash/get';
 import LRU from 'lru-cache';
 import numeral from 'numeral';
 
@@ -21,6 +21,7 @@ const BADGE_COLORS = {
 };
 
 const CACHE_KEYS = {
+  AWESOME_LIST: '@@awesome-list',
   GITHUB: '@@github',
 };
 
@@ -43,7 +44,7 @@ const chromePromise = new ChromePromise();
 
 async function loadAccessTokenAsync() {
   const result = await chromePromise.storage.local.get(STORAGE_KEYS.ACCESS_TOKEN);
-  const accessToken = lodash.get(result, STORAGE_KEYS.ACCESS_TOKEN, '');
+  const accessToken = get(result, STORAGE_KEYS.ACCESS_TOKEN, '');
 
   log('storage responds with access token', accessToken);
 
@@ -78,9 +79,19 @@ async function genGitHub() {
 }
 
 async function fetchAwesomeListAsync() {
-  const response = await fetch(AWESOME_LIST_URL);
-  const body = await response.text();
-  return body;
+  const cachedAwesomeList = lruCache.get(CACHE_KEYS.AWESOME_LIST);
+
+  if (!cachedAwesomeList) {
+    const response = await fetch(AWESOME_LIST_URL);
+    const body = await response.text();
+
+    log('fetch awesome list', body.length / 1024, 'KB');
+
+    lruCache.set(CACHE_KEYS.AWESOME_LIST, body);
+    return body;
+  }
+
+  return cachedAwesomeList;
 }
 
 async function fetchRateLimitAsync() {
@@ -89,8 +100,8 @@ async function fetchRateLimitAsync() {
 
   try {
     const response = await rateLimitWrapper.getRateLimit();
-    const remaining = lodash.get(response, 'data.resources.core.remaining', null);
-    const limit = lodash.get(response, 'data.resources.core.limit', null);
+    const remaining = get(response, 'data.resources.core.remaining', null);
+    const limit = get(response, 'data.resources.core.limit', null);
 
     if (!remaining || !limit) {
       throw new RateLimitError();
@@ -195,7 +206,7 @@ registerRoute(messageRouter, '/stars/get', (message) => {
     return fetchStarCountAsync(owner, name, { shouldUpdateRateLimit });
   }
 
-  return -1;
+  return ERROR;
 });
 
 chrome.runtime.onMessage.addListener(messageRouter.listener());
