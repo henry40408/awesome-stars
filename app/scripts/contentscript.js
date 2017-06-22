@@ -75,7 +75,7 @@ function appendStarAsync(owner, name, elems) {
 
       const { star, text } = colorsFromStarCount(starCountOrError);
       $star.css(STYLES.STAR).attr('src', starPathFromColor(star));
-      $tag.css({ ...STYLES.TAG, color: text });
+      $tag.css(Object.assign({}, STYLES.TAG, { color: text }));
       return $count.text(formattedStarCount);
     });
 }
@@ -88,7 +88,7 @@ function appendPlaceholder(elem, owner, name) {
     .attr('src', starPathFromColor(COLORS.WHITE));
 
   const $tag = jQuery('<span>')
-    .css({ ...STYLES.TAG, color: TextColor.WHITE })
+    .css(Object.assign({}, STYLES.TAG, { color: TextColor.WHITE }))
     .append($star).append($count);
 
   jQuery(elem).after($tag);
