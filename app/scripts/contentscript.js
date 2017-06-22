@@ -3,6 +3,7 @@ import { Client } from 'chomex';
 import jQuery from 'jquery';
 import chunkize from 'lodash/chunk';
 import concat from 'lodash/concat';
+import each from 'lodash/each';
 import includes from 'lodash/includes';
 import reduce from 'lodash/reduce';
 import values from 'lodash/values';
@@ -102,7 +103,16 @@ function iterateChunkAsync(chunk) {
   }));
 }
 
+function preloadStarImages() {
+  const colors = values(COLORS);
+  return each(colors, (color) => {
+    (new Image()).src = starPathFromColor(color);
+  });
+}
+
 function initAwesomeStars() {
+  preloadStarImages();
+
   const $links = jQuery('li > a', '#readme');
 
   const $linksWithParsedURLs = reduce($links, (acc, $link) => {
