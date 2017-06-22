@@ -1,10 +1,13 @@
+import { all, map } from 'bluebird';
 import { Client } from 'chomex';
 import jQuery from 'jquery';
 import lodash from 'lodash';
 import numeral from 'numeral';
 import ParseGithubURL from 'parse-github-url';
 
-import { ERROR, TextColor } from './constants';
+import { ERROR, TextColor } from './common';
+
+const CHUNK_SIZE = 200;
 
 const COLORS = {
   BLUE: 'blue',
@@ -48,7 +51,27 @@ function colorsFromStarCount(starCount) {
   }
 }
 
-async function appendStarTagAsync(el, owner, name) {
+function appendStarAsync(owner, name, elems) {
+  const { $count, $star, $tag } = elems;
+
+  return messageClient.message('/stars/get', { owner, name, updateRateLimit: false })
+    .then((response) => {
+      const { data: starCountOrError } = response;
+
+      if (starCountOrError === ERROR) {
+        return $count.text('N/A');
+      }
+
+      const formattedStarCount = starCountOrError > 0 ? numeral(starCountOrError).format('0,0') : 'N/A';
+
+      const { star, text } = colorsFromStarCount(starCountOrError);
+      $star.css(STYLES.STAR).attr('src', starPathFromColor(star));
+      $tag.css({ ...STYLES.TAG, color: text });
+      return $count.text(formattedStarCount);
+    });
+}
+
+function appendPlaceholder(el, owner, name) {
   const $count = jQuery('<span>').text('...');
 
   const $star = jQuery('<img>')
@@ -61,49 +84,38 @@ async function appendStarTagAsync(el, owner, name) {
 
   jQuery(el).after($tag);
 
-  const { data: starCountOrError } = await messageClient.message('/stars/get', { owner, name });
-
-  if (starCountOrError === ERROR) {
-    $count[0].innerHTML = 'N/A';
-    return starCountOrError;
-  }
-
-  const formattedStarCount = starCountOrError > 0 ? numeral(starCountOrError).format('0,0') : 'N/A';
-
-  const { star, text } = colorsFromStarCount(starCountOrError);
-  $star.css(STYLES.STAR).attr('src', starPathFromColor(star));
-  $tag.css({ ...STYLES.TAG, color: text });
-
-  $count[0].innerHTML = formattedStarCount;
-
-  return starCountOrError;
+  return appendStarAsync(owner, name, { $count, $star, $tag });
 }
 
-function isTarget(parsedUrl) {
+function isGithubLink(parsedUrl) {
   return parsedUrl && parsedUrl.host === 'github.com' && parsedUrl.owner && parsedUrl.name;
 }
 
-async function iterateAllLinks() {
+function iterateChunkAsync(chunk) {
+  return all(lodash.map(chunk, (elemParsedUrl) => {
+    const { elem, parsedURL: { owner, name } } = elemParsedUrl;
+    return appendPlaceholder(elem, owner, name);
+  }));
+}
+
+function iterateAllLinks() {
   const linkInListElems = jQuery('li > a', '#readme');
 
   const elemParsedUrls = lodash.reduce(linkInListElems, (acc, elem) => {
-    const rawUrl = jQuery(elem).attr('href');
-    const parsedUrl = ParseGithubURL(rawUrl);
+    const rawURL = jQuery(elem).attr('href');
+    const parsedURL = ParseGithubURL(rawURL);
 
     let newAcc = acc;
-    if (isTarget(parsedUrl)) {
-      newAcc = lodash.concat(acc, { elem, parsedUrl });
+    if (isGithubLink(parsedURL)) {
+      newAcc = lodash.concat(acc, { elem, parsedURL });
     }
 
     return newAcc;
   }, []);
 
-  async function elementIterator(elemParsedUrl) {
-    const { elem, parsedHref: { owner, name } } = elemParsedUrl;
-    return appendStarTagAsync(elem, owner, name);
-  }
-
-  lodash.each(elemParsedUrls, elementIterator);
+  const chunks = lodash.chunk(elemParsedUrls, CHUNK_SIZE);
+  map(chunks, chunk => iterateChunkAsync(chunk).then(() =>
+    messageClient.message('/rate-limit')));
 }
 
 jQuery(document).ready(() => {

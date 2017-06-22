@@ -4,7 +4,7 @@ import anime from 'animejs';
 import { Client } from 'chomex';
 import numeral from 'numeral';
 
-import { ERROR, TextColor } from './constants';
+import { ERROR, TextColor } from './common';
 
 const messageClient = new Client(chrome.runtime);
 

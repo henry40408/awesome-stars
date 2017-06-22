@@ -4,15 +4,16 @@ import { Router } from 'chomex';
 import ChromePromise from 'chrome-promise';
 import GitHub from 'github-api';
 import LRU from 'lru-cache';
-import moment from 'moment';
 import numeral from 'numeral';
 
-import { ERROR } from './constants';
+import { ERROR, log } from './common';
 
 if (process.env.NODE_ENV === 'development') {
   // eslint-disable-next-line global-require,import/no-extraneous-dependencies
   require('chromereload/devonly');
 }
+
+const AWESOME_LIST_URL = 'https://raw.githubusercontent.com/sindresorhus/awesome/master/readme.md';
 
 const BADGE_COLORS = {
   BRIGHT_BLUE: '#4a94fa',
@@ -39,13 +40,6 @@ const RateLimitError = CustomError('RateLimitError');
 const lruCache = LRU(LRU_OPTIONS);
 
 const chromePromise = new ChromePromise();
-
-function log(...args) {
-  if (process.env.NODE_ENV === 'development') {
-    // eslint-disable-next-line no-console
-    console.log.apply(null, [`[${moment().format()}]`, ...args]);
-  }
-}
 
 async function loadAccessTokenAsync() {
   const result = await chromePromise.storage.local.get(STORAGE_KEYS.ACCESS_TOKEN);
@@ -83,6 +77,12 @@ async function genGitHub() {
   return cachedGithubAdapter;
 }
 
+async function fetchAwesomeListAsync() {
+  const response = await fetch(AWESOME_LIST_URL);
+  const body = await response.text();
+  return body;
+}
+
 async function fetchRateLimitAsync() {
   const github = await genGitHub();
   const rateLimitWrapper = github.getRateLimit();
@@ -108,7 +108,8 @@ async function fetchRateLimitAsync() {
   }
 }
 
-async function fetchStarCountAsync(owner, name) {
+async function fetchStarCountAsync(owner, name, options = { shouldUpdateRateLimit: true }) {
+  const { shouldUpdateRateLimit } = options;
   const cacheKey = JSON.stringify({ name, owner });
   const cachedDetails = lruCache.get(cacheKey);
 
@@ -122,7 +123,9 @@ async function fetchStarCountAsync(owner, name) {
 
       log('github responds a JSON object', json);
 
-      fetchRateLimitAsync();
+      if (shouldUpdateRateLimit) {
+        fetchRateLimitAsync();
+      }
 
       return parseInt(json.stargazers_count, 10);
     } catch (e) {
@@ -181,13 +184,15 @@ registerRoute(messageRouter, '/access-token/set', (message) => {
   return setAccessTokenAsync(accessToken);
 });
 
+registerRoute(messageRouter, '/awesome-list/get', () => fetchAwesomeListAsync());
+
 registerRoute(messageRouter, '/rate-limit', () => fetchRateLimitAsync());
 
 registerRoute(messageRouter, '/stars/get', (message) => {
-  const { owner, name } = message;
+  const { owner, name, shouldUpdateRateLimit } = message;
 
   if (owner && name) {
-    return fetchStarCountAsync(owner, name);
+    return fetchStarCountAsync(owner, name, { shouldUpdateRateLimit });
   }
 
   return -1;
