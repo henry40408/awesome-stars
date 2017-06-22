@@ -49,7 +49,7 @@ function log(...args) {
 
 async function loadAccessTokenAsync() {
   const result = await chromePromise.storage.local.get(STORAGE_KEYS.ACCESS_TOKEN);
-  const accessToken = lodash.get(result, STORAGE_KEYS.ACCESS_TOKEN, null);
+  const accessToken = lodash.get(result, STORAGE_KEYS.ACCESS_TOKEN, '');
 
   log('storage responds with access token', accessToken);
 
