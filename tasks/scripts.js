@@ -1,6 +1,6 @@
 import gulp from 'gulp';
 import gulpif from 'gulp-if';
-import { log, colors} from 'gulp-util';
+import { log, colors } from 'gulp-util';
 import named from 'vinyl-named';
 import webpack from 'webpack';
 import gulpWebpack from 'webpack-stream';
@@ -13,13 +13,13 @@ const ENV = args.production ? 'production' : 'development';
 gulp.task('scripts', (cb) => {
   return gulp.src('app/scripts/*.js')
     .pipe(plumber({
-      errorHandler: function() {
+      errorHandler: function() {
         // Webpack will log the errors
       }
     }))
     .pipe(named())
     .pipe(gulpWebpack({
-      devtool: args.sourcemaps ? 'inline-source-map': null,
+      devtool: args.sourcemaps ? 'inline-source-map' : null,
       watch: args.watch,
       plugins: [
         new webpack.DefinePlugin({
@@ -33,20 +33,20 @@ gulp.task('scripts', (cb) => {
         new webpack.optimize.UglifyJsPlugin()
       ] : []),
       module: {
-        preLoaders: [{
-          test: /\.js$/,
-          loader: 'eslint-loader',
-          exclude: /node_modules/
-        }],
-        loaders: [{
-          test: /\.js$/,
-          loader: 'babel'
-        }]
-      },
-      eslint: {
-        configFile: '.eslintrc'
+        rules: [{
+            test: /\.js$/,
+            loader: 'eslint-loader',
+            exclude: /node_modules/,
+            enforce: 'pre'
+          },
+          {
+            test: /\.js$/,
+            loader: 'babel-loader',
+            enforce: 'post'
+          }
+        ]
       }
-    }, null, (err, stats) => {
+    }, webpack, (err, stats) => {
       log(`Finished '${colors.cyan('scripts')}'`, stats.toString({
         chunks: false,
         colors: true,

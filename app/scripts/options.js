@@ -4,7 +4,7 @@ import anime from 'animejs';
 import { Client } from 'chomex';
 import numeral from 'numeral';
 
-import { ERROR, TextColor } from './constants';
+import { ERROR, TextColor } from './common';
 
 const messageClient = new Client(chrome.runtime);
 
@@ -38,6 +38,7 @@ async function fetchRateLimitAsync(elems) {
   const { data } = await messageClient.message('/rate-limit');
 
   if (data === ERROR) {
+    $accessTokenSaveButton.attr('disabled', false);
     elems.PROGRESS_BAR_TEXT.css({ color: colorFromPercentage(0) }).text('N/A');
     return false;
   }

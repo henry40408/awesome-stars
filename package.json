@@ -53,21 +53,22 @@
     "gulp-zip": "3.x.x",
     "require-dir": "0.x.x",
     "vinyl-named": "1.x.x",
-    "webpack": "1.x.x",
+    "webpack": "2.x.x",
     "webpack-stream": "3.x.x",
     "yargs": "5.x.x"
   },
   "dependencies": {
     "animejs": "~2.0.2",
     "babel-runtime": "~6.23.0",
+    "bluebird": "~3.5.0",
     "chomex": "~1.0.5",
     "chrome-promise": "~2.0.3",
-    "custom-error": "^0.2.1",
+    "custom-error": "~0.2.1",
+    "date-fns": "~2.0.0-alpha.1",
     "github-api": "~3.0.0",
     "jquery": "~3.2.1",
     "lodash": "~4.17.4",
     "lru-cache": "~4.0.2",
-    "moment": "~2.18.1",
     "numeral": "~2.0.6",
     "parse-github-url": "~1.0.0"
   }
