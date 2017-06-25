@@ -8,7 +8,7 @@
     "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
   },
   "appDescription": {
-    "message": "Peek stars of repository on awesome list.",
+    "message": "Awesome Stars is a chrome extension that shows you stars of repository on awesome list.",
     "description": "The description of the application"
   },
   "browserActionTitle": {
