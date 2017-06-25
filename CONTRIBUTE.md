@@ -1,6 +1,6 @@
 # Awesome Stars
 
-Peek stars of repository on awesome list.
+Awesome Stars is a chrome extension that shows you stars of repository on awesome list.
 
 ## Dependencies
 
