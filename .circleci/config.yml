@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/awesome-stars
+    docker:
+      - image: circleci/node:6.10.3
+    steps:
+      - checkout
+      - run:
+          name: upgrade-npm
+          command: 'sudo npm install -g npm@latest'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install-dependencies
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: build
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+              gulp build --production --vendor=chrome
+              gulp pack --vendor=chrome
+            fi
+      - store_artifacts:
+          path: packages
+          prefix: packages
