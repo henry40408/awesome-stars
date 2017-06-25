@@ -1,4 +1,6 @@
-# 2.0
+# CHANGELOG
+
+## 2.0
 
 - Most importantly, use `chrome.local` instead of `chrome.sync` to store access token, so **if you upgrade from 1.x, I strongly suggest you regenerate the access token for this extension**.
 - Check whether repository is listed on [awesome](https://awesome.re/) repository.
