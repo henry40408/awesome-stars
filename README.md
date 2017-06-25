@@ -1,82 +1,40 @@
-# Awesome Stars
-
-Peek stars of repository on awesome list.
+![Awesome Stars](assets/readme-banner.png)
 
 ## Installation
 
-	$ npm install
+[![Available on Chrome Web Store](assets/available-on-chrome-web-store.png)](https://chrome.google.com/webstore/detail/awesome-stars/lcokkcbdmicofdahlooopcpinogephfb)
 
-## Usage
+## How to Use
 
-Run `$ gulp --watch` and load the `dist`-directory into chrome.
+1. [Create a access token](https://github.com/settings/tokens/new?description=Awesome%20Stars) at GitHub settings. **DO NOT select any scopes**!
+    - For more information, checkout [GitHub documentation](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token).
+2. Click Awesome Stars icon to open Options page. It locates near the icon to open Chrome menu.
 
-## Entry-files (bundles)
+![Awesome Stars Icon](assets/awesome-stars-icon.png)
 
-There are two kinds of entry-files that create bundles.
+3. Paste access token into the field, which has placeholder `Paste access token here`. Click `Save`.
+4. That's it!
 
-1. All js-files in the root of the `./app/scripts` directory
-2. All css-,scss- and less-files in the root of the `./app/styles` directory
+## Changes from 1.x to 2.x
 
-## Tasks
+- Most importantly, use `chrome.local` instead of `chrome.sync` to store access token, so if you upgrade from 1.x, I strongly suggest you regenerate the access token for this extension.
+- Check whether repository is listed on [awesome](https://awesome.re/) repository.
+- Staring repositories in different colors is built-in now.
+- Redesign UI, thanks to @sandokaishy.
+- Recreate the project with [generator-chrome-extension-kickstart](https://github.com/HaNdTriX/generator-chrome-extension-kickstart) for Webpack 2 and Babel 6.
 
-### Build
+## Thanks to Contributors
 
-```
-$ gulp
-```
+> sorted in alphabetical order
 
-Option | Description
----|---
-`--watch` | Starts a livereload server and watches all assets. <br>To reload the extension on change include `livereload.js` in your bundle.
-`--production` | Minifies all assets
-`--verbose` | Log additional data to the console.
-`--vendor` | Compile the extension for different vendors (chrome, firefox, opera)  Default: chrome
-`--sourcemaps` | Force the creation of sourcemaps. Default: !production
+- Peter @sandokaishy
+- Peter Dave Hello @PeterDaveHello
+- Tonypai @tpai
 
-### Development
+## How to Contribute
 
-```
-$ gulp --watch --vendor=chrome
-```
+Please checkout [contribute documentation](CONTRIBUTE.md).
 
-### Pack
+## License
 
-Zips your `dist` directory and saves it in the `packages` directory.
-
-```
-$ gulp pack --vendor=chrome
-```
-
-### Version
-
-Increments version number of `manifest.json` and `package.json`,
-commits the change to git and adds a git tag.
-
-```
-$ gulp patch   // => 0.0.X
-```
-
-or
-
-```shell
-$ gulp feature // => 0.X.0
-```
-
-or
-
-```shell
-$ gulp release // => X.0.0
-```
-
-
-## Globals
-
-The build tool also defines a variable named `process.env.NODE_ENV` in your scripts. It will be set to `development` unless you use the `--production` option.
-
-**Example:** `./app/background.js`
-
-```javascript
-if(process.env.NODE_ENV === 'development'){
-  console.log('We are in development mode!');
-}
-```
+MIT

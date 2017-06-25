@@ -82,8 +82,8 @@ jQuery(document).ready(() => {
   const ELEMENTS = {
     ACCESS_TOKEN_FIELD: jQuery('#access-token-field'),
     ACCESS_TOKEN_SAVE_BUTTON: jQuery('#access-token-save-button'),
-    PROGRESS_BAR_FILLED: jQuery('.progress-bar-filled'),
-    PROGRESS_BAR_TEXT: jQuery('.progress-bar-text'),
+    PROGRESS_BAR_FILLED: jQuery('#progress-bar-filled'),
+    PROGRESS_BAR_TEXT: jQuery('#progress-bar-text'),
   };
 
   ELEMENTS.ACCESS_TOKEN_SAVE_BUTTON.click(() => sendAccessTokenAsync(ELEMENTS));
