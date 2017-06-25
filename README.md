@@ -1,4 +1,4 @@
-![Awesome Stars](assets/readme-banner.png)
+![Awesome Stars](promo/Promo-Image-Large_920x680.png)
 
 ## Installation
 
@@ -19,13 +19,19 @@
 4. Click `Save`.
 5. That's it!
 
-## Changes from 1.x to 2.x
+## Screenshots
 
-- Most importantly, use `chrome.local` instead of `chrome.sync` to store access token, so if you upgrade from 1.x, I strongly suggest you regenerate the access token for this extension.
-- Check whether repository is listed on [awesome](https://awesome.re/) repository.
-- Staring repositories in different colors is built-in now.
-- Redesign UI, thanks to [@sandokaishy](https://github.com/sandokaishy).
-- Recreate the project with [generator-chrome-extension-kickstart](https://github.com/HaNdTriX/generator-chrome-extension-kickstart) for Webpack 2 and Babel 6.
+### Awesome Node.js
+
+![Awesome Node.js](assets/nodejs.png)
+
+### Awesome PHP
+
+![Awesome PHP](assets/php.png)
+
+### Awesome Swift
+
+![Awesome Swift](assets/swift.png)
 
 ## Thanks to Contributors
 
