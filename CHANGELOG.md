@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.0.1
+
+- Unify application description to `Awesome Stars is a chrome extension that shows you stars of repository on awesome list.`
+
 ## 2.0
 
 - Most importantly, use `chrome.local` instead of `chrome.sync` to store access token, so **if you upgrade from 1.x, I strongly suggest you regenerate the access token for this extension**.
