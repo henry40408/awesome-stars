@@ -7,8 +7,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: upgrade-npm
-          command: 'sudo npm install -g npm@latest'
+          name: install-gulp
+          command: sudo npm install gulp --global
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
@@ -21,7 +21,7 @@ jobs:
       - run:
           name: build
           command: |
-            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+            if [ "${CIRCLE_BRANCH}" == "develop" ] || [ "${CIRCLE_BRANCH}" == "master" ]; then
               gulp build --production --vendor=chrome
               gulp pack --vendor=chrome
             fi
