@@ -1,75 +1,50 @@
-# Awesome Stars
-
-Peek stars of repository on awesome list.
+![Awesome Stars](promo/Promo-Image-Large_920x680.png)
 
 ## Installation
 
-	$ npm install
+[![Available on Chrome Web Store](assets/available-on-chrome-web-store.png)](https://chrome.google.com/webstore/detail/awesome-stars/lcokkcbdmicofdahlooopcpinogephfb)
 
-## Usage
+## How to Use
 
-Run `$ gulp --watch` and load the `dist`-directory into chrome.
+1. [Create a access token](https://github.com/settings/tokens/new?description=Awesome%20Stars) at GitHub settings. **DO NOT select any scopes**!
+    - For more information, checkout [GitHub documentation](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token).
+2. Click Awesome Stars icon to open Options page. It locates near the icon to open Chrome menu.
 
-## Entryfiles (bundles)
+![Awesome Stars Icon](assets/awesome-stars-icon.png)
 
-There are two kinds of entryfiles that create bundles.
+3. Paste access token into the field, which has placeholder `Paste access token here`.
 
-1. All js-files in the root of the `./app/scripts` directory
-2. All css-,scss- and less-files in the root of the `./app/styles` directory
+![Awesome Options Page](assets/field-and-progress-bar.png)
 
-## Tasks
+4. Click `Save`.
+5. That's it!
 
-### Build
+## Screenshots
 
-    $ gulp
+### Awesome Node.js
 
+![Awesome Node.js](assets/nodejs.png)
 
-| Option         | Description                                                                                                                                           |
-|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `--watch`      | Starts a livereload server and watches all assets. <br>To reload the extension on change include `livereload.js` in your bundle.                      |
-| `--production` | Minifies all assets                                                                                                                                   |
-| `--verbose`    | Log additional data to the console.                                                                                                                   |
-| `--vendor`     | Compile the extension for different vendors (chrome, firefox, opera)  Default: chrome                                                                 |
-| `--sourcemaps` | Force the creation of sourcemaps. Default: !production                                                                                                |
+### Awesome PHP
 
+![Awesome PHP](assets/php.png)
 
-### pack
+### Awesome Swift
 
-Zips your `dist` directory and saves it in the `packages` directory.
+![Awesome Swift](assets/swift.png)
 
-    $ gulp pack --vendor=firefox
+## Thanks to Contributors
 
-### Version
+> sorted in alphabetical order
 
-Increments version number of `manifest.json` and `package.json`,
-commits the change to git and adds a git tag.
+- Peter [@sandokaishy](https://github.com/sandokaishy)
+- Peter Dave Hello [@PeterDaveHello](https://github.com/PeterDaveHello)
+- Tonypai [@tpai](https://github.com/tpai)
 
+## How to Contribute
 
-    $ gulp patch      // => 0.0.X
+Please checkout [contribute documentation](CONTRIBUTE.md).
 
-or
+## License
 
-    $ gulp feature    // => 0.X.0
-
-or
-
-    $ gulp release    // => X.0.0
-
-
-## Globals
-
-The build tool also defines a variable named `ENV` in your scripts. It will be set to `development` unless you use the `--production` option.
-
-
-**Example:** `./app/background.js`
-
-	if(ENV === 'development'){
-		console.log('We are in development mode!');
-	}
-
-
-
-
-
-
-
+MIT

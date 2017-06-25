@@ -40,14 +40,14 @@
           <h2>Setup access token</h2>
           <div class="row">
             <div class="nine columns">
-              <input type="text" class="access-token-field" id="access-token-field" />
+              <input id="access-token-field" type="text" class="access-token-field" placeholder="Paste access token here" />
             </div>
             <div class="three columns access-token-save-button-wrapper">
-              <button class="access-token-save-button" id="access-token-save-button">SAVE</button>
+              <button id="access-token-save-button" class="access-token-save-button">SAVE</button>
             </div>
             <div class="twelve columns">
               <div class="access-token-field-help">
-                <div><a href="https://github.com/settings/tokens/new?description=Awesome%20stars" target="_blank">Get an access token</a> from <a href="https://github.com/settings/tokens" target="_blank">GitHub settings page</a></div>
+                <div><a href="https://github.com/settings/tokens/new?description=Awesome%20Stars" target="_blank">Get an access token</a> from <a href="https://github.com/settings/tokens" target="_blank">GitHub settings page</a></div>
                 <div class="alert-text">Please DO NOT select any scopes!</div>
               </div>
             </div>
@@ -57,9 +57,9 @@
           <h2>Rate limit</h2>
           <div class="row">
             <div class="nine columns progress-bar">
-              <div class="progress-bar-filled">&nbsp;</div>
+              <div id="progress-bar-filled" class="progress-bar-filled">&nbsp;</div>
             </div>
-            <div class="three columns progress-bar-text">--</div>
+            <div id="progress-bar-text" class="three columns progress-bar-text">--</div>
             <div class="twelve columns progress-bar-help small-text">
               For requests using Basic Authentication or OAuth (including access token), you can make up to 5,000 requests per hour.
             </div>
