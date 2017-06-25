@@ -1,41 +1,49 @@
-# Awesome stars
-
-Peek stars of repository on awesome list.
+![Awesome Stars](promo/Promo-Image-Large_920x680.png)
 
 ## Installation
 
-[![available in the chrome website store](chrome-store-available.png)](https://chrome.google.com/webstore/detail/awesome-stars/lcokkcbdmicofdahlooopcpinogephfb?hl=zh-TW&gl=TW)
+[![Available on Chrome Web Store](assets/available-on-chrome-web-store.png)](https://chrome.google.com/webstore/detail/awesome-stars/lcokkcbdmicofdahlooopcpinogephfb)
 
-## How to use
+## How to Use
 
-- `English` [HOW TO USE](docs/HOW_TO_USE.md)
-- `繁體中文` [Awesome stars-Github Awesome系列好幫手](https://softnshare.wordpress.com/2016/02/28/awesome-stars-github-awesome%E7%B3%BB%E5%88%97%E5%A5%BD%E5%B9%AB%E6%89%8B/) by [SOFT & SHARE](https://softnshare.wordpress.com/)
+1. [Create a access token](https://github.com/settings/tokens/new?description=Awesome%20Stars) at GitHub settings. **DO NOT select any scopes**!
+    - For more information, checkout [GitHub documentation](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token).
+2. Click Awesome Stars icon to open Options page. It locates near the icon to open Chrome menu.
+
+![Awesome Stars Icon](assets/awesome-stars-icon.png)
+
+3. Paste access token into the field, which has placeholder `Paste access token here`.
+
+![Awesome Options Page](assets/field-and-progress-bar.png)
+
+4. Click `Save`.
+5. That's it!
 
 ## Screenshots
 
-### Node.js
+### Awesome Node.js
 
-[https://github.com/sindresorhus/awesome-nodejs](https://github.com/sindresorhus/awesome-nodejs)
+![Awesome Node.js](assets/nodejs.png)
 
-![Node.js screenshot](screenshots/nodejs.png)
+### Awesome PHP
 
-### PHP
+![Awesome PHP](assets/php.png)
 
-[https://github.com/ziadoz/awesome-php](https://github.com/ziadoz/awesome-php)
+### Awesome Swift
 
-![PHP screenshot](screenshots/php.png)
+![Awesome Swift](assets/swift.png)
 
-### Swift
+## Thanks to Contributors
 
-[https://github.com/matteocrippa/awesome-swift](https://github.com/matteocrippa/awesome-swift)
+> sorted in alphabetical order
 
-![Swift screenshot](screenshots/swift.png)
+- Peter [@sandokaishy](https://github.com/sandokaishy)
+- Peter Dave Hello [@PeterDaveHello](https://github.com/PeterDaveHello)
+- Tonypai [@tpai](https://github.com/tpai)
 
-## Todo
+## How to Contribute
 
-- [x] English version of How to use
-- [x] Ensure cache works on GitHub API  
-- [ ] I18n
+Please checkout [contribute documentation](CONTRIBUTE.md).
 
 ## License
 

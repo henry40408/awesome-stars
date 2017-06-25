@@ -1,2 +1,8 @@
-awesome-stars.crx
-awesome-stars.pem
+
+.DS_Store
+
+node_modules
+npm-debug.log
+
+dist/
+packages/
