@@ -14,6 +14,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const AWESOME_LIST_URL = 'https://raw.githubusercontent.com/sindresorhus/awesome/master/readme.md';
+const CHANGELOG_URL = 'https://github.com/henry40408/awesome-stars/blob/master/CHANGELOG.md';
 
 const BADGE_COLORS = {
   BRIGHT_BLUE: '#4a94fa',
@@ -163,6 +164,14 @@ async function setAccessTokenAsync(accessToken) {
   // NOTE fire and forget route returns nothing
   return true;
 }
+
+chrome.runtime.onInstalled.addListener(() => {
+  log(`open changelog ${CHANGELOG_URL}`);
+  if (process.env.NODE_ENV !== 'development') {
+    return window.open(CHANGELOG_URL);
+  }
+  return true;
+});
 
 chrome.browserAction.onClicked.addListener(() => {
   if (chrome.runtime.openOptionsPage) {
