@@ -2,7 +2,7 @@
 
 ## 2.0.2
 
-- Add [`THANK_YOU`](THANK_YOU.md) file and automatically it after user installs or upgrades the extension.
+- Add [`THANK_YOU`](THANK_YOU.md) file and automatically open it after user installs or upgrades the extension.
 
 ## 2.0.1
 
