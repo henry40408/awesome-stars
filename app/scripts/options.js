@@ -4,6 +4,7 @@ import anime from 'animejs';
 import { Client } from 'chomex';
 import numeral from 'numeral';
 
+import { version } from '../../package.json';
 import { ERROR, TextColor } from './common';
 
 const messageClient = new Client(chrome.runtime);
@@ -84,9 +85,13 @@ jQuery(document).ready(() => {
     ACCESS_TOKEN_SAVE_BUTTON: jQuery('#access-token-save-button'),
     PROGRESS_BAR_FILLED: jQuery('#progress-bar-filled'),
     PROGRESS_BAR_TEXT: jQuery('#progress-bar-text'),
+    VERSION: jQuery('#version'),
+    YEAR: jQuery('#year'),
   };
 
   ELEMENTS.ACCESS_TOKEN_SAVE_BUTTON.click(() => sendAccessTokenAsync(ELEMENTS));
+  ELEMENTS.VERSION.text(version);
+  ELEMENTS.YEAR.text((new Date()).getFullYear());
 
   fetchAccessTokenAsync(ELEMENTS);
   fetchRateLimitAsync(ELEMENTS);
