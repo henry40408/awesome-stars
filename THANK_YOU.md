@@ -8,4 +8,4 @@ Awesome Stars has been successfully installed or upgraded to latest version.
 
 ## Breaking Changes from 1.x
 
-If you upgrade from 1.x, please **regenerate the access token** and follow the instructions in **How to Use** section in [README](README.md).
+If you upgrade from 1.x, please **regenerate the access token** and follow the instructions in [How to Use](README.md#how-to-use) section.
