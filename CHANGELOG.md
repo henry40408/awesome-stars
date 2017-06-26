@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.0.2
+
+- Add [`THANK_YOU`](THANK_YOU.md) file and automatically it after user installs or upgrades the extension.
+
 ## 2.0.1
 
 - Unify application description to `Awesome Stars is a chrome extension that shows you stars of repository on awesome list.`
