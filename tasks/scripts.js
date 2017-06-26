@@ -10,7 +10,7 @@ import args from './lib/args';
 
 const ENV = args.production ? 'production' : 'development';
 
-gulp.task('scripts', () => gulp.src('app/scripts/*.js')
+gulp.task('scripts', () => gulp.src('app/scripts/*.+(js|jsx)')
   .pipe(plumber({ errorHandler: function() { /* Webpack will log the errors */ } }))
   .pipe(named())
   .pipe(gulpWebpack({
@@ -25,8 +25,8 @@ gulp.task('scripts', () => gulp.src('app/scripts/*.js')
     ].concat(args.production ? [new webpack.optimize.UglifyJsPlugin()] : []),
     module: {
       rules: [
-        { test: /\.js$/, loader: 'eslint-loader', exclude: /node_modules/, enforce: 'pre' },
-        { test: /\.js$/, loader: 'babel-loader', enforce: 'post' }
+        { test: /\.jsx?$/, loader: 'eslint-loader', exclude: /node_modules/, enforce: 'pre' },
+        { test: /\.jsx?$/, loader: 'babel-loader', enforce: 'post' }
       ],
     },
   }, webpack, (err, stats) => {
