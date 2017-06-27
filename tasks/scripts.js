@@ -16,6 +16,7 @@ gulp.task('scripts', () => gulp.src('app/scripts/*.+(js|jsx)')
   .pipe(gulpWebpack({
     devtool: args.sourcemaps ? 'inline-source-map' : false,
     watch: args.watch,
+    resolve: { extensions: ['.js', '.jsx'] },
     plugins: [
       new webpack.DefinePlugin({
         'process.env': { NODE_ENV: JSON.stringify(ENV) },
