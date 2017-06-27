@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { version } from '../../../../package.json';
 import { BASE, rem } from '../../services/scale';
+import LeftPanel from './LeftPanel';
 
 const SFooter = styled.div`
   font-family: Roboto, sans-serif;
@@ -65,7 +66,7 @@ const OptionPage = () => (
   <SPage column>
     <Box><Header /></Box>
     <Flex>
-      <Box w={1 / 2}>{'Left'}</Box>
+      <Box w={1 / 2}><LeftPanel /></Box>
       <Box w={1 / 2}>{'Right'}</Box>
     </Flex>
     <Box><Footer /></Box>
