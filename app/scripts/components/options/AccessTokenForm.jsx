@@ -17,7 +17,7 @@ const SFieldAddon = styled.div`
 `;
 
 const SForm = styled(Flex) `
-  margin: 0 0 ${rem(20)};
+  margin: 0 0 ${rem(8)};
 `;
 
 const SSaveButton = styled.input`

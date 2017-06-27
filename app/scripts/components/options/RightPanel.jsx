@@ -4,9 +4,10 @@ import styled from 'styled-components';
 import { SHeader, SText } from '../common';
 import { rem } from '../../services/scale';
 import AccessTokenForm from './AccessTokenForm';
+import RateLimit from './RateLimit';
 
 const SSection = styled.div`
-  margin: 0 0 ${rem(18)};
+  margin: 0 0 ${rem(32)};
 `;
 
 const SSmallText = SText.extend`
@@ -15,6 +16,8 @@ const SSmallText = SText.extend`
 
 const SSubheader = SHeader.extend`
   font-size: ${rem(16)};
+  margin: 0 0 ${rem(8)};
+  text-transform: none;
 `;
 
 const RightPanel = () => (
@@ -27,6 +30,7 @@ const RightPanel = () => (
     </SSection>
     <SSection>
       <SHeader>{'Rate Limit'}</SHeader>
+      <RateLimit />
       <SSubheader>{'Why do You Need an Access Token?'}</SSubheader>
       <SSmallText>{'According to GitHub documentation. For unauthenticated requests, the rate limit allows you to make up to 60 requests per hour. Unauthenticated requests are associated with your IP address, and not the user making requests. Awesome Stars can only works properly with an access token.'}</SSmallText>
     </SSection>
