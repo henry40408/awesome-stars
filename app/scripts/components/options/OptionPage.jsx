@@ -3,9 +3,13 @@ import { Flex, Box } from 'reflexbox';
 import styled from 'styled-components';
 
 import { version } from '../../../../package.json';
-import { BASE, rem } from '../../services/scale';
+import { rem } from '../../services/scale';
 import LeftPanel from './LeftPanel';
 import RightPanel from './RightPanel';
+
+const SBody = styled(Flex) `
+  margin: 0 0 ${rem(32)};
+`;
 
 const SFooter = styled.div`
   font-family: Roboto, sans-serif;
@@ -15,7 +19,7 @@ const SFooter = styled.div`
 `;
 
 const SHeader = styled.div`
-  margin: ${rem(55)} 0 ${rem(74)};
+  margin: ${rem(48)} 0 ${rem(32)};
   text-align: center;
 `;
 
@@ -64,10 +68,10 @@ const Footer = () => {
 const OptionPage = () => (
   <SPage column>
     <Box><Header /></Box>
-    <Flex>
+    <SBody>
       <Box w={1 / 2}><LeftPanel /></Box>
       <Box w={1 / 2}><RightPanel /></Box>
-    </Flex>
+    </SBody>
     <Box><Footer /></Box>
   </SPage>
 );
