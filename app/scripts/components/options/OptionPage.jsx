@@ -11,7 +11,6 @@ const SFooter = styled.div`
   font-family: Roboto, sans-serif;
   font-size: ${rem(12)};
   font-weight: 300;
-  line-height: ${16 / 12};
   text-align: center;
 `;
 
@@ -34,7 +33,6 @@ const SPage = styled(Flex) `
 const SPageSubtitle = styled.div`
   font-family: Roboto, sans-serif;
   font-weight: 300;
-  line-height: ${19 / BASE};
 `;
 
 const SPageTitle = styled.h1`
