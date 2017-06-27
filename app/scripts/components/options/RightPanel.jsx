@@ -1,9 +1,12 @@
 import React from 'react';
 
+import AccessTokenForm from './AccessTokenForm';
+
 const RightPanel = () => (
   <div>
     <div>
       <h2>{'Setup Access Token'}</h2>
+      <AccessTokenForm />
       <div>{'Get an access token from GitHub settings page'}</div>
       <div>{'Please DO NOT select any scopes!'}</div>
     </div>
