@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.1.0
+
+- Rewrite almost everything with React and the performance is satisified.
+- Replace `THANK_YOU.md` with fancier Thank You page.
+
 ## 2.0.2
 
 - Add [`THANK_YOU`](THANK_YOU.md) file and automatically open it after user installs or upgrades the extension.
