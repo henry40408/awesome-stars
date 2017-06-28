@@ -4,8 +4,8 @@ import chunkize from 'lodash/chunk';
 import concat from 'lodash/concat';
 import each from 'lodash/each';
 import includes from 'lodash/includes';
+import isNull from 'lodash/isNull';
 import reduce from 'lodash/reduce';
-import take from 'lodash/take';
 import values from 'lodash/values';
 import numeral from 'numeral';
 import ParseGithubURL from 'parse-github-url';
@@ -25,12 +25,12 @@ const COLORS = {
   YELLOW: 'yellow',
 };
 
-const StarIcon = styled.img`
+const SStarIcon = styled.img`
   background-color: transparent !important;
   margin: 0 .25rem 0 0;
 `;
 
-const StarTag = styled.span`
+const SStarTag = styled.span`
   background-color: #3F3F3F;
   border-radius: .78125rem;
   font-size: .75rem;
@@ -82,7 +82,7 @@ class Star extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { count: 0 };
+    this.state = { count: null };
   }
 
   componentWillMount() {
@@ -97,21 +97,21 @@ class Star extends React.Component {
 
     if (count === ERROR) {
       return (
-        <StarTag>
-          <StarIcon src={Star.starPathFromColor(COLORS.BLUE)} />
-          <span style={{ color: TextColor.BLUE }}>{'...'}</span>
-        </StarTag>
+        <SStarTag>
+          <SStarIcon src={Star.starPathFromColor(COLORS.BLUE)} />
+          <span style={{ color: TextColor.BLUE }}>{'N/A'}</span>
+        </SStarTag>
       );
     }
 
     const { star, text } = Star.colorsFromStarCount(count);
     const starIconPath = Star.starPathFromColor(star);
-    const countText = numeral(count).format('0,0');
+    const countText = isNull(count) ? '...' : numeral(count).format('0,0');
     return (
-      <StarTag>
-        <StarIcon src={starIconPath} />
+      <SStarTag>
+        <SStarIcon src={starIconPath} />
         <span style={{ color: text }}>{countText}</span>
-      </StarTag>
+      </SStarTag>
     );
   }
 }
@@ -147,10 +147,7 @@ function initAwesomeStars() {
     return parsed ? concat(acc, { link, parsed }) : acc;
   }, []);
 
-  const limitedLinksWithParsed = process.env.NODE_ENV === 'development' ?
-    take(linksWithParsed, CHUNK_SIZE) : linksWithParsed;
-
-  const chunks = chunkize(limitedLinksWithParsed, CHUNK_SIZE);
+  const chunks = chunkize(linksWithParsed, CHUNK_SIZE);
   map(chunks, chunk => iterateChunkAsync(chunk).then(() =>
     messageClient.message('/rate-limit')));
 }
