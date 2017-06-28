@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.1.1
+
+- Fix fallback path for option page in background.
+
 ## 2.1.0
 
 - Rewrite almost everything with React and the performance is satisified.
