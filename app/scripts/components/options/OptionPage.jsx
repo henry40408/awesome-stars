@@ -8,18 +8,19 @@ import LeftPanel from './LeftPanel';
 import RightPanel from './RightPanel';
 
 const SBody = styled(Flex) `
-  margin: 0 0 ${rem(32)};
+  margin: 0 0 4vh;
 `;
 
 const SFooter = styled.div`
   font-family: Roboto, sans-serif;
   font-size: ${rem(12)};
   font-weight: 300;
+  margin: 0 0 8vh;
   text-align: center;
 `;
 
 const SHeader = styled.div`
-  margin: ${rem(48)} 0 ${rem(32)};
+  margin: 6vh 0;
   text-align: center;
 `;
 
