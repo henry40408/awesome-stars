@@ -174,7 +174,7 @@ chrome.browserAction.onClicked.addListener(() => {
     return chrome.runtime.openOptionsPage();
   }
   // Reasonable fallback.
-  return window.open(chrome.runtime.getURL('options.html'));
+  return window.open(chrome.runtime.getURL('pages/options.html'));
 });
 
 fetchRateLimitAsync();
