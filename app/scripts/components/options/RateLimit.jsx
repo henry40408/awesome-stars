@@ -1,4 +1,5 @@
 import numeral from 'numeral';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Box, Flex } from 'reflexbox';
 import styled, { keyframes } from 'styled-components';
@@ -73,8 +74,8 @@ const RateLimit = ({ remaining, limit }) => {
 };
 
 RateLimit.propTypes = {
-  remaining: React.PropTypes.number,
-  limit: React.PropTypes.number,
+  remaining: PropTypes.number,
+  limit: PropTypes.number,
 };
 
 RateLimit.defaultProps = {

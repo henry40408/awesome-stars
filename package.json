@@ -73,6 +73,7 @@
     "lru-cache": "~4.0.2",
     "numeral": "~2.0.6",
     "parse-github-url": "~1.0.0",
+    "prop-types": "^15.5.10",
     "react": "~15.6.1",
     "react-dom": "~15.6.1",
     "reflexbox": "~3.0.0-0",

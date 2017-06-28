@@ -9,6 +9,7 @@ import take from 'lodash/take';
 import values from 'lodash/values';
 import numeral from 'numeral';
 import ParseGithubURL from 'parse-github-url';
+import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
@@ -51,8 +52,8 @@ function parseGithubURL(url) {
 
 class Star extends React.Component {
   static propTypes = {
-    name: React.PropTypes.string,
-    owner: React.PropTypes.string,
+    name: PropTypes.string,
+    owner: PropTypes.string,
   }
 
   static defaultProps = {
