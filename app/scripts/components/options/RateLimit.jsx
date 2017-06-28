@@ -57,8 +57,8 @@ const SNumber = styled(Box) `
 `;
 
 const RateLimit = ({ remaining, limit }) => {
-  const percentage = limit !== 0 ? (remaining / limit) * 100 : limit;
-  const number = limit !== 0 ? numeral(remaining).format('0,0') : 'N/A';
+  const percentage = limit > 0 ? (remaining / limit) * 100 : 0;
+  const number = limit > 0 ? numeral(remaining).format('0,0') : 'N/A';
   return (
     <SRateLimit>
       <SProgressBar.Container>
