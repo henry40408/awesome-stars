@@ -1,3 +1,4 @@
+import numeral from 'numeral';
 import React from 'react';
 import { Box, Flex } from 'reflexbox';
 import styled, { keyframes } from 'styled-components';
@@ -41,7 +42,7 @@ const filling = props => keyframes`
 `;
 
 SProgressBar.Fill = styled.div`
-  animation: 1.5s ease 1s 1 normal forwards running ${props => filling(props)};
+  animation: .75s ease .75s 1 normal forwards running ${props => filling(props)};
   height: 100%;
 `;
 
@@ -53,18 +54,32 @@ const SNumber = styled(Box) `
   font-size: ${rem(24)};
 `;
 
-const RateLimit = () => (
-  <SRateLimit>
-    <SProgressBar.Container>
-      <Box w={4 / 5}>
-        <SProgressBar>
-          <SProgressBar.Fill percentage={0} />
-        </SProgressBar>
-      </Box>
-      <SNumber flex w={1 / 5} align="center" justify="center">{'N/A'}</SNumber>
-    </SProgressBar.Container>
-    <SHelp>{'For requests using Basic Authentication or OAuth (including access token), you can make up to 5,000 requests per hour.'}</SHelp>
-  </SRateLimit>
-);
+const RateLimit = ({ remaining, limit }) => {
+  const percentage = limit !== 0 ? (remaining / limit) * 100 : limit;
+  const number = limit !== 0 ? numeral(remaining).format('0,0') : 'N/A';
+  return (
+    <SRateLimit>
+      <SProgressBar.Container>
+        <Box w={4 / 5}>
+          <SProgressBar>
+            <SProgressBar.Fill percentage={percentage} />
+          </SProgressBar>
+        </Box>
+        <SNumber flex w={1 / 5} align="center" justify="center">{number}</SNumber>
+      </SProgressBar.Container>
+      <SHelp>{'For requests using Basic Authentication or OAuth (including access token), you can make up to 5,000 requests per hour.'}</SHelp>
+    </SRateLimit>
+  );
+};
+
+RateLimit.propTypes = {
+  remaining: React.PropTypes.number,
+  limit: React.PropTypes.number,
+};
+
+RateLimit.defaultProps = {
+  remaining: 0,
+  limit: 0,
+};
 
 export default RateLimit;
