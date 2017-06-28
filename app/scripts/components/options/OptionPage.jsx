@@ -4,6 +4,8 @@ import styled from 'styled-components';
 
 import { version } from '../../../../package.json';
 import { rem } from '../../services/scale';
+
+import { Header } from '../common';
 import LeftPanel from './LeftPanel';
 import RightPanel from './RightPanel';
 
@@ -19,42 +21,10 @@ const SFooter = styled.div`
   text-align: center;
 `;
 
-const SHeader = styled.div`
-  margin: 6vh 0;
-  text-align: center;
-`;
-
-const SLogo = styled.img`
-  height: ${rem(70)};
-  margin: 0 0 ${rem(10)};
-  width: ${rem(72)};
-`;
-
 const SPage = styled(Flex) `
   margin: 0 auto;
   width: ${rem(960)};
 `;
-
-const SPageSubtitle = styled.div`
-  font-family: Roboto, sans-serif;
-  font-weight: 300;
-`;
-
-const SPageTitle = styled.h1`
-  font-family: 'Roboto Slab', sans-serif;
-  font-size: ${rem(32)};
-  letter-spacing: ${rem(3.9)};
-  margin: 0 0 ${rem(12)};
-  text-transform: uppercase;
-`;
-
-const Header = () => (
-  <SHeader>
-    <SLogo src={'../../../images/options-logo.png'} alt="Awesome Stars Logo" />
-    <SPageTitle>{'Awesome Stars'}</SPageTitle>
-    <SPageSubtitle>{'Awesome Stars is a chrome extension that shows you stars of repository on awesome list.'}</SPageSubtitle>
-  </SHeader>
-);
 
 const Footer = () => {
   const year = new Date().getFullYear();

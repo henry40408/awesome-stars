@@ -166,7 +166,7 @@ chrome.runtime.onInstalled.addListener(() => {
   if (process.env.NODE_ENV !== 'development') {
     return window.open(THANK_YOU_URL);
   }
-  return true;
+  return chrome.runtime.openOptionsPage();
 });
 
 chrome.browserAction.onClicked.addListener(() => {
