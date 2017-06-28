@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { ERROR } from '../../common';
-import { SSectionHeader, SText } from '../common';
+import { Link, SSectionHeader, SText } from '../common';
 import client from '../../services/client';
 import { rem } from '../../services/scale';
 
@@ -93,14 +93,22 @@ class RightPanel extends React.Component {
             submitAccessTokenAsync={this.submitAccessTokenAsync}
             updateAccessToken={this.updateAccessToken}
           />
-          <SText>{'Get an access token from GitHub settings page'}</SText>
-          <SText>{'Please DO NOT select any scopes!'}</SText>
+          <SText>
+            <Link href="https://github.com/settings/tokens/new?description=Awesome%20Stars">{'Get an access token'}</Link>
+            {' from '}
+            <Link href="https://github.com/settings">{'GitHub settings page'}</Link>
+          </SText>
+          <SText alert>{'Please DO NOT select any scopes!'}</SText>
         </SSection>
         <SSection>
           <SSectionHeader>{'Rate Limit'}</SSectionHeader>
           <RateLimit limit={limit} remaining={remaining} />
           <SSubheader>{'Why do You Need an Access Token?'}</SSubheader>
-          <SSmallText>{'According to GitHub documentation. For unauthenticated requests, the rate limit allows you to make up to 60 requests per hour. Unauthenticated requests are associated with your IP address, and not the user making requests. Awesome Stars can only works properly with an access token.'}</SSmallText>
+          <SSmallText>
+            {'According to '}
+            <Link href="https://developer.github.com/v3/#rate-limiting">{'GitHub documentation'}</Link>
+            {'. For unauthenticated requests, the rate limit allows you to make up to 60 requests per hour. Unauthenticated requests are associated with your IP address, and not the user making requests. Awesome Stars can only works properly with an access token.'}
+          </SSmallText>
         </SSection>
       </div>
     );

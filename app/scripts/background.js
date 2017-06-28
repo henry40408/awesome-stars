@@ -15,7 +15,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const AWESOME_LIST_URL = 'https://raw.githubusercontent.com/sindresorhus/awesome/master/readme.md';
-const THANK_YOU_URL = 'https://github.com/henry40408/awesome-stars/blob/master/THANK_YOU.md';
 
 const CACHE_KEYS = {
   AWESOME_LIST: '@@awesome-list',
@@ -162,11 +161,11 @@ async function setAccessTokenAsync(accessToken) {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-  log(`open thank you page ${THANK_YOU_URL}`);
-  if (process.env.NODE_ENV !== 'development') {
-    return window.open(THANK_YOU_URL);
+  if (process.env.NODE_ENV === 'development') {
+    chrome.runtime.openOptionsPage();
   }
-  return chrome.runtime.openOptionsPage();
+  log('open thank you page');
+  return window.open(chrome.runtime.getURL('pages/thank-you.html'));
 });
 
 chrome.browserAction.onClicked.addListener(() => {
