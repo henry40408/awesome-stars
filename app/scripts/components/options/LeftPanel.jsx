@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { SHeader, SText } from '../common';
+import { SSectionHeader, SText } from '../common';
 import { Colors } from '../../services/colors';
 import { BASE, rem } from '../../services/scale';
 
@@ -29,7 +29,7 @@ const SStarCurve = styled.img`
 
 const LeftPanel = () => (
   <div>
-    <SHeader>{'How Hot are those Stars'}</SHeader>
+    <SSectionHeader>{'How Hot are those Stars'}</SSectionHeader>
     <SParagraph>{'There are four levels for the stars of repository. Awesome Stars changes its color according to star count:'}</SParagraph>
     <SColorList>
       <SColorList.Item color={Colors.BLUE}>{'Blue for less than 1,000.'}</SColorList.Item>
