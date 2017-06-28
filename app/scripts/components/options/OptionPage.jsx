@@ -31,7 +31,7 @@ const SLogo = styled.img`
 
 const SPage = styled(Flex) `
   margin: 0 auto;
-  width: 60rem;
+  width: ${rem(960)};
 `;
 
 const SPageSubtitle = styled.div`
