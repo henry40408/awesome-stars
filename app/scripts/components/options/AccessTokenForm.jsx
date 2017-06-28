@@ -4,18 +4,18 @@ import React from 'react';
 import { Flex, Box } from 'reflexbox';
 import styled from 'styled-components';
 
-import COLORS from '../../services/colors';
+import { Colors } from '../../services/colors';
 import { rem } from '../../services/scale';
 
 const SField = styled.input`
-  border: 1px solid ${props => (props.invalid ? COLORS.RED : COLORS.WHITE)};
-  color: ${props => (props.invalid ? COLORS.RED : COLORS.DARK_GRAY)};
+  border: 1px solid ${props => (props.invalid ? Colors.RED : Colors.WHITE)};
+  color: ${props => (props.invalid ? Colors.RED : Colors.DARK_GRAY)};
   padding: ${rem(14)};
   width: calc(100% - 1px * 2 - 14px * 2);
 `;
 
 const SFieldAddon = styled.div`
-  background-color: ${COLORS.WHITE};
+  background-color: ${Colors.WHITE};
   padding: ${rem(6)};
 `;
 
@@ -24,17 +24,17 @@ const SForm = styled(Flex) `
 `;
 
 const SSaveButton = styled.input`
-  background-color: ${COLORS.DARK_GRAY};
+  background-color: ${Colors.DARK_GRAY};
   border: 0;
   border-radius: ${rem(2)};
-  color: ${COLORS.WHITE};
+  color: ${Colors.WHITE};
   height: calc(${rem(48)} - ${rem(6)} * 2);
   margin: 0 auto;
   text-transform: uppercase;
   width: 100%;
 
   &:disabled {
-    background-color: ${COLORS.GRAY};
+    background-color: ${Colors.GRAY};
   }
 `;
 

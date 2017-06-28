@@ -5,7 +5,7 @@ import { Box, Flex } from 'reflexbox';
 import styled, { keyframes } from 'styled-components';
 
 import { SText } from '../common';
-import COLORS from '../../services/colors';
+import { Colors } from '../../services/colors';
 import { rem } from '../../services/scale';
 
 const SHelp = SText.extend`
@@ -13,7 +13,7 @@ const SHelp = SText.extend`
 `;
 
 const SProgressBar = styled.div`
-  border: 1px solid ${COLORS.WHITE};
+  border: 1px solid ${Colors.WHITE};
   height: ${rem(48)};
 `;
 
@@ -23,16 +23,16 @@ SProgressBar.Container = styled(Flex) `
 
 const colorFromPercentage = (percentage) => {
   if (percentage >= 50) {
-    return COLORS.GREEN;
+    return Colors.GREEN;
   } else if (percentage > 2 && percentage < 50) {
-    return COLORS.YELLOW;
+    return Colors.YELLOW;
   }
-  return COLORS.RED;
+  return Colors.RED;
 };
 
 const filling = props => keyframes`
   from {
-    background-color: ${COLORS.RED};
+    background-color: ${Colors.RED};
     width: 0%;
   }
 
@@ -52,7 +52,7 @@ const SRateLimit = styled.div`
 `;
 
 const SNumber = styled(Box) `
-  color: ${props => (props.invalid ? COLORS.RED : COLORS.WHITE)};
+  color: ${props => (props.invalid ? Colors.RED : Colors.WHITE)};
   font-size: ${rem(24)};
 `;
 

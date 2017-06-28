@@ -14,11 +14,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
-import { ERROR, TextColor, log } from './common';
+import { ERROR, log } from './common';
+import { TextColors } from './services/colors';
+import { rem } from './services/scale';
 
 const CHUNK_SIZE = 20;
 
-const COLORS = {
+const STAR_COLORS = {
   BLUE: 'blue',
   ORANGE: 'orange',
   WHITE: 'white',
@@ -27,15 +29,15 @@ const COLORS = {
 
 const SStarIcon = styled.img`
   background-color: transparent !important;
-  margin: 0 .25rem 0 0;
+  margin: 0 ${rem(4)} 0 0;
 `;
 
 const SStarTag = styled.span`
   background-color: #3F3F3F;
-  border-radius: .78125rem;
-  font-size: .75rem;
-  margin: 0 0 0 .25rem;
-  padding: .3125rem .625rem .3125rem .4375rem;
+  border-radius: ${rem(12)};
+  font-size: ${rem(12)};
+  margin: 0 0 0 ${rem(4)};
+  padding: ${rem(5)} ${rem(10)} ${rem(5)} ${rem(7)};
 `;
 
 const messageClient = new Client(chrome.runtime);
@@ -64,19 +66,19 @@ class Star extends React.Component {
   static colorsFromStarCount(count) {
     switch (true) {
       case (count >= 10000):
-        return { star: COLORS.ORANGE, text: TextColor.ORANGE };
+        return { star: STAR_COLORS.ORANGE, text: TextColors.ORANGE };
       case (count < 10000 && count >= 5000):
-        return { star: COLORS.YELLOW, text: TextColor.YELLOW };
+        return { star: STAR_COLORS.YELLOW, text: TextColors.YELLOW };
       case (count < 5000 && count >= 1000):
-        return { star: COLORS.WHITE, text: TextColor.WHITE };
+        return { star: STAR_COLORS.WHITE, text: TextColors.WHITE };
       default:
-        return { star: COLORS.BLUE, text: TextColor.BLUE };
+        return { star: STAR_COLORS.BLUE, text: TextColors.BLUE };
     }
   }
 
   static starPathFromColor(raw) {
-    const available = values(COLORS);
-    const color = includes(available, raw) ? raw : COLORS.BLUE;
+    const available = values(STAR_COLORS);
+    const color = includes(available, raw) ? raw : STAR_COLORS.BLUE;
     return chrome.extension.getURL(`images/star-${color}.svg`);
   }
 
@@ -98,8 +100,8 @@ class Star extends React.Component {
     if (count === ERROR) {
       return (
         <SStarTag>
-          <SStarIcon src={Star.starPathFromColor(COLORS.BLUE)} />
-          <span style={{ color: TextColor.BLUE }}>{'N/A'}</span>
+          <SStarIcon src={Star.starPathFromColor(STAR_COLORS.BLUE)} />
+          <span style={{ color: TextColors.BLUE }}>{'N/A'}</span>
         </SStarTag>
       );
     }
@@ -126,7 +128,7 @@ function iterateChunkAsync(chunk) {
 }
 
 function preloadStarImages() {
-  const colors = values(COLORS);
+  const colors = values(STAR_COLORS);
   return each(colors, (color) => {
     const image = new Image();
     image.src = Star.starPathFromColor(color);
