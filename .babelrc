@@ -1,5 +1,12 @@
 {
-    "presets": ["es2015", "stage-0"],
-    "plugins": ["transform-runtime"],
-    "ignore": ["node_modules"]
+  "presets": [
+    ["env", { "target": { "browser": "last 2 versions" } }],
+    "stage-0",
+    "react"
+  ],
+  "plugins": [
+    "transform-decorators-legacy",
+    "transform-runtime"
+  ],
+  "ignore": ["node_modules"]
 }

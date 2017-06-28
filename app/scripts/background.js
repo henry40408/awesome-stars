@@ -6,6 +6,7 @@ import get from 'lodash/get';
 import LRU from 'lru-cache';
 import numeral from 'numeral';
 
+import { BadgeColors } from './services/colors';
 import { ERROR, log } from './common';
 
 if (process.env.NODE_ENV === 'development') {
@@ -14,12 +15,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const AWESOME_LIST_URL = 'https://raw.githubusercontent.com/sindresorhus/awesome/master/readme.md';
-const THANK_YOU_URL = 'https://github.com/henry40408/awesome-stars/blob/master/THANK_YOU.md';
-
-const BADGE_COLORS = {
-  BRIGHT_BLUE: '#4a94fa',
-  RED: '#ff0000',
-};
 
 const CACHE_KEYS = {
   AWESOME_LIST: '@@awesome-list',
@@ -53,7 +48,7 @@ async function loadAccessTokenAsync() {
 }
 
 function updateBadge(maybeText) {
-  const color = maybeText === NA ? BADGE_COLORS.RED : BADGE_COLORS.BRIGHT_BLUE;
+  const color = maybeText === NA ? BadgeColors.RED : BadgeColors.BRIGHT_BLUE;
   const text = maybeText === NA ? 'N/A' : maybeText;
 
   log('badge color updated to', color);
@@ -166,11 +161,11 @@ async function setAccessTokenAsync(accessToken) {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-  log(`open thank you page ${THANK_YOU_URL}`);
-  if (process.env.NODE_ENV !== 'development') {
-    return window.open(THANK_YOU_URL);
+  if (process.env.NODE_ENV === 'development') {
+    chrome.runtime.openOptionsPage();
   }
-  return true;
+  log('open thank you page');
+  return window.open(chrome.runtime.getURL('pages/thank-you.html'));
 });
 
 chrome.browserAction.onClicked.addListener(() => {
