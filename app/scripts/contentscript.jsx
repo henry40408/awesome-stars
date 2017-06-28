@@ -15,7 +15,7 @@ import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
 import { ERROR, log } from './common';
-import { TextColors } from './services/colors';
+import { Colors, TextColors } from './services/colors';
 import { rem } from './services/scale';
 
 const CHUNK_SIZE = 20;
@@ -33,11 +33,11 @@ const SStarIcon = styled.img`
 `;
 
 const SStarTag = styled.span`
-  background-color: #3F3F3F;
+  background-color: ${Colors.GRAY};
   border-radius: ${rem(12)};
   font-size: ${rem(12)};
   margin: 0 0 0 ${rem(4)};
-  padding: ${rem(5)} ${rem(10)} ${rem(5)} ${rem(7)};
+  padding: ${rem(4)} ${rem(8)};
 `;
 
 const messageClient = new Client(chrome.runtime);

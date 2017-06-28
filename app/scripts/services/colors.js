@@ -6,8 +6,9 @@ export const BadgeColors = {
 export const Colors = {
   BLUE: '#c4f7ff',
   DARK_GRAY: '#222222',
-  GRAY: '#999999',
+  GRAY: '#3f3f3f',
   GREEN: '#d4fc45',
+  LIGHT_GRAY: '#999999',
   ORANGE: '#ecab20',
   RED: '#ff3e00',
   WHITE: '#ffffff',

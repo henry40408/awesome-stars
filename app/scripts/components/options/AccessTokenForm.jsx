@@ -34,7 +34,7 @@ const SSaveButton = styled.input`
   width: 100%;
 
   &:disabled {
-    background-color: ${Colors.GRAY};
+    background-color: ${Colors.LIGHT_GRAY};
   }
 `;
 
