@@ -1,3 +1,5 @@
+import autobind from 'autobind-decorator';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Flex, Box } from 'reflexbox';
 import styled from 'styled-components';
@@ -6,7 +8,8 @@ import COLORS from '../../services/colors';
 import { rem } from '../../services/scale';
 
 const SField = styled.input`
-  border: 1px solid ${COLORS.WHITE};
+  border: 1px solid ${props => (props.invalid ? COLORS.RED : COLORS.WHITE)};
+  color: ${props => (props.invalid ? COLORS.RED : COLORS.DARK_GRAY)};
   padding: ${rem(14)};
   width: calc(100% - 1px * 2 - 14px * 2);
 `;
@@ -29,21 +32,68 @@ const SSaveButton = styled.input`
   margin: 0 auto;
   text-transform: uppercase;
   width: 100%;
+
+  &:disabled {
+    background-color: ${COLORS.GRAY};
+  }
 `;
 
-const AccessTokenForm = () => (
-  <form>
-    <SForm>
-      <Box w={4 / 5}>
-        <SField type="text" />
-      </Box>
-      <Box w={1 / 5}>
-        <SFieldAddon>
-          <SSaveButton type="submit" value="Save" />
-        </SFieldAddon>
-      </Box>
-    </SForm>
-  </form>
-);
+export default class AccessTokenForm extends React.Component {
+  static defaultProps = {
+    accessToken: '',
+    loading: false,
+    limit: -1,
+  };
 
-export default AccessTokenForm;
+  static propTypes = {
+    accessToken: PropTypes.string,
+    limit: PropTypes.number,
+    loading: PropTypes.bool,
+    updateAccessToken: PropTypes.func.isRequired,
+    submitAccessTokenAsync: PropTypes.func.isRequired,
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = { saving: false };
+  }
+
+  @autobind
+  handleSubmit(e) {
+    const { submitAccessTokenAsync } = this.props;
+    e.preventDefault();
+    this.setState({ saving: true });
+    return submitAccessTokenAsync().then(() => {
+      this.setState({ saving: false });
+    });
+  }
+
+  render() {
+    const { accessToken, limit, loading, updateAccessToken } = this.props;
+    const { saving } = this.state;
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <SForm>
+          <Box w={4 / 5}>
+            <SField
+              invalid={limit === 0}
+              type="text"
+              value={accessToken}
+              onChange={e => updateAccessToken(e.target.value)}
+            />
+          </Box>
+          <Box w={1 / 5}>
+            <SFieldAddon>
+              <SSaveButton
+                disabled={loading}
+                innerRef={(el) => { this.saveButton = el; }}
+                type="submit"
+                value={saving ? 'Saved!' : 'Save'}
+              />
+            </SFieldAddon>
+          </Box>
+        </SForm>
+      </form>
+    );
+  }
+}

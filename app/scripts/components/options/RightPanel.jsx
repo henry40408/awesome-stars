@@ -27,33 +27,72 @@ const SSubheader = SHeader.extend`
 class RightPanel extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { accessToken: '', limit: 0, remaining: 0 };
+    this.state = {
+      accessToken: '',
+      limit: -1,
+      loading: false,
+      remaining: -1,
+    };
   }
 
   componentWillMount() {
-    return this.updateRateLimit();
+    return this.fetchAccessTokenAsync()
+      .then(() => this.fetchRateLimitAsync());
   }
 
   @autobind
-  updateRateLimit() {
-    return client.message('/rate-limit')
-      .then(({ data }) => {
-        if (data === ERROR) {
-          this.setState({ limit: 0, remainig: 0 });
-        } else {
-          const { limit, remaining } = data;
-          this.setState({ limit, remaining });
-        }
-      });
+  fetchAccessTokenAsync() {
+    return client.message('/access-token/get').then(({ data }) => {
+      this.setState({ accessToken: data });
+    });
+  }
+
+  @autobind
+  fetchRateLimitAsync() {
+    return this.sendMessage('/rate-limit').then(({ data }) => {
+      if (data === ERROR) {
+        this.setState({ limit: 0, remainig: 0 });
+      } else {
+        const { limit, remaining } = data;
+        this.setState({ limit, remaining });
+      }
+    });
+  }
+
+  @autobind
+  sendMessage(route, message) {
+    this.setState({ loading: true });
+    return client.message(route, message).then((response) => {
+      this.setState({ loading: false });
+      return response;
+    });
+  }
+
+  @autobind
+  submitAccessTokenAsync() {
+    const { accessToken } = this.state;
+    return this.sendMessage('/access-token/set', { accessToken })
+      .then(() => this.fetchRateLimitAsync());
+  }
+
+  @autobind
+  updateAccessToken(accessToken) {
+    this.setState({ accessToken });
   }
 
   render() {
-    const { limit, remaining } = this.state;
+    const { accessToken, limit, loading, remaining } = this.state;
     return (
       <div>
         <SSection>
           <SHeader>{'Setup Access Token'}</SHeader>
-          <AccessTokenForm />
+          <AccessTokenForm
+            accessToken={accessToken}
+            limit={limit}
+            loading={loading}
+            submitAccessTokenAsync={this.submitAccessTokenAsync}
+            updateAccessToken={this.updateAccessToken}
+          />
           <SText>{'Get an access token from GitHub settings page'}</SText>
           <SText>{'Please DO NOT select any scopes!'}</SText>
         </SSection>

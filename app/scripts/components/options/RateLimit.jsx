@@ -43,7 +43,7 @@ const filling = props => keyframes`
 `;
 
 SProgressBar.Fill = styled.div`
-  animation: .75s ease .75s 1 normal forwards running ${props => filling(props)};
+  animation: .75s ease 0s 1 normal forwards running ${props => filling(props)};
   height: 100%;
 `;
 
@@ -52,6 +52,7 @@ const SRateLimit = styled.div`
 `;
 
 const SNumber = styled(Box) `
+  color: ${props => (props.invalid ? COLORS.RED : COLORS.WHITE)};
   font-size: ${rem(24)};
 `;
 
@@ -66,7 +67,13 @@ const RateLimit = ({ remaining, limit }) => {
             <SProgressBar.Fill percentage={percentage} />
           </SProgressBar>
         </Box>
-        <SNumber flex w={1 / 5} align="center" justify="center">{number}</SNumber>
+        <SNumber
+          flex
+          align="center"
+          invalid={limit === 0}
+          justify="center"
+          w={1 / 5}
+        >{number}</SNumber>
       </SProgressBar.Container>
       <SHelp>{'For requests using Basic Authentication or OAuth (including access token), you can make up to 5,000 requests per hour.'}</SHelp>
     </SRateLimit>
