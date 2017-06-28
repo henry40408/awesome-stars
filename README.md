@@ -1,5 +1,7 @@
 ![Awesome Stars](promo/Promo-Image-Large_920x680.png)
 
+[![CircleCI](https://circleci.com/gh/henry40408/awesome-stars/tree/master.svg?style=shield)](https://circleci.com/gh/henry40408/awesome-stars/tree/master) [![GitHub tag](https://img.shields.io/github/tag/henry40408/awesome-stars.svg)](https://github.com/henry40408/awesome-stars) [![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/lcokkcbdmicofdahlooopcpinogephfb.svg)](https://chrome.google.com/webstore/detail/awesome-stars/lcokkcbdmicofdahlooopcpinogephfb) [![Chrome Web Store Downloads](https://img.shields.io/chrome-web-store/d/lcokkcbdmicofdahlooopcpinogephfb.svg)](https://chrome.google.com/webstore/detail/awesome-stars/lcokkcbdmicofdahlooopcpinogephfb) [![license](https://img.shields.io/github/license/henry40408/awesome-stars.svg)](https://github.com/henry40408/awesome-stars)
+
 ## Installation
 
 [![Available on Chrome Web Store](assets/available-on-chrome-web-store.png)](https://chrome.google.com/webstore/detail/awesome-stars/lcokkcbdmicofdahlooopcpinogephfb)
