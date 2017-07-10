@@ -208,7 +208,9 @@ async function checkUpdateNotificationSent() {
   const { data: updateNotificationSent } = await messageClient.message('/update-notification-sent/get');
 
   if (!updateNotificationSent) {
+    // NOTE send update notification when entering GitHub
     showUpdateNotification();
+
     return messageClient.message('/update-notification-sent/set', {
       updateNotificationSent: true,
     });

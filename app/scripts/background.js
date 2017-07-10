@@ -175,14 +175,15 @@ async function setUpdateNotificationSentAsync(updateNotificationSent) {
 }
 
 chrome.runtime.onInstalled.addListener((reason, previousVersion) => {
-  const isExtensionUpdated = reason === 'UPDATE' && previousVersion !== version;
+  const isExtensionUpgraded = reason === 'update' && previousVersion !== version;
 
   if (process.env.NODE_ENV === 'development') {
     chrome.runtime.openOptionsPage();
   }
 
-  // NOTE send update notification when entering GitHub
-  if (process.env.NODE_ENV === 'development' || isExtensionUpdated) {
+  // NOTE delete update notification sent state in development environment
+  // or when extension itself is updated
+  if (process.env.NODE_ENV === 'development' || isExtensionUpgraded) {
     const payload = {
       [STORAGE_KEYS.UPDATE_NOTIFICATION_SENT]: false,
     };
