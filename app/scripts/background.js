@@ -6,6 +6,7 @@ import get from 'lodash/get';
 import LRU from 'lru-cache';
 import numeral from 'numeral';
 
+import { version } from '../../package.json';
 import { BadgeColors } from './services/colors';
 import { ERROR, log } from './common';
 
@@ -30,6 +31,7 @@ const NA = '@@NA';
 
 const STORAGE_KEYS = {
   ACCESS_TOKEN: 'ACCESS_TOKEN',
+  UPDATE_NOTIFICATION_SENT: 'UPDATE_NOTIFICATION_SENT',
 };
 
 const RateLimitError = CustomError('RateLimitError');
@@ -144,6 +146,11 @@ async function fetchStarCountAsync(owner, name, options = { shouldUpdateRateLimi
   return parseInt(cachedDetails.stargazers_count, 10);
 }
 
+async function getUpdateNotificationSentAsync() {
+  const result = await chromePromise.storage.local.get(STORAGE_KEYS.UPDATE_NOTIFICATION_SENT);
+  return get(result, STORAGE_KEYS.UPDATE_NOTIFICATION_SENT, false);
+}
+
 async function setAccessTokenAsync(accessToken) {
   const payload = {
     [STORAGE_KEYS.ACCESS_TOKEN]: accessToken,
@@ -160,12 +167,31 @@ async function setAccessTokenAsync(accessToken) {
   return true;
 }
 
-chrome.runtime.onInstalled.addListener(() => {
+async function setUpdateNotificationSentAsync(updateNotificationSent) {
+  const payload = {
+    [STORAGE_KEYS.UPDATE_NOTIFICATION_SENT]: updateNotificationSent,
+  };
+  return chromePromise.storage.local.set(payload);
+}
+
+chrome.runtime.onInstalled.addListener((reason, previousVersion) => {
+  const isExtensionUpgraded = reason === 'update' && previousVersion !== version;
+
   if (process.env.NODE_ENV === 'development') {
     chrome.runtime.openOptionsPage();
   }
-  log('open thank you page');
-  return window.open(chrome.runtime.getURL('pages/thank-you.html'));
+
+  // NOTE delete update notification sent state in development environment
+  // or when extension itself is updated
+  if (process.env.NODE_ENV === 'development' || isExtensionUpgraded) {
+    const payload = {
+      [STORAGE_KEYS.UPDATE_NOTIFICATION_SENT]: false,
+    };
+
+    return chromePromise.storage.local.set(payload);
+  }
+
+  return true;
 });
 
 chrome.browserAction.onClicked.addListener(() => {
@@ -211,6 +237,13 @@ registerRoute(messageRouter, '/stars/get', (message) => {
   }
 
   return ERROR;
+});
+
+registerRoute(messageRouter, '/update-notification-sent/get', () => getUpdateNotificationSentAsync());
+
+registerRoute(messageRouter, '/update-notification-sent/set', (message) => {
+  const { updateNotificationSent } = message;
+  return setUpdateNotificationSentAsync(updateNotificationSent);
 });
 
 chrome.runtime.onMessage.addListener(messageRouter.listener());
