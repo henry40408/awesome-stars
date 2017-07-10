@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 2.2.0
+- Replace annoying Thank You page with passive GitHub notification.
+
 ## 2.1.1
 
 - Fix fallback path for option page in background.
