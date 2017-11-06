@@ -8,10 +8,10 @@ jobs:
       - checkout
       - run: sudo npm install gulp --global
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: yarn-{{ checksum "yarn.lock" }}
       - run: yarn
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: yarn-{{ checksum "yarn.lock" }}
           paths:
             - ./node_modules
       - run:
