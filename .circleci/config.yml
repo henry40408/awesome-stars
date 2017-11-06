@@ -6,14 +6,10 @@ jobs:
       - image: circleci/node:6.10.3
     steps:
       - checkout
-      - run:
-          name: install-gulp
-          command: sudo npm install gulp --global
+      - run: sudo npm install gulp --global
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-dependencies
-          command: npm install
+      - run: npm install
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
