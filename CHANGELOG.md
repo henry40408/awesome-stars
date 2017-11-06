@@ -1,6 +1,11 @@
 # CHANGELOG
 
+## 2.3.0
+
+- Upgrade to React 16.x
+
 ## 2.2.0
+
 - Replace annoying Thank You page with passive GitHub notification.
 
 ## 2.1.1
