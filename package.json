@@ -1,7 +1,7 @@
 {
   "name": "awesome-stars",
   "private": true,
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Awesome Stars is a chrome extension that shows you stars of repository on awesome list.",
   "scripts": {
     "start": "npm run dev:chrome",
@@ -18,7 +18,7 @@
     "babel-cli": "6.x.x",
     "babel-core": "6.x.x",
     "babel-eslint": "7.x.x",
-    "babel-loader": "6.x.x",
+    "babel-loader": "7.x.x",
     "babel-plugin-add-module-exports": "~0.2.1",
     "babel-plugin-transform-class-properties": "~6.24.1",
     "babel-plugin-transform-decorators-legacy": "~1.3.4",
@@ -72,9 +72,9 @@
     "numeral": "~2.0.6",
     "parse-github-url": "~1.0.0",
     "prop-types": "~15.5.10",
-    "react": "~15.6.1",
-    "react-dom": "~15.6.1",
+    "react": "~16.0.0",
+    "react-dom": "~16.0.0",
     "reflexbox": "~3.0.0-0",
-    "styled-components": "~2.1.0"
+    "styled-components": "~2.2.3"
   }
 }
