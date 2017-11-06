@@ -1,7 +1,7 @@
 {
   "name": "awesome-stars",
   "private": true,
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Awesome Stars is a chrome extension that shows you stars of repository on awesome list.",
   "scripts": {
     "start": "npm run dev:chrome",
