@@ -9,7 +9,7 @@ jobs:
       - run: sudo npm install gulp --global
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
-      - run: npm install
+      - run: yarn
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
