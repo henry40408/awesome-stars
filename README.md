@@ -9,7 +9,7 @@
 ## How to Use
 
 1. [Create a access token](https://github.com/settings/tokens/new?description=Awesome%20Stars) at GitHub settings. **DO NOT select any scopes**!
-    - For more information, checkout [GitHub documentation](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token).
+   * For more information, checkout [GitHub documentation](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token).
 2. Click Awesome Stars icon to open Options page. It locates near the icon to open Chrome menu.
 
 ![Awesome Stars Icon](assets/awesome-stars-icon.png)
@@ -39,9 +39,9 @@
 
 > sorted in alphabetical order
 
-- Peter [@sandokaishy](https://github.com/sandokaishy)
-- Peter Dave Hello [@PeterDaveHello](https://github.com/PeterDaveHello)
-- Tonypai [@tpai](https://github.com/tpai)
+* Peter [@sandokaishy](https://github.com/sandokaishy)
+* Peter Dave Hello [@PeterDaveHello](https://github.com/PeterDaveHello)
+* Tonypai [@tpai](https://github.com/tpai)
 
 ## How to Contribute
 
