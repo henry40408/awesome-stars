@@ -1,3 +1,4 @@
+import omit from 'lodash/omit';
 import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -48,10 +49,17 @@ SProgressBar.Fill = styled.div`
 `;
 
 const SRateLimit = styled.div`
-  margin: 0 0 ${rem(24)};
+  margin: 0 0 ${rem(16)};
 `;
 
-const SNumber = styled(Box) `
+// HACK Box is actually a div element, passing unknown properties to it causes a warning
+const BoxWithoutInvalid = (props) => {
+  // NOTE customized properties is omitted
+  const pickedProps = omit(props, ['invalid']);
+  return <Box {...pickedProps} />;
+};
+
+const SNumber = styled(BoxWithoutInvalid) `
   color: ${props => (props.invalid ? Colors.RED : Colors.WHITE)};
   font-size: ${rem(24)};
 `;

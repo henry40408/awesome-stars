@@ -41,7 +41,7 @@ const SPageTitle = styled.h1`
 export const SSectionHeader = styled.h2`
   font-size: ${rem(24)};
   font-weight: 300;
-  margin: 0 0 ${rem(18)};
+  margin: 0 0 ${rem(12)};
   text-transform: uppercase;
 `;
 

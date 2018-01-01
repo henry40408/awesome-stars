@@ -11,7 +11,7 @@ import AccessTokenForm from './AccessTokenForm';
 import RateLimit from './RateLimit';
 
 const SSection = styled.div`
-  margin: 0 0 ${rem(32)};
+  margin: 0 0 ${rem(16)};
 `;
 
 const SSmallText = SText.extend`
@@ -22,6 +22,16 @@ const SSubheader = SSectionHeader.extend`
   font-size: ${rem(16)};
   margin: 0 0 ${rem(8)};
   text-transform: none;
+`;
+
+const SCheckboxGroup = styled.label`
+`;
+
+const SCheckbox = styled.input`
+`;
+
+const SCheckboxLabel = styled.span`
+  margin: 0 0 0 ${rem(16)};
 `;
 
 class RightPanel extends React.Component {
@@ -99,6 +109,12 @@ class RightPanel extends React.Component {
             <Link href="https://github.com/settings">{'GitHub settings page'}</Link>
           </SText>
           <SText alert>{'Please DO NOT select any scopes!'}</SText>
+        </SSection>
+        <SSection>
+          <SCheckboxGroup htmlFor="option-apply-on-github-issues">
+            <SCheckbox type="checkbox" id="option-apply-on-github-issues" />
+            <SCheckboxLabel>{'Apply on GitHub issues'}</SCheckboxLabel>
+          </SCheckboxGroup>
         </SSection>
         <SSection>
           <SSectionHeader>{'Rate Limit'}</SSectionHeader>
