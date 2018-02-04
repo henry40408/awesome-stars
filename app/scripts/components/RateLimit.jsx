@@ -45,7 +45,7 @@ const RLMeter = reflex(BaseRLMeter);
 
 const BaseRLNumber = styled.div`
   color: ${({ inverse }) => (inverse ? colors.white : colors.darkGray)};
-  font-size: ${({ heightInRem }) => heightInRem * 0.9}rem;
+  font-size: ${({ heightInRem }) => heightInRem * (heightInRem > 1 ? 0.5 : 0.9)}rem;
   display: flex;
   align-items: center;
   justify-content: center;
