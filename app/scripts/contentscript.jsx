@@ -29,15 +29,15 @@ const STAR_COLORS = {
 
 const SStarIcon = styled.img`
   background-color: transparent !important;
-  margin: 0 4rem 0 0;
+  margin: 0 .25rem 0 0;
 `;
 
 const SStarTag = styled.span`
   background-color: ${colors.gray};
-  border-radius: 12rem;
-  font-size: 12rem;
-  margin: 0 0 0 4rem;
-  padding: 4rem 8rem;
+  border-radius: .75rem;
+  font-size: .75rem;
+  margin: 0 0 0 .25rem;
+  padding: .25rem .5rem;
 `;
 
 const messageClient = new Client(chrome.runtime);
