@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Flex, Box } from 'reflexbox';
+import { Box, Flex, reflex } from 'reflexbox';
 import { withState } from 'recompose';
 
 import colors from '../themes/colors';
@@ -18,12 +18,15 @@ const ATFField = styled.input`
   width: 100%;
 `;
 
-const ATFButtonContainer = styled(Box)`
+const BaseATFButtonContainer = styled.div`
+  background: ${colors.white};
   display: flex;
   align-items: center;
   justify-content: center;
   padding: ${({ heightInRem }) => heightInRem * 0.25}rem;
 `;
+
+const ATFButtonContainer = reflex(BaseATFButtonContainer);
 
 const ATFButton = styled.button`
   box-sizing: border-box;
