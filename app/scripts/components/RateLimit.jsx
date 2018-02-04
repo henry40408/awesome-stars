@@ -28,7 +28,7 @@ const RLFilling = ({ percentage }) => keyframes`
 `;
 
 const BaseRLMeterContainer = styled(Box)`
-  border: 1px ${({ inverse }) => (inverse ? colors.white : colors.darkGray)} solid;
+  border: 1px transparent solid;
   height: ${({ heightInRem }) => heightInRem}rem;
 `;
 
