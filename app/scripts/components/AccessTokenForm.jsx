@@ -13,7 +13,7 @@ const ATFContainer = styled(Flex)`
 const ATFField = styled.input`
   border: none;
   box-sizing: border-box;
-  font-size: ${({ heightInRem }) => heightInRem * 1.05}rem;
+  font-size: ${({ heightInRem }) => heightInRem * 1.1}rem;
   padding: ${({ heightInRem }) => heightInRem * 0.5}rem;
   width: 100%;
 `;
