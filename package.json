@@ -2,7 +2,7 @@
   "name": "awesome-stars",
   "private": true,
   "version": "2.3.0",
-  "description": "A chrome extension reveals star count of repositories on awesome list",
+  "description": "A Chrome extension that reveals star count of repositories on awesome list",
   "scripts": {
     "start": "npm run dev:chrome",
     "build": "npm run build:chrome",

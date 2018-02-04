@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { injectGlobal } from 'styled-components';
 
 import colors from './themes/colors';
+import OptionPage from './components/OptionPage';
 
 // eslint-disable-next-line no-unused-expressions
 injectGlobal`
@@ -20,6 +21,14 @@ body {
 a {
   color: ${colors.orange};
 }
+
+#container {
+  align-items: center;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  width: 100vw;
+}
 `;
 
-ReactDOM.render(<div />, document.getElementById('container'));
+ReactDOM.render(<OptionPage />, document.getElementById('container'));
