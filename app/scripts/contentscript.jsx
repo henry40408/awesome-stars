@@ -16,9 +16,7 @@ import styled from 'styled-components';
 
 import { version } from '../../package.json';
 import { ERROR, log } from './common';
-import { Link } from './components/common';
-import { Colors, TextColors } from './services/colors';
-import { rem } from './services/scale';
+import colors from './themes/colors';
 
 const CHUNK_SIZE = 20;
 
@@ -31,15 +29,15 @@ const STAR_COLORS = {
 
 const SStarIcon = styled.img`
   background-color: transparent !important;
-  margin: 0 ${rem(4)} 0 0;
+  margin: 0 4rem 0 0;
 `;
 
 const SStarTag = styled.span`
-  background-color: ${Colors.GRAY};
-  border-radius: ${rem(12)};
-  font-size: ${rem(12)};
-  margin: 0 0 0 ${rem(4)};
-  padding: ${rem(4)} ${rem(8)};
+  background-color: ${colors.gray};
+  border-radius: 12rem;
+  font-size: 12rem;
+  margin: 0 0 0 4rem;
+  padding: 4rem 8rem;
 `;
 
 const messageClient = new Client(chrome.runtime);
@@ -68,13 +66,13 @@ class Star extends React.Component {
   static colorsFromStarCount(count) {
     switch (true) {
       case (count >= 10000):
-        return { star: STAR_COLORS.ORANGE, text: TextColors.ORANGE };
+        return { star: STAR_COLORS.ORANGE, text: colors.orange };
       case (count < 10000 && count >= 5000):
-        return { star: STAR_COLORS.YELLOW, text: TextColors.YELLOW };
+        return { star: STAR_COLORS.YELLOW, text: colors.yellow };
       case (count < 5000 && count >= 1000):
-        return { star: STAR_COLORS.WHITE, text: TextColors.WHITE };
+        return { star: STAR_COLORS.WHITE, text: colors.white };
       default:
-        return { star: STAR_COLORS.BLUE, text: TextColors.BLUE };
+        return { star: STAR_COLORS.BLUE, text: colors.lightBlue };
     }
   }
 
@@ -103,7 +101,7 @@ class Star extends React.Component {
       return (
         <SStarTag>
           <SStarIcon src={Star.starPathFromColor(STAR_COLORS.BLUE)} />
-          <span style={{ color: TextColors.BLUE }}>{'N/A'}</span>
+          <span style={{ color: colors.lightBlue }}>{'N/A'}</span>
         </SStarTag>
       );
     }
@@ -130,10 +128,10 @@ function iterateChunkAsync(chunk) {
 }
 
 function preloadStarImages() {
-  const colors = values(STAR_COLORS);
-  return each(colors, (color) => {
+  const starColors = values(STAR_COLORS);
+  return each(starColors, (starColor) => {
     const image = new Image();
-    image.src = Star.starPathFromColor(color);
+    image.src = Star.starPathFromColor(starColor);
   });
 }
 
@@ -190,7 +188,7 @@ const UpdateNotification = () => (
         {' has been updated to '}
         <strong>{version}</strong>
         {'! For more information, please check out '}
-        <strong><Link href="https://github.com/henry40408/awesome-stars/blob/master/CHANGELOG.md">{'CHANGELOG'}</Link></strong>
+        <strong><a href="https://github.com/henry40408/awesome-stars/blob/master/CHANGELOG.md">{'CHANGELOG'}</a></strong>
         {'.'}
       </div>
     </div>

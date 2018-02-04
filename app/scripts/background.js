@@ -7,7 +7,7 @@ import LRU from 'lru-cache';
 import numeral from 'numeral';
 
 import { version } from '../../package.json';
-import { BadgeColors } from './services/colors';
+import colors from './themes/colors';
 import { ERROR, log } from './common';
 
 if (process.env.NODE_ENV === 'development') {
@@ -50,7 +50,7 @@ async function loadAccessTokenAsync() {
 }
 
 function updateBadge(maybeText) {
-  const color = maybeText === NA ? BadgeColors.RED : BadgeColors.BRIGHT_BLUE;
+  const color = maybeText === NA ? colors.red : colors.blue;
   const text = maybeText === NA ? 'N/A' : maybeText;
 
   log('badge color updated to', color);
@@ -239,7 +239,9 @@ registerRoute(messageRouter, '/stars/get', (message) => {
   return ERROR;
 });
 
-registerRoute(messageRouter, '/update-notification-sent/get', () => getUpdateNotificationSentAsync());
+registerRoute(messageRouter, '/update-notification-sent/get', () =>
+  getUpdateNotificationSentAsync(),
+);
 
 registerRoute(messageRouter, '/update-notification-sent/set', (message) => {
   const { updateNotificationSent } = message;
