@@ -3,24 +3,40 @@ import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
 import AccessTokenForm from '../scripts/components/AccessTokenForm';
-import ProgressBar from '../scripts/components/ProgressBar';
+import RateLimit from '../scripts/components/RateLimit';
 
 const MAXIMUM = 5000;
 
-storiesOf('ProgressBar', module)
-  .add('default', () => <ProgressBar />)
-  .add('empty', () => <ProgressBar remaining={0} total={MAXIMUM} />)
-  .add('less than 50%', () => <ProgressBar remaining={MAXIMUM * 0.499} total={MAXIMUM} />)
-  .add('less than 2%', () => <ProgressBar remaining={MAXIMUM * 0.019} total={MAXIMUM} />)
-  .add('full', () => <ProgressBar remaining={MAXIMUM} total={MAXIMUM} />)
-  .add('with 4rem height', () => <ProgressBar remaining={MAXIMUM} total={MAXIMUM} height="4rem" />);
+storiesOf('RateLimit', module)
+  .add('default', () => <RateLimit />)
+  .add('with remaining and total', () => (
+    <div>
+      <p>empty</p>
+      <RateLimit remaining={0} total={MAXIMUM} />
+      <p>1.9%</p>
+      <RateLimit remaining={MAXIMUM * 0.019} total={MAXIMUM} />
+      <p>49.9%</p>
+      <RateLimit remaining={MAXIMUM * 0.499} total={MAXIMUM} />
+      <p>total</p>
+      <RateLimit remaining={MAXIMUM} total={MAXIMUM} />
+    </div>
+  ))
+  .add('with heightInRem', () => (
+    <div>
+      <p>1</p>
+      <RateLimit remaining={MAXIMUM} total={MAXIMUM} heightInRem={1} />
+      <p>2</p>
+      <RateLimit remaining={MAXIMUM} total={MAXIMUM} heightInRem={2} />
+      <p>4</p>
+      <RateLimit remaining={MAXIMUM} total={MAXIMUM} heightInRem={4} />
+    </div>
+  ));
 
 const onAccessTokenSubmit = accessToken => action(`access token submitted: ${accessToken}`);
 
 storiesOf('AccessTokenForm', module)
   .add('default', () => <AccessTokenForm />)
-  .add('inverse', () => <AccessTokenForm inverse />)
-  .add('with heights', () => (
+  .add('with height', () => (
     <div>
       <p>1rem</p>
       <AccessTokenForm heightInRem={1} />
