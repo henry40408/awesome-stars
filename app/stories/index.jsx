@@ -9,6 +9,7 @@ const MAXIMUM = 5000;
 
 storiesOf('RateLimit', module)
   .add('default', () => <RateLimit />)
+  .add('inverse', () => <RateLimit inverse remaining={MAXIMUM} total={MAXIMUM} />)
   .add('with remaining and total', () => (
     <div>
       <p>empty</p>
