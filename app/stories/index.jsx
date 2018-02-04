@@ -19,7 +19,17 @@ const onAccessTokenSubmit = accessToken => action(`access token submitted: ${acc
 
 storiesOf('AccessTokenForm', module)
   .add('default', () => <AccessTokenForm />)
-  .add('with 2rem height', () => <AccessTokenForm heightInRem={2} />)
+  .add('inverse', () => <AccessTokenForm inverse />)
+  .add('with heights', () => (
+    <div>
+      <p>1rem</p>
+      <AccessTokenForm heightInRem={1} />
+      <p>2rem</p>
+      <AccessTokenForm heightInRem={2} />
+      <p>4rem</p>
+      <AccessTokenForm heightInRem={4} />
+    </div>
+  ))
   .add('with onSubmit handler', () => (
     <AccessTokenForm heightInRem={2} onSubmit={onAccessTokenSubmit} />
   ))
