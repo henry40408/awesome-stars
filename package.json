@@ -16,6 +16,8 @@
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "devDependencies": {
+    "@storybook/addon-actions": "~3.3.12",
+    "@storybook/addons": "~3.3.0",
     "@storybook/react": "~3.3.12",
     "ajv": "~5.0.0",
     "babel-cli": "6.x.x",
@@ -77,6 +79,7 @@
     "prop-types": "~15.6.0",
     "react": "~16.0.0",
     "react-dom": "~16.0.0",
+    "recompose": "^0.26.0",
     "reflexbox": "~3.0.0-0",
     "styled-components": "~2.2.3"
   }

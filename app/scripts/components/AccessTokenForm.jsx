@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Flex, Box } from 'reflexbox';
+import { withState } from 'recompose';
 
 import colors from '../themes/colors';
 
@@ -36,23 +37,36 @@ const ATFButton = styled.button`
   width: 100%;
 `;
 
-const AccessTokenForm = ({ heightInRem }) => (
-  <ATFContainer>
-    <Box w={2 / 3}>
-      <ATFField type="text" heightInRem={heightInRem} />
-    </Box>
-    <ATFButtonContainer w={1 / 3} heightInRem={heightInRem}>
-      <ATFButton heightInRem={heightInRem}>Save</ATFButton>
-    </ATFButtonContainer>
-  </ATFContainer>
+const AccessTokenForm = withState('token', 'setToken', ({ accessToken }) => accessToken)(
+  ({ heightInRem, onSubmit, setToken, token }) => (
+    <ATFContainer>
+      <Box w={2 / 3}>
+        <ATFField
+          type="text"
+          value={token}
+          onChange={e => setToken(e.target.value)}
+          heightInRem={heightInRem}
+        />
+      </Box>
+      <ATFButtonContainer w={1 / 3} heightInRem={heightInRem}>
+        <ATFButton heightInRem={heightInRem} onClick={onSubmit(token)}>
+          Save
+        </ATFButton>
+      </ATFButtonContainer>
+    </ATFContainer>
+  ),
 );
 
 AccessTokenForm.propTypes = {
-  heightInRem: PropTypes.string,
+  accessToken: PropTypes.string,
+  heightInRem: PropTypes.number,
+  onSubmit: PropTypes.func,
 };
 
 AccessTokenForm.defaultProps = {
+  accessToken: '',
   heightInRem: 1,
+  onSubmit: () => {},
 };
 
 export default AccessTokenForm;
