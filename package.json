@@ -2,7 +2,7 @@
   "name": "awesome-stars",
   "private": true,
   "version": "2.3.0",
-  "description": "Awesome Stars is a chrome extension that shows you stars of repository on awesome list.",
+  "description": "A chrome extension reveals star count of repositories on awesome list",
   "scripts": {
     "start": "npm run dev:chrome",
     "build": "npm run build:chrome",
@@ -12,11 +12,14 @@
     "dev": "npm run dev:chrome",
     "dev:chrome": "gulp --watch --vendor=chrome",
     "dev:firefox": "gulp --watch --vendor=firefox",
-    "dev:opera": "gulp --watch --vendor=opera"
+    "dev:opera": "gulp --watch --vendor=opera",
+    "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "devDependencies": {
+    "@storybook/react": "~3.3.12",
+    "ajv": "~5.0.0",
     "babel-cli": "6.x.x",
-    "babel-core": "6.x.x",
+    "babel-core": "6.26.x",
     "babel-eslint": "7.x.x",
     "babel-loader": "7.x.x",
     "babel-plugin-add-module-exports": "~0.2.1",
@@ -71,7 +74,7 @@
     "lru-cache": "~4.0.2",
     "numeral": "~2.0.6",
     "parse-github-url": "~1.0.0",
-    "prop-types": "~15.5.10",
+    "prop-types": "~15.6.0",
     "react": "~16.0.0",
     "react-dom": "~16.0.0",
     "reflexbox": "~3.0.0-0",
