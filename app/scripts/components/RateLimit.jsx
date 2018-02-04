@@ -57,10 +57,10 @@ const RateLimit = ({ heightInRem, inverse, remaining, total }) => {
   const ratio = total === 0 ? 0 : remaining / total;
   return (
     <Flex>
-      <RLMeterContainer w={2 / 3} heightInRem={heightInRem}>
+      <RLMeterContainer w={3 / 4} heightInRem={heightInRem}>
         <RLMeter inverse={inverse} percentage={ratio * 100} />
       </RLMeterContainer>
-      <RLNumber w={1 / 3} heightInRem={heightInRem} inverse={inverse}>
+      <RLNumber w={1 / 4} heightInRem={heightInRem} inverse={inverse}>
         {numeral(remaining).format('0,0')}
       </RLNumber>
     </Flex>

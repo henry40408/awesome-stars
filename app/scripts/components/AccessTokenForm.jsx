@@ -43,7 +43,7 @@ const ATFButton = styled.button`
 const AccessTokenForm = withState('token', 'setToken', ({ accessToken }) => accessToken)(
   ({ heightInRem, onSubmit, setToken, token }) => (
     <ATFContainer>
-      <Box w={2 / 3}>
+      <Box w={3 / 4}>
         <ATFField
           type="text"
           value={token}
@@ -51,7 +51,7 @@ const AccessTokenForm = withState('token', 'setToken', ({ accessToken }) => acce
           heightInRem={heightInRem}
         />
       </Box>
-      <ATFButtonContainer w={1 / 3} heightInRem={heightInRem}>
+      <ATFButtonContainer w={1 / 4} heightInRem={heightInRem}>
         <ATFButton heightInRem={heightInRem} onClick={onSubmit(token)}>
           Save
         </ATFButton>
