@@ -17,7 +17,8 @@
   },
   "devDependencies": {
     "@storybook/addon-actions": "~3.3.12",
-    "@storybook/addons": "~3.3.0",
+    "@storybook/addon-knobs": "~3.3.12",
+    "@storybook/addons": "~3.3.12",
     "@storybook/react": "~3.3.12",
     "ajv": "~5.0.0",
     "babel-cli": "6.x.x",

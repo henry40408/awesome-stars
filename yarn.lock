@@ -34,6 +34,22 @@
     react-inspector "^2.2.2"
     uuid "^3.1.0"
 
+"@storybook/addon-knobs@~3.3.12":
+  version "3.3.12"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-knobs/-/addon-knobs-3.3.12.tgz#371c3d5b50bd0220a7f0d18e5c20794fb6292545"
+  dependencies:
+    babel-runtime "^6.26.0"
+    deep-equal "^1.0.1"
+    global "^4.3.2"
+    insert-css "^2.0.0"
+    lodash.debounce "^4.0.8"
+    moment "^2.20.1"
+    prop-types "^15.6.0"
+    react-color "^2.11.4"
+    react-datetime "^2.11.1"
+    react-textarea-autosize "^5.2.1"
+    util-deprecate "^1.0.2"
+
 "@storybook/addon-links@^3.3.12":
   version "3.3.12"
   resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-3.3.12.tgz#e1bb6e207506a45bea9e5f64cd78c045327412b7"
@@ -42,7 +58,7 @@
     global "^4.3.2"
     prop-types "^15.5.10"
 
-"@storybook/addons@^3.3.12", "@storybook/addons@~3.3.0":
+"@storybook/addons@^3.3.12", "@storybook/addons@~3.3.12":
   version "3.3.12"
   resolved "https://registry.yarnpkg.com/@storybook/addons/-/addons-3.3.12.tgz#682927b5ac4baad796922eec505a7e956a3f79d9"
 
@@ -2626,7 +2642,7 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-create-react-class@^15.6.2:
+create-react-class@^15.5.2, create-react-class@^15.6.2:
   version "15.6.3"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.3.tgz#2d73237fb3f970ae6ebe011a9e66f46dbca80036"
   dependencies:
@@ -5101,6 +5117,10 @@ inquirer@^0.12.0:
     strip-ansi "^3.0.0"
     through "^2.3.6"
 
+insert-css@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/insert-css/-/insert-css-2.0.0.tgz#eb5d1097b7542f4c79ea3060d3aee07d053880f4"
+
 interpret@^0.6.4:
   version "0.6.6"
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-0.6.6.tgz#fecd7a18e7ce5ca6abfb953e1f86213a49f1625b"
@@ -5981,7 +6001,7 @@ lodash@^4.0.0, lodash@^4.14.0, lodash@^4.2.0, lodash@^4.3.0, lodash@~4.17.4:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
-lodash@^4.17.0, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.2.1:
+lodash@^4.0.1, lodash@^4.17.0, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.2.1:
   version "4.17.5"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
 
@@ -6084,6 +6104,10 @@ markdown-loader@^2.0.1:
 marked@^0.3.9:
   version "0.3.12"
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.12.tgz#7cf25ff2252632f3fe2406bde258e94eee927519"
+
+material-colors@^1.2.1:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/material-colors/-/material-colors-1.2.5.tgz#5292593e6754cb1bcc2b98030e4e0d6a3afc9ea1"
 
 math-expression-evaluator@^1.2.14:
   version "1.2.17"
@@ -6283,6 +6307,10 @@ mkdirp@0.5.1, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkd
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
   dependencies:
     minimist "0.0.8"
+
+moment@^2.20.1:
+  version "2.20.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.20.1.tgz#d6eb1a46cbcc14a2b2f9434112c1ff8907f313fd"
 
 move-concurrently@^1.0.1:
   version "1.0.1"
@@ -7347,7 +7375,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.5.8, prop-types@^15.5.9, prop-types@^15.6.0, prop-types@~15.6.0:
+prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.5.9, prop-types@^15.6.0, prop-types@~15.6.0:
   version "15.6.0"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.0.tgz#ceaf083022fc46b4a35f69e13ef75aed0d639856"
   dependencies:
@@ -7512,6 +7540,25 @@ rc@^1.1.2, rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-color@^2.11.4:
+  version "2.13.8"
+  resolved "https://registry.yarnpkg.com/react-color/-/react-color-2.13.8.tgz#bcc58f79a722b9bfc37c402e68cd18f26970aee4"
+  dependencies:
+    lodash "^4.0.1"
+    material-colors "^1.2.1"
+    prop-types "^15.5.10"
+    reactcss "^1.2.0"
+    tinycolor2 "^1.4.1"
+
+react-datetime@^2.11.1:
+  version "2.12.0"
+  resolved "https://registry.yarnpkg.com/react-datetime/-/react-datetime-2.12.0.tgz#9226a11730b7be1273c12f018a4d5613496e831c"
+  dependencies:
+    create-react-class "^15.5.2"
+    object-assign "^3.0.0"
+    prop-types "^15.5.7"
+    react-onclickoutside "^6.5.0"
+
 react-docgen@^2.20.0:
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/react-docgen/-/react-docgen-2.20.0.tgz#41a6da483a34a4aaed041a9909f5e61864d681cb"
@@ -7573,6 +7620,10 @@ react-modal@^3.1.10:
     prop-types "^15.5.10"
     warning "^3.0.0"
 
+react-onclickoutside@^6.5.0:
+  version "6.7.1"
+  resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.7.1.tgz#6a5b5b8b4eae6b776259712c89c8a2b36b17be93"
+
 react-split-pane@^0.1.74:
   version "0.1.76"
   resolved "https://registry.yarnpkg.com/react-split-pane/-/react-split-pane-0.1.76.tgz#b2ba11e1055e18b6b0fd56e13e3adb35aec87af6"
@@ -7588,6 +7639,12 @@ react-style-proptype@^3.0.0:
   resolved "https://registry.yarnpkg.com/react-style-proptype/-/react-style-proptype-3.1.0.tgz#c8912fc13460f5b0c1ec1114c729d535b52b8073"
   dependencies:
     prop-types "^15.5.4"
+
+react-textarea-autosize@^5.2.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/react-textarea-autosize/-/react-textarea-autosize-5.2.1.tgz#2b78f9067180f41b08ac59f78f1581abadd61e54"
+  dependencies:
+    prop-types "^15.6.0"
 
 react-transition-group@^1.1.2:
   version "1.2.1"
@@ -7618,6 +7675,12 @@ react@~16.0.0:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.0"
+
+reactcss@^1.2.0:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/reactcss/-/reactcss-1.2.3.tgz#c00013875e557b1cf0dfd9a368a1c3dab3b548dd"
+  dependencies:
+    lodash "^4.0.1"
 
 read-all-stream@^3.0.0:
   version "3.1.0"
@@ -8752,6 +8815,10 @@ timers-browserify@^2.0.2:
   resolved "https://registry.yarnpkg.com/timers-browserify/-/timers-browserify-2.0.2.tgz#ab4883cf597dcd50af211349a00fbca56ac86b86"
   dependencies:
     setimmediate "^1.0.4"
+
+tinycolor2@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/tinycolor2/-/tinycolor2-1.4.1.tgz#f4fad333447bc0b07d4dc8e9209d8f39a8ac77e8"
 
 to-absolute-glob@^0.1.1:
   version "0.1.1"
