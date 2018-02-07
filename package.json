@@ -40,6 +40,7 @@
     "eslint-plugin-import": "~2.2.0",
     "eslint-plugin-jsx-a11y": "~5.0.1",
     "eslint-plugin-react": "~7.0.1",
+    "file-loader": "~1.1.6",
     "gulp": "3.x.x",
     "gulp-bump": "2.x.x",
     "gulp-cache": "0.x.x",

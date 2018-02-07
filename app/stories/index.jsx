@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 import AccessTokenForm from '../scripts/components/AccessTokenForm';
 import RateLimit from '../scripts/components/RateLimit';
+import Star from '../scripts/components/Star';
 
 const MAXIMUM = 5000;
 
@@ -39,3 +40,5 @@ storiesOf('AccessTokenForm', module).add('default', () => (
     onSubmit={accessToken => action(`access token submitted: ${accessToken}`)}
   />
 ));
+
+storiesOf('Star', module).add('default', () => <Star count={number('Count', 1000)} />);
