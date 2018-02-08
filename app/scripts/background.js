@@ -111,7 +111,9 @@ class GithubService {
     let client = this.cache.get(this.GITHUB_KEY);
     if (!client) {
       client = octokit();
-      client.authenticate({ type: 'token', token });
+      if (token) {
+        client.authenticate({ type: 'token', token });
+      }
       this.cache.set(this.GITHUB_KEY, client);
     }
     return client;
