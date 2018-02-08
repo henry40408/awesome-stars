@@ -78,7 +78,13 @@ class OptionPage extends React.Component {
   constructor(props) {
     super(props);
     this.client = new Client(chrome.runtime);
-    this.state = { accessToken: '', remaining: 0, limit: 0 };
+    this.state = {
+      accessToken: '',
+      invalid: false,
+      limit: 0,
+      remaining: 0,
+      saving: false,
+    };
   }
 
   componentDidMount() {
@@ -88,11 +94,19 @@ class OptionPage extends React.Component {
   loadInitialDataAsync = async () => {
     const { data: accessToken } = await this.client.message('/access-token/get');
     const { data: { remaining, limit } } = await this.client.message('/rate-limit');
-    this.setState({ accessToken, remaining, limit });
+    const invalid = remaining === -1 || limit === -1;
+    this.setState({ accessToken, invalid, remaining, limit });
+  };
+
+  saveAccessTokenAsync = async (accessToken) => {
+    this.setState({ saving: true });
+    await this.client.message('/access-token/set', { accessToken });
+    this.setState({ saving: false });
+    this.loadInitialDataAsync();
   };
 
   render() {
-    const { accessToken, remaining, limit } = this.state;
+    const { accessToken, invalid, remaining, limit, saving } = this.state;
     return (
       <Container column>
         <Header p={2}>
@@ -118,7 +132,12 @@ class OptionPage extends React.Component {
             </Box>
             <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
               <h3>Setup Access Token</h3>
-              <AccessTokenForm accessToken={accessToken} />
+              <AccessTokenForm
+                accessToken={accessToken}
+                invalid={invalid}
+                onSubmit={this.saveAccessTokenAsync}
+                saving={saving}
+              />
               <p>
                 <a href="https://github.com/settings/tokens/new?description=Awesome%20Stars">
                   Get an access token
