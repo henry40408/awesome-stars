@@ -54,14 +54,23 @@ const BaseRLNumber = styled.div`
 const RLNumber = reflex(BaseRLNumber);
 
 const RateLimit = ({ heightInRem, inverse, remaining, total }) => {
-  const ratio = total === 0 ? 0 : remaining / total;
+  let ratio = total === 0 ? 0 : remaining / total;
+  let formatted;
+
+  if (remaining === -1 || total === -1) {
+    ratio = 0;
+    formatted = 'N/A';
+  } else {
+    formatted = numeral(remaining).format('0,0');
+  }
+
   return (
     <Flex>
       <RLMeterContainer w={3 / 4} heightInRem={heightInRem}>
         <RLMeter inverse={inverse} percentage={ratio * 100} />
       </RLMeterContainer>
       <RLNumber w={1 / 4} heightInRem={heightInRem} inverse={inverse}>
-        {numeral(remaining).format('0,0')}
+        {formatted}
       </RLNumber>
     </Flex>
   );

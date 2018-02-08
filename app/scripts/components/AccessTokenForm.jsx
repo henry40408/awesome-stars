@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Box, Flex, reflex } from 'reflexbox';
-import { compose, withState } from 'recompose';
 
 import colors from '../themes/colors';
 
@@ -40,26 +39,43 @@ const ATFButton = styled.button`
   width: 100%;
 `;
 
-const AccessTokenForm = compose(withState('token', 'setToken', ({ accessToken }) => accessToken))(
-  ({ heightInRem, invalid, saving, onSubmit, setToken, token }) => (
-    <ATFContainer>
-      <Box w={3 / 4}>
-        <ATFField
-          type="text"
-          value={token}
-          onChange={e => setToken(e.target.value)}
-          heightInRem={heightInRem}
-          invalid={invalid}
-        />
-      </Box>
-      <ATFButtonContainer w={1 / 4} heightInRem={heightInRem}>
-        <ATFButton disabled={saving} onClick={onSubmit(token)} heightInRem={heightInRem}>
-          {saving ? 'Saving...' : 'Save'}
-        </ATFButton>
-      </ATFButtonContainer>
-    </ATFContainer>
-  ),
-);
+class AccessTokenForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { accessToken: '' };
+  }
+
+  componentWillReceiveProps({ accessToken }) {
+    this.setState({ accessToken });
+  }
+
+  updateAccessToken = (accessToken) => {
+    this.setState({ accessToken });
+  };
+
+  render() {
+    const { heightInRem, invalid, saving, onSubmit } = this.props;
+    const { accessToken } = this.state;
+    return (
+      <ATFContainer>
+        <Box w={3 / 4}>
+          <ATFField
+            type="text"
+            value={accessToken}
+            onChange={e => this.updateAccessToken(e.target.value)}
+            heightInRem={heightInRem}
+            invalid={invalid}
+          />
+        </Box>
+        <ATFButtonContainer w={1 / 4} heightInRem={heightInRem}>
+          <ATFButton disabled={saving} onClick={onSubmit(accessToken)} heightInRem={heightInRem}>
+            {saving ? 'Saving...' : 'Save'}
+          </ATFButton>
+        </ATFButtonContainer>
+      </ATFContainer>
+    );
+  }
+}
 
 AccessTokenForm.propTypes = {
   accessToken: PropTypes.string,
