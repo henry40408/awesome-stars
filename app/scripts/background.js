@@ -29,6 +29,8 @@ class AccessTokenRepository {
     this.common = ctx[DIConstants.S_COMMON];
     /** @type {ChromeStorageService} */
     this.storage = ctx[DIConstants.S_CHROME_STORAGE];
+
+    this.changed = false;
   }
 
   async loadAsync() {
@@ -36,7 +38,8 @@ class AccessTokenRepository {
   }
 
   async saveAsync(accessToken) {
-    return this.storage.saveAsync(this.KEY_ACCESS_TOKEN, accessToken);
+    await this.storage.saveAsync(this.KEY_ACCESS_TOKEN, accessToken);
+    this.changed = true;
   }
 }
 
@@ -109,12 +112,13 @@ class GithubService {
   async buildClient() {
     const token = await this.accessToken.loadAsync();
     let client = this.cache.get(this.GITHUB_KEY);
-    if (!client) {
+    if (this.accessToken.changed || !client) {
       client = octokit();
       if (token) {
         client.authenticate({ type: 'token', token });
       }
       this.cache.set(this.GITHUB_KEY, client);
+      this.accessToken.changed = true;
     }
     return client;
   }
@@ -161,7 +165,7 @@ class GithubService {
     }
   }
 
-  async fetchStarCountAsync(owner, name, options = { shouldUpdateRateLimit: true }) {
+  async fetchStarCountAsync(owner, name) {
     const client = await this.buildClient();
     const cacheKey = `/repos/${owner}/${name}`;
     let repo = this.cache.get(cacheKey);
@@ -171,11 +175,6 @@ class GithubService {
         repo = await client.repos.get({ owner, repo: name });
         this.common.log('fetch repository from github', repo);
         this.cache.set(cacheKey, repo);
-
-        const { shouldUpdateRateLimit } = options;
-        if (shouldUpdateRateLimit) {
-          this.fetchRateLimitAsync();
-        }
       } catch (e) {
         this.common.updateBadge(null);
         return -1;
@@ -248,8 +247,7 @@ class MessageRouter {
 
     this.register('/access-token/set', async (message) => {
       const { accessToken: token } = message;
-      await this.accessToken.saveAsync(token);
-      return this.github.fetchRateLimitAsync();
+      return this.accessToken.saveAsync(token);
     });
 
     this.register('/awesome-list/get', async () => this.github.fetchAwesomeListAsync());
