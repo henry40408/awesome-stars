@@ -37,7 +37,9 @@ storiesOf('AccessTokenForm', module).add('default', () => (
   <AccessTokenForm
     accessToken="accessToken"
     heightInRem={number('Height in rem', 1)}
+    invalid={boolean('Invalid', false)}
     onSubmit={accessToken => action(`access token submitted: ${accessToken}`)}
+    saving={boolean('Saving', false)}
   />
 ));
 

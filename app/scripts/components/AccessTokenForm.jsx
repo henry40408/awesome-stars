@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Box, Flex, reflex } from 'reflexbox';
-import { withState } from 'recompose';
+import { compose, withState } from 'recompose';
 
 import colors from '../themes/colors';
 
@@ -11,7 +11,7 @@ const ATFContainer = styled(Flex)`
 `;
 
 const ATFField = styled.input`
-  border: none;
+  border: 2px ${({ invalid }) => (invalid ? colors.red : 'transparent')} solid;
   box-sizing: border-box;
   font-size: ${({ heightInRem }) => heightInRem * 1.1}rem;
   padding: ${({ heightInRem }) => heightInRem * 0.5}rem;
@@ -30,8 +30,8 @@ const ATFButtonContainer = reflex(BaseATFButtonContainer);
 
 const ATFButton = styled.button`
   box-sizing: border-box;
-  background-color: ${colors.darkGray};
-  border: 1px solid ${colors.darkGray};
+  background-color: ${({ disabled }) => (disabled ? colors.lightGray : colors.darkGray)};
+  border: 1px solid ${({ disabled }) => (disabled ? colors.lightGray : colors.darkGray)};
   color: ${colors.white};
   font-size: ${props => props.heightInRem}rem;
   height: 100%;
@@ -40,8 +40,8 @@ const ATFButton = styled.button`
   width: 100%;
 `;
 
-const AccessTokenForm = withState('token', 'setToken', ({ accessToken }) => accessToken)(
-  ({ heightInRem, onSubmit, setToken, token }) => (
+const AccessTokenForm = compose(withState('token', 'setToken', ({ accessToken }) => accessToken))(
+  ({ heightInRem, invalid, saving, onSubmit, setToken, token }) => (
     <ATFContainer>
       <Box w={3 / 4}>
         <ATFField
@@ -49,11 +49,12 @@ const AccessTokenForm = withState('token', 'setToken', ({ accessToken }) => acce
           value={token}
           onChange={e => setToken(e.target.value)}
           heightInRem={heightInRem}
+          invalid={invalid}
         />
       </Box>
       <ATFButtonContainer w={1 / 4} heightInRem={heightInRem}>
-        <ATFButton heightInRem={heightInRem} onClick={onSubmit(token)}>
-          Save
+        <ATFButton disabled={saving} onClick={onSubmit(token)} heightInRem={heightInRem}>
+          {saving ? 'Saving...' : 'Save'}
         </ATFButton>
       </ATFButtonContainer>
     </ATFContainer>
@@ -63,13 +64,17 @@ const AccessTokenForm = withState('token', 'setToken', ({ accessToken }) => acce
 AccessTokenForm.propTypes = {
   accessToken: PropTypes.string,
   heightInRem: PropTypes.number,
+  invalid: PropTypes.bool,
   onSubmit: PropTypes.func,
+  saving: PropTypes.bool,
 };
 
 AccessTokenForm.defaultProps = {
   accessToken: '',
   heightInRem: 1,
+  invalid: false,
   onSubmit: () => {},
+  saving: false,
 };
 
 export default AccessTokenForm;
