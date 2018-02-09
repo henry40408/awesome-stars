@@ -91,18 +91,28 @@ class OptionPage extends React.Component {
     this.loadInitialDataAsync();
   }
 
-  loadInitialDataAsync = async () => {
+  loadAccessTokenAsync = async () => {
     const { data: accessToken } = await this.client.message('/access-token/get');
+    return { accessToken };
+  };
+
+  loadInitialDataAsync = async () => {
+    const { accessToken } = await this.loadAccessTokenAsync();
+    const { invalid, limit, remaining } = await this.loadRateLimitAsync();
+    this.setState({ accessToken, invalid, limit, remaining });
+  };
+
+  loadRateLimitAsync = async () => {
     const { data: { remaining, limit } } = await this.client.message('/rate-limit');
     const invalid = remaining === -1 || limit === -1;
-    this.setState({ accessToken, invalid, remaining, limit });
+    return { invalid, limit, remaining };
   };
 
   saveAccessTokenAsync = async (accessToken) => {
-    this.setState({ saving: true });
+    this.setState({ saving: true, accessToken });
     await this.client.message('/access-token/set', { accessToken });
-    this.setState({ saving: false });
-    this.loadInitialDataAsync();
+    const { invalid, limit, remaining } = await this.loadRateLimitAsync();
+    this.setState({ saving: false, invalid, limit, remaining });
   };
 
   render() {
