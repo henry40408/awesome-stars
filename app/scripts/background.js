@@ -1,4 +1,5 @@
-import octokit from '@octokit/rest';
+import axios from 'axios';
+import * as awilix from 'awilix';
 import { Router } from 'chomex';
 import ChromePromise from 'chrome-promise';
 import format from 'date-fns/format';
@@ -14,8 +15,6 @@ if (process.env.NODE_ENV === 'development') {
   // eslint-disable-next-line global-require,import/no-extraneous-dependencies
   require('chromereload/devonly');
 }
-
-const awilix = require('awilix');
 
 const container = awilix.createContainer({
   injectionMode: awilix.InjectionMode.PROXY,
@@ -113,10 +112,11 @@ class GithubService {
     const token = await this.accessToken.loadAsync();
     let client = this.cache.get(this.GITHUB_KEY);
     if (this.accessToken.changed || !client) {
-      client = octokit();
+      const params = {};
       if (token) {
-        client.authenticate({ type: 'token', token });
+        params.access_token = token;
       }
+      client = axios.create({ baseURL: 'https://api.github.com', params });
       this.cache.set(this.GITHUB_KEY, client);
       this.accessToken.changed = true;
     }
@@ -147,10 +147,11 @@ class GithubService {
   }
 
   async fetchRateLimitAsync() {
+    /** @type {axios} */
     const client = await this.buildClient();
     try {
-      const rateLimit = await client.misc.getRateLimit({});
-      const { data: { rate: { remaining, limit } } } = rateLimit;
+      const response = await client.get('/rate_limit');
+      const { rate: { remaining, limit } } = response.data;
 
       this.common.log('rate limit:', { remaining, limit });
 
@@ -166,13 +167,15 @@ class GithubService {
   }
 
   async fetchStarCountAsync(owner, name) {
+    /** @type {axios} */
     const client = await this.buildClient();
     const cacheKey = `/repos/${owner}/${name}`;
     let repo = this.cache.get(cacheKey);
 
     if (!repo) {
       try {
-        repo = await client.repos.get({ owner, repo: name });
+        const response = await client.get(`/repos/${owner}/${name}`);
+        repo = response.data;
         this.common.log('fetch repository from github', repo);
         this.cache.set(cacheKey, repo);
       } catch (e) {

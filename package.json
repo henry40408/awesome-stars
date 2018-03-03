@@ -67,8 +67,8 @@
     "yargs": "5.x.x"
   },
   "dependencies": {
-    "@octokit/rest": "~14.0.8",
     "awilix": "~3.0.5",
+    "axios": "^0.18.0",
     "babel-runtime": "~6.23.0",
     "bluebird": "~3.5.0",
     "chomex": "~1.0.5",
