@@ -35,8 +35,11 @@ gulp.task('scripts', () =>
               __ENV__: JSON.stringify(ENV),
               __VENDOR__: JSON.stringify(args.vendor),
             }),
-            new BundleAnalyzerPlugin(),
-          ].concat(args.production ? [new webpack.optimize.UglifyJsPlugin()] : []),
+          ].concat(
+            args.production
+              ? [new webpack.optimize.UglifyJsPlugin()]
+              : [new BundleAnalyzerPlugin()],
+          ),
           module: {
             rules: [
               { test: /\.jsx?$/, loader: 'eslint-loader', exclude: /node_modules/, enforce: 'pre' },
