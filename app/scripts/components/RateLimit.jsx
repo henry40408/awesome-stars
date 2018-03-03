@@ -28,7 +28,7 @@ const RLFilling = ({ percentage }) => keyframes`
 `;
 
 const BaseRLMeterContainer = styled.div`
-  border: 1px transparent solid;
+  border: 1px white solid;
   height: ${({ heightInRem }) => heightInRem}rem;
 `;
 
