@@ -1,7 +1,5 @@
 import format from 'date-fns/format';
 
-exports.ERROR = '@@ERROR';
-
 exports.log = function log(...args) {
   if (process.env.NODE_ENV === 'development') {
     const timestamp = format(new Date(), 'YYYY-MM-DDTHH:mm:ssZ');

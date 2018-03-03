@@ -76,7 +76,14 @@ class Star extends React.Component {
   render() {
     const { count, loading } = this.props;
     const { star: starColor, text: textColor } = this.colorsFromCount(count);
-    const countText = loading || count === -1 ? '...' : numeral(count).format('0,0');
+
+    let countText;
+    if (loading) {
+      countText = '...';
+    } else {
+      countText = count === -1 ? '\u26A0' : numeral(count).format('0,0');
+    }
+
     return (
       <StarBadge>
         <StarIcon src={starIcons[starColor]} alt={`${starColor} star`} />
