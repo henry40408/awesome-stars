@@ -41,6 +41,7 @@ gulp.task('scripts', () =>
             rules: [
               { test: /\.jsx?$/, loader: 'eslint-loader', exclude: /node_modules/, enforce: 'pre' },
               { test: /\.jsx?$/, loader: 'babel-loader', enforce: 'post' },
+              { test: /\.svg$/, loader: 'file-loader' },
             ],
           },
         },

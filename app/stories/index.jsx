@@ -1,13 +1,14 @@
 import React from 'react';
 import { storiesOf, addDecorator } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { withKnobs, boolean, number, text } from '@storybook/addon-knobs';
+import { withKnobs, boolean, number } from '@storybook/addon-knobs';
 
 import styled from 'styled-components';
 
 import AccessTokenForm from '../scripts/components/AccessTokenForm';
 import RateLimit from '../scripts/components/RateLimit';
 import Star from '../scripts/components/Star';
+import UpdateNotification from '../scripts/components/UpdateNotification';
 
 const MAXIMUM = 5000;
 
@@ -44,3 +45,5 @@ storiesOf('AccessTokenForm', module).add('default', () => (
 ));
 
 storiesOf('Star', module).add('default', () => <Star count={number('Count', 1000)} />);
+
+storiesOf('UpdateNotification', module).add('default', () => <UpdateNotification />);
