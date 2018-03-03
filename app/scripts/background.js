@@ -186,7 +186,7 @@ class GithubService {
       this.common.log('fetch repository from cache', repo);
     }
 
-    const { data: { stargazers_count } } = repo;
+    const { stargazers_count } = repo;
     return parseInt(stargazers_count, 10);
   }
 }
