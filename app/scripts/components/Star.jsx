@@ -52,10 +52,12 @@ const StarText = styled.span`
 class Star extends React.Component {
   static propTypes = {
     count: PropTypes.number,
+    loading: PropTypes.bool,
   };
 
   static defaultProps = {
     count: 0,
+    loading: false,
   };
 
   colorsFromCount = (count) => {
@@ -72,9 +74,9 @@ class Star extends React.Component {
   };
 
   render() {
-    const { count } = this.props;
+    const { count, loading } = this.props;
     const { star: starColor, text: textColor } = this.colorsFromCount(count);
-    const countText = count === -1 ? '...' : numeral(count).format('0,0');
+    const countText = loading || count === -1 ? '...' : numeral(count).format('0,0');
     return (
       <StarBadge>
         <StarIcon src={starIcons[starColor]} alt={`${starColor} star`} />

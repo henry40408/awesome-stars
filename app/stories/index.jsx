@@ -44,6 +44,8 @@ storiesOf('AccessTokenForm', module).add('default', () => (
   />
 ));
 
-storiesOf('Star', module).add('default', () => <Star count={number('Count', 1000)} />);
+storiesOf('Star', module).add('default', () => (
+  <Star count={number('Count', 1000)} loading={boolean('Loading', false)} />
+));
 
 storiesOf('UpdateNotification', module).add('default', () => <UpdateNotification />);

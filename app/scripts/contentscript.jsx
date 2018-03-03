@@ -17,11 +17,9 @@ const messageClient = new Client(chrome.runtime);
 
 function parseGithubURL(url) {
   const parsed = ParseGithubURL(url);
-
   if (parsed && parsed.host === 'github.com' && parsed.owner && parsed.name) {
     return parsed;
   }
-
   return null;
 }
 
