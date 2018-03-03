@@ -78,14 +78,15 @@ class OptionPage extends React.Component {
   constructor(props) {
     super(props);
     this.client = new Client(chrome.runtime);
-    this.state = {
-      accessToken: '',
-      invalid: false,
-      limit: 0,
-      remaining: 0,
-      saving: false,
-    };
   }
+
+  state = {
+    accessToken: '',
+    invalid: false,
+    limit: 0,
+    remaining: 0,
+    saving: false,
+  };
 
   componentDidMount() {
     this.loadInitialDataAsync();

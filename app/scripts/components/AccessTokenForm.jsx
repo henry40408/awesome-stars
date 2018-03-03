@@ -40,10 +40,7 @@ const ATFButton = styled.button`
 `;
 
 class AccessTokenForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { accessToken: '' };
-  }
+  state = { accessToken: '' };
 
   componentWillReceiveProps({ accessToken }) {
     this.setState({ accessToken });
