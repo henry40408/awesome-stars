@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom';
 
 import { Client } from 'chomex';
 import chunkize from 'lodash/chunk';
-import includes from 'lodash/includes';
 import ParseGithubURL from 'parse-github-url';
 
 import { log } from './common';
@@ -19,9 +18,9 @@ function parseGithubURL(url) {
   const parsed = ParseGithubURL(url);
   if (parsed && parsed.host === 'github.com' && parsed.owner && parsed.name) {
     const { host, owner, name } = parsed;
-    return { illegal: false, host, owner, name };
+    return { valid: true, host, owner, name };
   }
-  return { illegal: true };
+  return { valid: false };
 }
 
 function appendStars(tuples) {
@@ -53,8 +52,10 @@ async function isAwesomeListAsync() {
   }
 
   const { owner, name } = parsed;
-  const { data: awesomeList } = await messageClient.message('/awesome-list/get');
-  const isAwesomeList = includes(awesomeList, `${owner}/${name}`);
+  const { data: isAwesomeList } = await messageClient.message('/awesome-list/check', {
+    owner,
+    name,
+  });
 
   if (isAwesomeList) {
     log(`awesome list ${owner}/${name} detected`);
@@ -76,10 +77,10 @@ async function initAwesomeStarsAsync() {
   const tuples = links
     .filter(link => !link.hash)
     .map((link) => {
-      const { illegal, owner, name } = parseGithubURL(link.href);
-      return { illegal, link, owner, name };
+      const { valid, owner, name } = parseGithubURL(link.href);
+      return { valid, link, owner, name };
     })
-    .filter(tuple => !tuple.illegal);
+    .filter(tuple => tuple.valid);
 
   const stars = appendStars(tuples);
   await batchUpdateCountAsync(stars);

@@ -67,7 +67,10 @@ class MessageRouter {
       return this.accessToken.saveAsync(token);
     });
 
-    this.register('/awesome-list/get', async () => this.github.fetchAwesomeListAsync());
+    this.register('/awesome-list/check', async (message) => {
+      const { owner, name } = message;
+      return this.github.isAwesomeListAsync({ owner, name });
+    });
 
     this.register('/rate-limit', async () => this.github.fetchRateLimitAsync());
 

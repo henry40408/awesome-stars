@@ -1,4 +1,5 @@
 import axios from 'axios/index';
+import includes from 'lodash/includes';
 import numeral from 'numeral';
 
 import DIConstants from '../constants';
@@ -90,18 +91,23 @@ class GithubService {
       try {
         const response = await client.get(`/repos/${owner}/${name}`);
         repo = response.data;
-        this.log('fetch repository from github', repo);
+        this.log('🌍 fetch repository from Github', repo);
         this.cache.set(cacheKey, repo);
       } catch (e) {
         this.updateBadge(null);
         return -1;
       }
     } else {
-      this.log('fetch repository from cache', repo);
+      this.log('🗄 fetch repository from️ cache', repo);
     }
 
     const { stargazers_count } = repo;
     return parseInt(stargazers_count, 10);
+  }
+
+  async isAwesomeListAsync({ owner, name }) {
+    const awesomeList = await this.fetchAwesomeListAsync();
+    return includes(awesomeList, `${owner}/${name}`);
   }
 }
 
