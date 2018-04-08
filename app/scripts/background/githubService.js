@@ -10,6 +10,8 @@ class GithubService {
   AWESOME_LIST_KEY = '@@awesome-list';
   GITHUB_KEY = '@@github';
 
+  RATE_LIMIT_THRESHOLD = 0.5;
+
   constructor(ctx) {
     this.log = ctx[DIConstants.LOG];
     this.updateBadge = ctx[DIConstants.UPDATE_BADGE];
@@ -82,6 +84,16 @@ class GithubService {
   }
 
   async fetchStarCountAsync(owner, name) {
+    // threshold to prevent the extension use all rate limit
+    const { remaining, limit } = await this.fetchRateLimitAsync();
+    if (
+      remaining === -1 || limit === -1 ||
+      limit === 0 ||
+      remaining / limit <= this.RATE_LIMIT_THRESHOLD
+    ) {
+      return -1;
+    }
+
     const client = await this.buildClient();
 
     const cacheKey = `/repos/${owner}/${name}`;
