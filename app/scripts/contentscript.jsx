@@ -1,58 +1,40 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 
 import { Client } from 'chomex';
 import chunkize from 'lodash/chunk';
+import includes from 'lodash/includes';
 import ParseGithubURL from 'parse-github-url';
 
-import checkAsync from './checkers';
 import { log } from './common';
-import Star from './components/Star';
 import UpdateNotification from './components/UpdateNotification';
+import StarHOC from './components/StarHOC';
 
 const CHUNK_SIZE = 20;
 const messageClient = new Client(chrome.runtime);
 
-class StarHOC extends React.Component {
-  static propTypes = {
-    owner: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  };
-
-  state = { count: 0, hasError: false, loading: true };
-
-  async updateCountAsync() {
-    const { owner, name } = this.props;
-    const { data: count } = await messageClient.message('/stars/get', { owner, name });
-    this.setState({ count, loading: false });
-  }
-
-  render() {
-    const { count, loading } = this.state;
-    return <Star count={count} loading={loading} />;
-  }
-}
-
 function parseGithubURL(url) {
   const parsed = ParseGithubURL(url);
   if (parsed && parsed.host === 'github.com' && parsed.owner && parsed.name) {
-    return parsed;
+    const { host, owner, name } = parsed;
+    return { illegal: false, host, owner, name };
   }
-  return null;
+  return { illegal: true };
 }
 
 function appendStars(tuples) {
-  /** @type {Array<StarHOC>} */
+  /** @type {[StarHOC]} */
   const stars = [];
+
   for (const tuple of tuples) {
     const { link, owner, name } = tuple;
     const starNode = document.createElement('span');
     link.parentNode.insertBefore(starNode, link.nextSibling);
     ReactDOM.render(<StarHOC ref={star => stars.push(star)} owner={owner} name={name} />, starNode);
   }
+
   return stars;
 }
 
@@ -64,35 +46,43 @@ async function batchUpdateCountAsync(stars) {
   }
 }
 
+async function isAwesomeListAsync() {
+  const parsed = parseGithubURL(window.location.href);
+  if (!parsed) {
+    return false;
+  }
+
+  const { owner, name } = parsed;
+  const { data: awesomeList } = await messageClient.message('/awesome-list/get');
+  const isAwesomeList = includes(awesomeList, `${owner}/${name}`);
+
+  if (isAwesomeList) {
+    log(`awesome list ${owner}/${name} detected`);
+    return true;
+  }
+
+  return false;
+}
+
 async function initAwesomeStarsAsync() {
+  const isAwesomeList = await isAwesomeListAsync();
+  if (!isAwesomeList) {
+    return;
+  }
+
   /** @type {Array} */
   const links = [].slice.call(document.querySelectorAll('#readme li > a'));
 
   const tuples = links
     .filter(link => !link.hash)
-    .filter(link => parseGithubURL(link.href))
     .map((link) => {
-      const { owner, name } = parseGithubURL(link.href);
-      return { link, owner, name };
-    });
+      const { illegal, owner, name } = parseGithubURL(link.href);
+      return { illegal, link, owner, name };
+    })
+    .filter(tuple => !tuple.illegal);
 
   const stars = appendStars(tuples);
   await batchUpdateCountAsync(stars);
-}
-
-async function checkAwesomeListAsync() {
-  const parsed = parseGithubURL(window.location.href);
-  if (!parsed) {
-    return;
-  }
-
-  const { owner, name } = parsed;
-  const options = { owner, name };
-  const isAwesomeList = await checkAsync(options);
-  if (isAwesomeList) {
-    log(`awesome list ${owner}/${name} detected`);
-    await initAwesomeStarsAsync();
-  }
 }
 
 function showUpdateNotification() {
@@ -109,11 +99,11 @@ async function checkUpdateNotificationSentAsync() {
 
   if (!updateNotificationSent) {
     showUpdateNotification();
-    await messageClient.message('/update-notification-sent/set', {
+    messageClient.message('/update-notification-sent/set', {
       updateNotificationSent: true,
     });
   }
 }
 
 checkUpdateNotificationSentAsync();
-checkAwesomeListAsync();
+initAwesomeStarsAsync();
