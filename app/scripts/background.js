@@ -21,9 +21,9 @@ const container = awilix.createContainer({
 
 container.register({
   [DIConstants.LOG]: awilix.asValue(log),
-  [DIConstants.MESSAGE_ROUTER]: awilix.asClass(MessageRouter).singleton(),
   [DIConstants.UPDATE_BADGE]: awilix.asValue(updateBadge),
-  [DIConstants.R_ACCESS_TOKEN]: awilix.asClass(AccessTokenRepository),
+  [DIConstants.MESSAGE_ROUTER]: awilix.asClass(MessageRouter).singleton(),
+  [DIConstants.R_ACCESS_TOKEN]: awilix.asClass(AccessTokenRepository).singleton(),
   [DIConstants.S_CACHE]: awilix.asClass(CacheService).singleton(),
   [DIConstants.S_CHROME_STORAGE]: awilix.asClass(ChromeStorageService),
   [DIConstants.S_GITHUB]: awilix.asClass(GithubService),
