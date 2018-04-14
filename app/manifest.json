@@ -37,5 +37,5 @@
     "images/star-white.svg",
     "images/star-yellow.svg"
   ],
-  "permissions": ["storage"]
+  "permissions": ["contextMenus", "storage"]
 }
