@@ -11,7 +11,9 @@ import { log } from './common';
 import UpdateNotification from './components/UpdateNotification';
 import StarHOC from './components/StarHOC';
 
-const CHUNK_SIZE = 20;
+const CHUNK_SIZE = 10;
+const GITHUB_ISSUES_URL_PATTERN = /https:\/\/github\.com\/(.+?)\/issues\/(\d+)/;
+
 const messageClient = new Client(chrome.runtime);
 
 function parseGithubURL(url) {
@@ -51,6 +53,11 @@ async function isAwesomeListAsync() {
     return false;
   }
 
+  const readme = document.querySelector('#readme');
+  if (!readme) {
+    return false;
+  }
+
   const { owner, name } = parsed;
   const { data: isAwesomeList } = await messageClient.message('/awesome-list/check', {
     owner,
@@ -65,15 +72,7 @@ async function isAwesomeListAsync() {
   return false;
 }
 
-async function initAwesomeStarsAsync() {
-  const isAwesomeList = await isAwesomeListAsync();
-  if (!isAwesomeList) {
-    return;
-  }
-
-  /** @type {Array} */
-  const links = [].slice.call(document.querySelectorAll('#readme li > a'));
-
+async function attachStarsOnLinksAsync(links) {
   const tuples = links
     .filter(link => !link.hash)
     .map((link) => {
@@ -84,6 +83,34 @@ async function initAwesomeStarsAsync() {
 
   const stars = appendStars(tuples);
   await batchUpdateCountAsync(stars);
+}
+
+async function initForReadmeAsync() {
+  const isAwesomeList = await isAwesomeListAsync();
+  if (!isAwesomeList) {
+    return;
+  }
+
+  /** @type {Array} */
+  const links = [].slice.call(document.querySelectorAll('#readme li > a'));
+  await attachStarsOnLinksAsync(links);
+}
+
+async function initForGithubIssuesAsync() {
+  const isGithubIssues = !!window.location.href.match(GITHUB_ISSUES_URL_PATTERN);
+  if (!isGithubIssues) {
+    return;
+  }
+
+  const links = [].slice.call(document.querySelectorAll('.comment-body li > a'));
+  await attachStarsOnLinksAsync(links);
+}
+
+async function initAwesomeStarsAsync() {
+  await Promise.all([
+    initForReadmeAsync(),
+    initForGithubIssuesAsync(),
+  ]);
 }
 
 function showUpdateNotification() {
