@@ -67,17 +67,11 @@ const ColorItem = styled.li`
 `;
 
 const StarsCurve = styled.img`
-  margin: -5.75rem 0 0;
+  margin: -7.5rem 0 0;
 `;
 
 const AlertText = styled.span`
   color: ${colors.red};
-`;
-
-const CheckBox = styled.input.attrs({
-  type: 'checkbox',
-})`
-  margin-right: .4rem;
 `;
 
 class OptionPage extends React.Component {
@@ -88,7 +82,6 @@ class OptionPage extends React.Component {
 
   state = {
     accessToken: '',
-    applyOnGithubIssues: false,
     invalid: false,
     limit: 0,
     remaining: 0,
@@ -104,17 +97,11 @@ class OptionPage extends React.Component {
     return { accessToken };
   };
 
-  loadApplyOnGithubIssuesAsync = async () => {
-    const { data: applyOnGithubIssues } = await this.client.message('/apply-on-github-issues/get');
-    return { applyOnGithubIssues };
-  };
-
   loadInitialDataAsync = async () => {
     this.setState({ saving: true });
     const { accessToken } = await this.loadAccessTokenAsync();
     const { invalid, limit, remaining } = await this.loadRateLimitAsync();
-    const { applyOnGithubIssues } = await this.loadApplyOnGithubIssuesAsync();
-    this.setState({ accessToken, applyOnGithubIssues, invalid, limit, remaining, saving: false });
+    this.setState({ accessToken, invalid, limit, remaining, saving: false });
   };
 
   loadRateLimitAsync = async () => {
@@ -130,18 +117,9 @@ class OptionPage extends React.Component {
     this.setState({ saving: false, invalid, limit, remaining });
   };
 
-  toggleApplyOnGithubIssuesAsync = async () => {
-    this.setState({ saving: true });
-    const { applyOnGithubIssues } = this.state;
-    const newApplyOnGithubIssues = !applyOnGithubIssues;
-    await this.client.message('/apply-on-github-issues/set', { applyOnGithubIssues: newApplyOnGithubIssues });
-    this.setState({ applyOnGithubIssues: newApplyOnGithubIssues, saving: false });
-  };
-
   render() {
     const {
       accessToken,
-      applyOnGithubIssues,
       invalid,
       remaining,
       limit,
@@ -187,16 +165,6 @@ class OptionPage extends React.Component {
                 <br />
                 <AlertText>Please DO NOT select any scopes!</AlertText>
               </p>
-              <h3>Additional Options</h3>
-              <label htmlFor="apply-on-issues">
-                <CheckBox
-                  id="apply-on-issues"
-                  checked={applyOnGithubIssues}
-                  disabled={saving}
-                  onClick={this.toggleApplyOnGithubIssuesAsync}
-                />
-                <span>Apply on GitHub Issues</span>
-              </label>
               <h3>Rate Limit</h3>
               <RateLimit inverse remaining={remaining} total={limit} heightInRem={2.5} />
               <p>
