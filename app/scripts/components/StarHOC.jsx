@@ -13,7 +13,6 @@ class StarHOC extends React.Component {
 
   constructor(props) {
     super(props);
-
     this.messageClient = new Client(chrome.runtime);
   }
 
