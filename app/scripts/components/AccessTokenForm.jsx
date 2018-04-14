@@ -69,9 +69,7 @@ class AccessTokenForm extends React.Component {
             disabled={saving}
             onClick={() => onSubmit(accessToken)}
             heightInRem={heightInRem}
-          >
-            {saving ? 'Saving...' : 'Save'}
-          </ATFButton>
+          >Save</ATFButton>
         </ATFButtonContainer>
       </ATFContainer>
     );
