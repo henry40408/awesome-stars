@@ -97,6 +97,11 @@ async function initForReadmeAsync() {
 }
 
 async function initForGithubIssuesAsync() {
+  const { data: applyOnGithubIssues } = await messageClient.message('/apply-on-github-issues/get');
+  if (!applyOnGithubIssues) {
+    return;
+  }
+
   const isGithubIssues = !!window.location.href.match(GITHUB_ISSUES_URL_PATTERN);
   if (!isGithubIssues) {
     return;
