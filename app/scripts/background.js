@@ -15,6 +15,8 @@ if (process.env.NODE_ENV === 'development') {
   require('chromereload/devonly');
 }
 
+const MENU_APPLY_ON_GITHUB_ISSUES = 'MENU_APPLY_ON_GITHUB_ISSUES';
+
 /** @type {AwilixContainer} */
 const container = awilix.createContainer({
   injectionMode: awilix.InjectionMode.PROXY,
@@ -30,14 +32,29 @@ container.register({
   [DIConstants.S_GITHUB]: awilix.asClass(GithubService),
 });
 
-function initializeExtension() {
-  /** @type {ChromeStorageService} */
-  const storageService = container.resolve(DIConstants.S_CHROME_STORAGE);
+/** @type {ChromeStorageService} */
+const storageService = container.resolve(DIConstants.S_CHROME_STORAGE);
 
+/** @type {MessageRouter} */
+const messageRouter = container.resolve(DIConstants.MESSAGE_ROUTER);
+
+async function applyOnGithubIssuesClickListener() {
+  const checked = !await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES);
+  await storageService.saveAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES, checked);
+  chrome.contextMenus.update(MENU_APPLY_ON_GITHUB_ISSUES, {
+    checked,
+  });
+}
+
+async function initializeExtensionAsync() {
+  const checked = !!await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES);
   chrome.contextMenus.create({
+    id: MENU_APPLY_ON_GITHUB_ISSUES,
+    type: 'checkbox',
     title: 'Apply on GitHub issues',
     contexts: ['browser_action'],
-    onclick: () => {},
+    onclick: applyOnGithubIssuesClickListener,
+    checked,
   });
 
   chrome.runtime.onInstalled.addListener(async (reason, previousVersion) => {
@@ -59,11 +76,7 @@ function initializeExtension() {
 }
 
 function main() {
-  initializeExtension();
-
-  /** @type {MessageRouter} */
-  const messageRouter = container.resolve(DIConstants.MESSAGE_ROUTER);
-
+  initializeExtensionAsync();
   messageRouter.start();
 }
 
