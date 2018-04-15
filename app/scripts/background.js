@@ -47,16 +47,6 @@ async function applyOnGithubIssuesClickListener() {
 }
 
 async function initializeExtensionAsync() {
-  const checked = !!await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES);
-  chrome.contextMenus.create({
-    id: MENU_APPLY_ON_GITHUB_ISSUES,
-    type: 'checkbox',
-    title: 'Apply on GitHub issues',
-    contexts: ['browser_action'],
-    onclick: applyOnGithubIssuesClickListener,
-    checked,
-  });
-
   chrome.runtime.onInstalled.addListener(async (reason, previousVersion) => {
     const isUpdate = reason === 'update' && previousVersion !== version;
 
@@ -72,6 +62,16 @@ async function initializeExtensionAsync() {
     }
 
     return true;
+  });
+
+  const checked = !!await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES);
+  chrome.contextMenus.create({
+    id: MENU_APPLY_ON_GITHUB_ISSUES,
+    type: 'checkbox',
+    title: 'Apply on GitHub issues',
+    contexts: ['browser_action'],
+    onclick: applyOnGithubIssuesClickListener,
+    checked,
   });
 }
 
