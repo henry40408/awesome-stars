@@ -22,7 +22,7 @@
     "@storybook/react": "~3.3.12",
     "ajv": "~5.0.0",
     "babel-cli": "6.x.x",
-    "babel-core": "6.26.x",
+    "babel-core": "6.x.x",
     "babel-eslint": "7.x.x",
     "babel-loader": "7.x.x",
     "babel-plugin-add-module-exports": "~0.2.1",
