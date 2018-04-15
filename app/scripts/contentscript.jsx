@@ -13,6 +13,7 @@ import StarHOC from './components/StarHOC';
 
 const CHUNK_SIZE = 10;
 const GITHUB_ISSUES_URL_PATTERN = /https:\/\/github\.com\/(.+?)\/issues\/(\d+)/;
+const GITHUB_ISSUES_LINKS_LIMIT = 1000;
 
 const messageClient = new Client(chrome.runtime);
 
@@ -107,8 +108,9 @@ async function initForGithubIssuesAsync() {
     return;
   }
 
-  const links = [].slice.call(document.querySelectorAll('.comment-body li > a'));
-  await attachStarsOnLinksAsync(links);
+  const links = [].slice.call(document.querySelectorAll('.comment-body a'));
+  const limitedLinks = links.slice(0, GITHUB_ISSUES_LINKS_LIMIT);
+  await attachStarsOnLinksAsync(limitedLinks);
 }
 
 async function initAwesomeStarsAsync() {
