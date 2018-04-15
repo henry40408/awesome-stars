@@ -1,30 +1,18 @@
 {
-  "appName": {
-    "message": "Awesome Stars",
-    "description": "The name of the application"
-  },
-  "appShortName": {
-    "message": "aws_stars",
-    "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
-  },
   "appDescription": {
-    "message": "Awesome Stars is a chrome extension that shows you stars of repository on awesome list.",
+    "message": "Awesome Stars 讓你可以直接在 Awesome List 上看到專案的星星數",
     "description": "The description of the application"
   },
   "applyOnGithubIssues": {
-    "message": "Apply on GitHub Issues",
+    "message": "也在 GitHub Issues 上顯示星星",
     "description": "Content menu item"
   },
-  "browserActionTitle": {
-    "message": "Awesome Stars",
-    "description": "The title of the browser action button"
-  },
   "blue": {
-    "message": "blue",
+    "message": "藍色",
     "description": "Color"
   },
   "colorForLess": {
-    "message": "$COLOR$ for less than $COUNT$.",
+    "message": "低於 $COUNT$ 會顯示 $COLOR$",
     "description": "Option page string",
     "placeholders": {
       "color": {
@@ -38,7 +26,7 @@
     }
   },
   "colorForMore": {
-    "message": "$COLOR$ for more than $COUNT$.",
+    "message": "高於 $COUNT$ 會顯示 $COLOR$",
     "description": "Option page string",
     "placeholders": {
       "color": {
@@ -52,7 +40,7 @@
     }
   },
   "colorForRange": {
-    "message": "$COLOR$ for $MIN$ to $MAX$.",
+    "message": "介於 $MIN$ 與 $MAX$ 會顯示$COLOR$",
     "description": "Option page string",
     "placeholders": {
       "color": {
@@ -70,59 +58,59 @@
     }
   },
   "ifYouDontHaveOneYet": {
-    "message": "If you don't have one yet, ",
+    "message": "如果你還沒有申請過 access token，",
     "description": "Option page string"
   },
   "getAnAccessToken": {
-    "message": "get an access token",
+    "message": "請前往 GitHub 產生一組",
     "description": "Option page string"
   },
   "githubDocumentation": {
-    "message": "GitHub documentation",
+    "message": "GitHub 文件",
     "description": "Option page string"
   },
   "opHowHotAreThoseStars": {
-    "message": "How Hot are Those Stars?",
+    "message": "不同顏色的星星代表什麼意思？",
     "description": "Option page string"
   },
   "opHowHotAreThoseStarsDescription": {
-    "message": "There are four levels for the stars of repository. Awesome Stars changes its color according to star count:",
+    "message": "目前共有四種顏色，Awesome Stars 會根據星星的數量變換星星標籤的顏色：",
     "description": "Option page string"
   },
   "orange": {
-    "message": "orange",
+    "message": "橘色",
     "description": "Color"
   },
   "rateLimitDescription": {
-    "message": "For requests using Basic Authentication or OAuth (including access token), you can make up to 5,000 requests per hour.",
+    "message": "透過 Basic Auth 或 OAuth（包括 access token），我們一小時內可以可以對 GitHub 送出 5,000 次請求。",
     "description": "Option page string"
   },
-  "pleaseDoNotSelectAnyScopes":{
-    "message":"Please DO NOT select any scopes!",
-    "description":"Option page string"
+  "pleaseDoNotSelectAnyScopes": {
+    "message": "產生時請不要選擇任何的 scope！",
+    "description": "Option page string"
   },
   "setupAccessToken": {
-    "message": "setup access token",
+    "message": "設定 access token",
     "description": "Option page string"
   },
   "white": {
-    "message": "white",
+    "message": "白色",
     "description": "Color"
   },
   "whyDoYouNeedAnAccessToken": {
-    "message": "Why do You Need an Access Token?",
+    "message": "為什麼你會需要 Access Token？",
     "description": "Option page string"
   },
   "whyDoYouNeedAnAccessTokenDescription1": {
-    "message": "According to ",
+    "message": "根據 ",
     "description": "Option page string"
   },
   "whyDoYouNeedAnAccessTokenDescription2": {
-    "message": ". For unauthenticated requests, the rate limit allows you to make up to 60 requests per hour. Unauthenticated requests are associated with your IP address, and not the user making requests. Awesome Stars can only works properly with an access token.",
+    "message": "，在沒有經過 Basic Auth 或 OAuth 認證的情況下，同一個 IP、一小時內只能送出 60 次 request。單一 awesome list 表列的專案數量往往超過這個數目，因此 Awesome List 需要一組 access token 才能正常運作。",
     "description": "Option page string"
   },
   "yellow": {
-    "message": "yellow",
+    "message": "黃色",
     "description": "Color"
   }
 }

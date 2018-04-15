@@ -1,9 +1,8 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/awesome-stars
     docker:
-      - image: circleci/node:6.10.3
+      - image: circleci/node:carbon
     steps:
       - checkout
       - run: sudo npm install gulp --global
@@ -12,15 +11,8 @@ jobs:
       - run: yarn
       - save_cache:
           key: yarn-{{ checksum "yarn.lock" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: build
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "develop" ] || [ "${CIRCLE_BRANCH}" == "master" ]; then
-              gulp build --production --vendor=chrome
-              gulp pack --vendor=chrome
-            fi
+          paths: [node_modules]
+      - run: bash .circleci/build.sh
       - store_artifacts:
           path: packages
           prefix: packages

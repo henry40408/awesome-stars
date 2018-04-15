@@ -1,249 +1,83 @@
-import CustomError from 'custom-error';
-import { Router } from 'chomex';
-import ChromePromise from 'chrome-promise';
-import GitHub from 'github-api';
-import get from 'lodash/get';
-import LRU from 'lru-cache';
-import numeral from 'numeral';
+import * as awilix from 'awilix';
+
+import { log, updateBadge } from './common';
+import DIConstants from './constants';
 
 import { version } from '../../package.json';
-import { BadgeColors } from './services/colors';
-import { ERROR, log } from './common';
+import AccessTokenRepository from './background/accessTokenRepository';
+import CacheService from './background/cacheService';
+import ChromeStorageService from './background/chromeStorageService';
+import GithubService from './background/githubService';
+import MessageRouter from './background/messageRouter';
 
 if (process.env.NODE_ENV === 'development') {
   // eslint-disable-next-line global-require,import/no-extraneous-dependencies
   require('chromereload/devonly');
 }
 
-const AWESOME_LIST_URL = 'https://raw.githubusercontent.com/sindresorhus/awesome/master/readme.md';
+const MENU_APPLY_ON_GITHUB_ISSUES = 'MENU_APPLY_ON_GITHUB_ISSUES';
 
-const CACHE_KEYS = {
-  AWESOME_LIST: '@@awesome-list',
-  GITHUB: '@@github',
-};
+/** @type {AwilixContainer} */
+const container = awilix.createContainer({
+  injectionMode: awilix.InjectionMode.PROXY,
+});
 
-const LRU_OPTIONS = {
-  max: 5000,
-  maxAge: 24 * 60 * 60 * 1000, // TTL = 24 hours
-};
+container.register({
+  [DIConstants.LOG]: awilix.asValue(log),
+  [DIConstants.UPDATE_BADGE]: awilix.asValue(updateBadge),
+  [DIConstants.MESSAGE_ROUTER]: awilix.asClass(MessageRouter).singleton(),
+  [DIConstants.R_ACCESS_TOKEN]: awilix.asClass(AccessTokenRepository).singleton(),
+  [DIConstants.S_CACHE]: awilix.asClass(CacheService).singleton(),
+  [DIConstants.S_CHROME_STORAGE]: awilix.asClass(ChromeStorageService),
+  [DIConstants.S_GITHUB]: awilix.asClass(GithubService),
+});
 
-const NA = '@@NA';
+/** @type {ChromeStorageService} */
+const storageService = container.resolve(DIConstants.S_CHROME_STORAGE);
 
-const STORAGE_KEYS = {
-  ACCESS_TOKEN: 'ACCESS_TOKEN',
-  UPDATE_NOTIFICATION_SENT: 'UPDATE_NOTIFICATION_SENT',
-};
+/** @type {MessageRouter} */
+const messageRouter = container.resolve(DIConstants.MESSAGE_ROUTER);
 
-const RateLimitError = CustomError('RateLimitError');
-
-const lruCache = LRU(LRU_OPTIONS);
-
-const chromePromise = new ChromePromise();
-
-async function loadAccessTokenAsync() {
-  const result = await chromePromise.storage.local.get(STORAGE_KEYS.ACCESS_TOKEN);
-  const accessToken = get(result, STORAGE_KEYS.ACCESS_TOKEN, '');
-
-  log('storage responds with access token', accessToken);
-
-  return accessToken;
+async function applyOnGithubIssuesClickListener() {
+  const checked = !await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES);
+  await storageService.saveAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES, checked);
+  chrome.contextMenus.update(MENU_APPLY_ON_GITHUB_ISSUES, {
+    checked,
+  });
 }
 
-function updateBadge(maybeText) {
-  const color = maybeText === NA ? BadgeColors.RED : BadgeColors.BRIGHT_BLUE;
-  const text = maybeText === NA ? 'N/A' : maybeText;
+async function initializeExtensionAsync() {
+  chrome.runtime.onInstalled.addListener(async (reason, previousVersion) => {
+    const isUpdate = reason === 'update' && previousVersion !== version;
 
-  log('badge color updated to', color);
-  log('badge text updated to', text);
-
-  chrome.browserAction.setBadgeBackgroundColor({ color });
-  chrome.browserAction.setBadgeText({ text });
-}
-
-async function genGitHub() {
-  const cachedGithubAdapter = lruCache.get(CACHE_KEYS.GITHUB);
-
-  if (!cachedGithubAdapter) {
-    const accessToken = await loadAccessTokenAsync();
-    const githubAdapter = new GitHub({ token: accessToken });
-
-    log('new GitHub adapter generated with access token', accessToken);
-
-    lruCache.set(CACHE_KEYS.GITHUB, githubAdapter);
-    return githubAdapter;
-  }
-
-  return cachedGithubAdapter;
-}
-
-async function fetchAwesomeListAsync() {
-  const cachedAwesomeList = lruCache.get(CACHE_KEYS.AWESOME_LIST);
-
-  if (!cachedAwesomeList) {
-    const response = await fetch(AWESOME_LIST_URL);
-    const body = await response.text();
-
-    log('fetch awesome list', body.length / 1024, 'KB');
-
-    lruCache.set(CACHE_KEYS.AWESOME_LIST, body);
-    return body;
-  }
-
-  return cachedAwesomeList;
-}
-
-async function fetchRateLimitAsync() {
-  const github = await genGitHub();
-  const rateLimitWrapper = github.getRateLimit();
-
-  try {
-    const response = await rateLimitWrapper.getRateLimit();
-    const remaining = get(response, 'data.resources.core.remaining', null);
-    const limit = get(response, 'data.resources.core.limit', null);
-
-    if (!remaining || !limit) {
-      throw new RateLimitError();
+    if (process.env.NODE_ENV === 'development') {
+      chrome.runtime.openOptionsPage();
     }
 
-    log('github responds with rate limit', remaining, limit);
-
-    const format = remaining < 1000 ? '0a' : '0.0a';
-    updateBadge(numeral(remaining).format(format));
-
-    return { limit, remaining };
-  } catch (e) {
-    updateBadge(NA);
-    return ERROR;
-  }
-}
-
-async function fetchStarCountAsync(owner, name, options = { shouldUpdateRateLimit: true }) {
-  const { shouldUpdateRateLimit } = options;
-  const cacheKey = JSON.stringify({ name, owner });
-  const cachedDetails = lruCache.get(cacheKey);
-
-  if (!cachedDetails) {
-    try {
-      const github = await genGitHub();
-      const repoWrapper = github.getRepo(owner, name);
-      const { data: json } = await repoWrapper.getDetails();
-
-      lruCache.set(cacheKey, json);
-
-      log('github responds a JSON object', json);
-
-      if (shouldUpdateRateLimit) {
-        fetchRateLimitAsync();
-      }
-
-      return parseInt(json.stargazers_count, 10);
-    } catch (e) {
-      return ERROR;
+    // reset update notification state...
+    // 1. in development environment
+    // 2. when extension is successfully upgraded
+    if (process.env.NODE_ENV === 'development' || isUpdate) {
+      return storageService.saveAsync(storageService.KEY_UPDATE_NOTIFICATION_SENT, false);
     }
-  }
 
-  log('getStarCountAsync responds with cached detail', cachedDetails);
-  return parseInt(cachedDetails.stargazers_count, 10);
+    return true;
+  });
+
+  const checked = !!await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES);
+  chrome.contextMenus.create({
+    id: MENU_APPLY_ON_GITHUB_ISSUES,
+    type: 'checkbox',
+    title: chrome.i18n.getMessage('applyOnGithubIssues'),
+    contexts: ['browser_action'],
+    onclick: applyOnGithubIssuesClickListener,
+    checked,
+  });
 }
 
-async function getUpdateNotificationSentAsync() {
-  const result = await chromePromise.storage.local.get(STORAGE_KEYS.UPDATE_NOTIFICATION_SENT);
-  return get(result, STORAGE_KEYS.UPDATE_NOTIFICATION_SENT, false);
+function main() {
+  initializeExtensionAsync();
+  messageRouter.start();
 }
 
-async function setAccessTokenAsync(accessToken) {
-  const payload = {
-    [STORAGE_KEYS.ACCESS_TOKEN]: accessToken,
-  };
-
-  chromePromise.storage.local.set(payload);
-
-  // NOTE Force GitHub adapter to be re-generated
-  lruCache.del(CACHE_KEYS.GITHUB);
-
-  fetchRateLimitAsync();
-
-  // NOTE fire and forget route returns nothing
-  return true;
-}
-
-async function setUpdateNotificationSentAsync(updateNotificationSent) {
-  const payload = {
-    [STORAGE_KEYS.UPDATE_NOTIFICATION_SENT]: updateNotificationSent,
-  };
-  return chromePromise.storage.local.set(payload);
-}
-
-chrome.runtime.onInstalled.addListener((reason, previousVersion) => {
-  const isExtensionUpgraded = reason === 'update' && previousVersion !== version;
-
-  if (process.env.NODE_ENV === 'development') {
-    chrome.runtime.openOptionsPage();
-  }
-
-  // NOTE delete update notification sent state in development environment
-  // or when extension itself is updated
-  if (process.env.NODE_ENV === 'development' || isExtensionUpgraded) {
-    const payload = {
-      [STORAGE_KEYS.UPDATE_NOTIFICATION_SENT]: false,
-    };
-
-    return chromePromise.storage.local.set(payload);
-  }
-
-  return true;
-});
-
-chrome.browserAction.onClicked.addListener(() => {
-  if (chrome.runtime.openOptionsPage) {
-    // New way to open options pages, if supported (Chrome 42+).
-    return chrome.runtime.openOptionsPage();
-  }
-  // Reasonable fallback.
-  return window.open(chrome.runtime.getURL('pages/options.html'));
-});
-
-fetchRateLimitAsync();
-
-function logMiddleware(route, fn) {
-  return (message) => {
-    log(route, 'called with', message);
-    return fn(message);
-  };
-}
-
-function registerRoute(router, route, fn) {
-  return router.on(route, logMiddleware(route, fn));
-}
-
-const messageRouter = new Router();
-
-registerRoute(messageRouter, '/access-token/get', () => loadAccessTokenAsync());
-
-registerRoute(messageRouter, '/access-token/set', (message) => {
-  const { accessToken } = message;
-  return setAccessTokenAsync(accessToken);
-});
-
-registerRoute(messageRouter, '/awesome-list/get', () => fetchAwesomeListAsync());
-
-registerRoute(messageRouter, '/rate-limit', () => fetchRateLimitAsync());
-
-registerRoute(messageRouter, '/stars/get', (message) => {
-  const { owner, name, shouldUpdateRateLimit } = message;
-
-  if (owner && name) {
-    return fetchStarCountAsync(owner, name, { shouldUpdateRateLimit });
-  }
-
-  return ERROR;
-});
-
-registerRoute(messageRouter, '/update-notification-sent/get', () => getUpdateNotificationSentAsync());
-
-registerRoute(messageRouter, '/update-notification-sent/set', (message) => {
-  const { updateNotificationSent } = message;
-  return setUpdateNotificationSentAsync(updateNotificationSent);
-});
-
-chrome.runtime.onMessage.addListener(messageRouter.listener());
+main();
