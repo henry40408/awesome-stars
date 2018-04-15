@@ -68,7 +68,7 @@ async function initializeExtensionAsync() {
   chrome.contextMenus.create({
     id: MENU_APPLY_ON_GITHUB_ISSUES,
     type: 'checkbox',
-    title: 'Apply on GitHub issues',
+    title: chrome.i18n.getMessage('applyOnGithubIssues'),
     contexts: ['browser_action'],
     onclick: applyOnGithubIssuesClickListener,
     checked,

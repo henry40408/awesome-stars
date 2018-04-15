@@ -11,6 +11,10 @@
     "message": "Awesome Stars is a chrome extension that shows you stars of repository on awesome list.",
     "description": "The description of the application"
   },
+  "applyOnGithubIssues": {
+    "message": "Apply on GitHub Issues",
+    "description": "Content menu item"
+  },
   "browserActionTitle": {
     "message": "Awesome Stars",
     "description": "The title of the browser action button"

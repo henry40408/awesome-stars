@@ -3,6 +3,10 @@
     "message": "Awesome Stars 讓你可以直接在 Awesome List 上看到專案的星星數",
     "description": "The description of the application"
   },
+  "applyOnGithubIssues": {
+    "message": "也在 GitHub Issues 上顯示星星",
+    "description": "Content menu item"
+  },
   "blue": {
     "message": "藍色",
     "description": "Color"
