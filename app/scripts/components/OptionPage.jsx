@@ -4,16 +4,15 @@ import { Client } from 'chomex';
 import { Box, Flex } from 'reflexbox';
 import styled from 'styled-components';
 
-import { description, version } from '../../../package.json';
+import { version } from '../../../package.json';
 import colors from '../themes/colors';
 
 import AccessTokenForm from '../components/AccessTokenForm';
 import RateLimit from '../components/RateLimit';
 
 const Container = styled(Flex)`
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto', Helvetica, sans-serif;
   font-weight: lighter;
-  text-align: justify;
   max-width: 960px;
 `;
 
@@ -74,6 +73,14 @@ const AlertText = styled.span`
   color: ${colors.red};
 `;
 
+const CapitalizedH3 = styled.h3`
+  text-transform: capitalize;
+`;
+
+function capitalize(str) {
+  return str.replace(/\b\w/, l => l.toUpperCase());
+}
+
 class OptionPage extends React.Component {
   constructor(props) {
     super(props);
@@ -91,6 +98,10 @@ class OptionPage extends React.Component {
   componentDidMount() {
     this.loadInitialDataAsync();
   }
+
+  getMessage = (messageName, subsitutions = []) => (
+    chrome.i18n.getMessage(messageName, subsitutions)
+  );
 
   loadAccessTokenAsync = async () => {
     const { data: accessToken } = await this.client.message('/access-token/get');
@@ -130,27 +141,46 @@ class OptionPage extends React.Component {
       <Container column>
         <Header p={2}>
           <img src="../../images/options-logo.png" alt="Awesome Stars logo" />
-          <h1>Awesome Stars</h1>
-          <h2>{description}</h2>
+          <h1>{this.getMessage('appName')}</h1>
+          <h2>{this.getMessage('appDescription')}</h2>
         </Header>
         <Body>
           <Flex wrap w={1}>
             <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
-              <h3>How Hot are Those Stars?</h3>
-              <p>
-                There are four levels for the stars of repository. Awesome Stars changes its color
-                according to star count:
-              </p>
+              <h3>{this.getMessage('opHowHotAreThoseStars')}</h3>
+              <p>{this.getMessage('opHowHotAreThoseStarsDescription')}</p>
               <ColorList>
-                <ColorItem color={colors.lightBlue}>Blue for less than 1,000.</ColorItem>
-                <ColorItem color={colors.white}>White for 1,000 to 4,999.</ColorItem>
-                <ColorItem color={colors.yellow}>Yellow for 5,000 to 9,999.</ColorItem>
-                <ColorItem color={colors.orange}>Orange for more than 10,000.</ColorItem>
+                <ColorItem color={colors.lightBlue}>{
+                  this.getMessage('colorForLess', [
+                    capitalize(this.getMessage('blue')),
+                    '1,000',
+                  ])
+                }</ColorItem>
+                <ColorItem color={colors.white}>{
+                  this.getMessage('colorForRange', [
+                    capitalize(this.getMessage('white')),
+                    '1,000',
+                    '4,999',
+                  ])
+                }</ColorItem>
+                <ColorItem color={colors.yellow}>{
+                  this.getMessage('colorForRange', [
+                    capitalize(this.getMessage('yellow')),
+                    '5,000',
+                    '9,999',
+                  ])
+                }</ColorItem>
+                <ColorItem color={colors.orange}>{
+                  this.getMessage('colorForMore', [
+                    capitalize(this.getMessage('orange')),
+                    '10,000',
+                  ])
+                }</ColorItem>
               </ColorList>
               <StarsCurve src="../../images/stars-curve.svg" alt="Stars Curve" width="100%" />
             </Box>
             <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
-              <h3>Setup Access Token</h3>
+              <CapitalizedH3>{this.getMessage('setupAccessToken')}</CapitalizedH3>
               <AccessTokenForm
                 accessToken={accessToken}
                 invalid={invalid}
@@ -158,30 +188,26 @@ class OptionPage extends React.Component {
                 saving={saving}
               />
               <p>
+                {this.getMessage('ifYouDontHaveOneYet')}
                 <a href="https://github.com/settings/tokens/new?description=Awesome%20Stars">
-                  Get an access token
-                </a>{' '}
-                from <a href="https://github.com/settings">GitHub settings page</a>
+                  {this.getMessage('getAnAccessToken')}
+                </a>
                 <br />
-                <AlertText>Please DO NOT select any scopes!</AlertText>
+                <AlertText>{this.getMessage('pleaseDoNotSelectAnyScopes')}</AlertText>
               </p>
               <h3>Rate Limit</h3>
               <RateLimit inverse remaining={remaining} total={limit} heightInRem={2.5} />
               <p>
-                <small>
-                  For requests using Basic Authentication or OAuth (including access token), you can
-                  make up to 5,000 requests per hour.
-                </small>
+                <small>{this.getMessage('rateLimitDescription')}</small>
               </p>
-              <h4>Why do You Need an Access Token?</h4>
+              <h4>{this.getMessage('whyDoYouNeedAnAccessToken')}</h4>
               <p>
                 <small>
-                  According to{' '}
-                  <a href="https://developer.github.com/v3/#rate-limiting">GitHub documentation</a>.
-                  For unauthenticated requests, the rate limit allows you to make up to 60 requests
-                  per hour. Unauthenticated requests are associated with your IP address, and not
-                  the user making requests. Awesome Stars can only works properly with an access
-                  token.
+                  {this.getMessage('whyDoYouNeedAnAccessTokenDescription1')}
+                  <a href="https://developer.github.com/v3/#rate-limiting">
+                    {this.getMessage('githubDocumentation')}
+                  </a>
+                  {this.getMessage('whyDoYouNeedAnAccessTokenDescription2')}
                 </small>
               </p>
             </Box>
