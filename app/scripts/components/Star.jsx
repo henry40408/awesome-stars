@@ -3,7 +3,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import numeral from 'numeral';
 import styled from 'styled-components';
 
 import colors from '../themes/colors';
@@ -74,6 +73,8 @@ class Star extends React.Component {
   };
 
   render() {
+    const formatter = new Intl.NumberFormat('en-US');
+
     const { count, loading } = this.props;
     const { star: starColor, text: textColor } = this.colorsFromCount(count);
 
@@ -81,7 +82,7 @@ class Star extends React.Component {
     if (loading) {
       countText = '...';
     } else {
-      countText = count === -1 ? '\u26A0' : numeral(count).format('0,0');
+      countText = count === -1 ? '\u26A0' : formatter.format(count);
     }
 
     return (

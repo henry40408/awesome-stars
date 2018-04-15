@@ -1,6 +1,5 @@
 import axios from 'axios/index';
 import includes from 'lodash/includes';
-import numeral from 'numeral';
 
 import DIConstants from '../constants';
 
@@ -64,6 +63,7 @@ class GithubService {
   }
 
   async fetchRateLimitAsync() {
+    const formatter = new Intl.NumberFormat('en-US', { style: 'percent' });
     const client = await this.buildClient();
 
     try {
@@ -71,9 +71,7 @@ class GithubService {
       const { rate: { remaining, limit } } = response.data;
 
       this.log('rate limit:', { remaining, limit });
-
-      const textFormat = remaining < 1000 ? '0a' : '0.0a';
-      const badgeText = numeral(remaining).format(textFormat);
+      const badgeText = formatter.format(remaining / limit);
       this.updateBadge(badgeText);
 
       return { remaining, limit };

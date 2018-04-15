@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import numeral from 'numeral';
 import styled, { keyframes } from 'styled-components';
 import { Flex, reflex } from 'reflexbox';
 
@@ -54,6 +53,8 @@ const BaseRLNumber = styled.div`
 const RLNumber = reflex(BaseRLNumber);
 
 const RateLimit = ({ heightInRem, inverse, remaining, total }) => {
+  const formatter = new Intl.NumberFormat('en-US');
+
   let ratio = total === 0 ? 0 : remaining / total;
   let formatted;
 
@@ -61,7 +62,7 @@ const RateLimit = ({ heightInRem, inverse, remaining, total }) => {
     ratio = 0;
     formatted = 'N/A';
   } else {
-    formatted = numeral(remaining).format('0,0');
+    formatted = formatter.format(remaining);
   }
 
   return (
