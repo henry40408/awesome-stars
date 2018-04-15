@@ -12,7 +12,7 @@ import RateLimit from '../components/RateLimit';
 
 const Container = styled(Flex)`
   font-family: 'Roboto', Helvetica, sans-serif;
-  font-weight: lighter;
+  font-weight: light;
   max-width: 960px;
 `;
 
