@@ -68,7 +68,7 @@ async function initializeExtensionAsync () {
 
   contextMenuService.upsert(contextMenuService.MENU_RATE_LIMIT, {
     type: 'normal',
-    contexts: ['browser_action'],
+    contexts: ['page_action'],
     title: 'Rate Limit: N/A',
     enabled: false
   })
@@ -76,7 +76,7 @@ async function initializeExtensionAsync () {
   contextMenuService.upsert(contextMenuService.MENU_APPLY_ON_GITHUB_ISSUES, {
     type: 'checkbox',
     title: chrome.i18n.getMessage('applyOnGithubIssues'),
-    contexts: ['browser_action'],
+    contexts: ['page_action'],
     onclick: applyOnGithubIssuesClickListener,
     checked
   })

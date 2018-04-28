@@ -1,5 +1,5 @@
 import get from 'lodash/get'
-import ChromePromise from 'chrome-promise'
+import ChromePromise from 'chrome-promise/constructor'
 import DIConstants from '../constants'
 
 class ChromeStorageService {

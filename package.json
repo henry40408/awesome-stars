@@ -80,7 +80,7 @@
     "axios": "~0.18.0",
     "bluebird": "~3.5.0",
     "chomex": "~1.0.5",
-    "chrome-promise": "~2.0.3",
+    "chrome-promise": "~3.0.0",
     "date-fns": "~2.0.0-alpha.7",
     "lodash": "~4.17.4",
     "lru-cache": "~4.0.2",

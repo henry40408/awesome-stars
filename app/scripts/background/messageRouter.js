@@ -1,4 +1,5 @@
 import { Router } from 'chomex'
+import ChromePromise from 'chrome-promise/constructor'
 
 import DIConstants from '../constants'
 
@@ -13,6 +14,7 @@ class MessageRouter {
     /** @type {ChromeStorageService} */
     this.storage = ctx[DIConstants.S_CHROME_STORAGE]
 
+    this.chromePromise = new ChromePromise()
     this.log = ctx[DIConstants.LOG]
     this.messageRouter = new Router()
 
@@ -37,6 +39,13 @@ class MessageRouter {
 
     this.register('/awesome-list/check', async (message) => {
       const {owner, name} = message
+
+      const tabs = await this.chromePromise.tabs.query({active: true})
+      if (tabs.length > 0) {
+        const {id} = tabs[0]
+        chrome.pageAction.show(id)
+      }
+
       return this.github.isAwesomeListAsync({owner, name})
     })
 

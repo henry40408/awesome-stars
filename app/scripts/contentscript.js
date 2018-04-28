@@ -60,10 +60,7 @@ async function isAwesomeListAsync () {
   }
 
   const {owner, name} = parsed
-  const {data: isAwesomeList} = await messageClient.message('/awesome-list/check', {
-    owner,
-    name
-  })
+  const {data: isAwesomeList} = await messageClient.message('/awesome-list/check', {owner, name})
 
   if (isAwesomeList) {
     log(`awesome list ${owner}/${name} detected`)

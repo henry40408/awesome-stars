@@ -15,7 +15,7 @@
     "message": "Apply on GitHub Issues",
     "description": "Content menu item"
   },
-  "browserActionTitle": {
+  "pageActionTitle": {
     "message": "Awesome Stars",
     "description": "The title of the browser action button"
   },
