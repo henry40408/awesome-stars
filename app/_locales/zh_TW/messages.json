@@ -4,7 +4,7 @@
     "description": "The description of the application"
   },
   "applyOnGithubIssues": {
-    "message": "也在 GitHub Issues 上顯示星星",
+    "message": "在 GitHub Issues 上顯示星星",
     "description": "Content menu item"
   },
   "blue": {
