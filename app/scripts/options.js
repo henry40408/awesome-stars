@@ -1,9 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { injectGlobal } from 'styled-components';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { injectGlobal } from 'styled-components'
 
-import colors from './themes/colors';
-import OptionPage from './components/OptionPage';
+import colors from './themes/colors'
+import OptionPage from './components/OptionPage'
 
 // eslint-disable-next-line no-unused-expressions
 injectGlobal`
@@ -29,6 +29,6 @@ a {
   justify-content: center;
   width: 100vw;
 }
-`;
+`
 
-ReactDOM.render(<OptionPage />, document.getElementById('container'));
+ReactDOM.render(<OptionPage />, document.getElementById('container'))

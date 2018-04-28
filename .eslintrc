@@ -1,5 +1,8 @@
 {
-  "extends": "standard",
+  "extends": ["standard", "standard-react"],
+  "env": {
+    "browser": true
+  },
   "globals": {
     "chrome": true
   },

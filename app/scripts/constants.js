@@ -1,5 +1,7 @@
-// R -> Repository
-// S -> Service
+/**
+ * R: Repository
+ * S: Service
+ */
 export default {
   MESSAGE_ROUTER: Symbol('router'),
   R_ACCESS_TOKEN: Symbol('access token repository'),
@@ -8,5 +10,5 @@ export default {
   S_COMMON: Symbol('common service'),
   S_GITHUB: Symbol('github service'),
   LOG: Symbol('log function'),
-  UPDATE_BADGE: Symbol('update badge function'),
-};
+  UPDATE_BADGE: Symbol('update badge function')
+}
