@@ -1,26 +1,26 @@
-import React from 'react';
-import { storiesOf, addDecorator } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import { withKnobs, boolean, number } from '@storybook/addon-knobs';
+import React from 'react'
+import { storiesOf, addDecorator } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
+import { withKnobs, boolean, number } from '@storybook/addon-knobs'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
-import AccessTokenForm from '../scripts/components/AccessTokenForm';
-import RateLimit from '../scripts/components/RateLimit';
-import Star from '../scripts/components/Star';
-import UpdateNotification from '../scripts/components/UpdateNotification';
+import AccessTokenForm from '../scripts/components/AccessTokenForm'
+import RateLimit from '../scripts/components/RateLimit'
+import Star from '../scripts/components/Star'
+import UpdateNotification from '../scripts/components/UpdateNotification'
 
-const MAXIMUM = 5000;
+const MAXIMUM = 5000
 
-addDecorator(withKnobs);
+addDecorator(withKnobs)
 
 const RateLimitContainer = styled.div`
-  background-color: ${({ inverse }) => (inverse ? 'black' : 'white')};
+  background-color: ${({inverse}) => (inverse ? 'black' : 'white')};
   padding: 1rem 0;
-`;
+`
 
 storiesOf('RateLimit', module).add('default', () => {
-  const inverse = boolean('Inverse', false);
+  const inverse = boolean('Inverse', false)
 
   return (
     <RateLimitContainer inverse={inverse}>
@@ -31,8 +31,8 @@ storiesOf('RateLimit', module).add('default', () => {
         heightInRem={number('Height in rem', 1)}
       />
     </RateLimitContainer>
-  );
-});
+  )
+})
 
 storiesOf('AccessTokenForm', module).add('default', () => (
   <AccessTokenForm
@@ -42,10 +42,10 @@ storiesOf('AccessTokenForm', module).add('default', () => (
     onSubmit={accessToken => action(`access token submitted: ${accessToken}`)}
     saving={boolean('Saving', false)}
   />
-));
+))
 
 storiesOf('Star', module).add('default', () => (
   <Star count={number('Count', 1000)} loading={boolean('Loading', false)} />
-));
+))
 
-storiesOf('UpdateNotification', module).add('default', () => <UpdateNotification />);
+storiesOf('UpdateNotification', module).add('default', () => <UpdateNotification />)

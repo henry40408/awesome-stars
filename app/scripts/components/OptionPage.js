@@ -1,20 +1,20 @@
-import React from 'react';
+import React from 'react'
 
-import { Client } from 'chomex';
-import { Box, Flex } from 'reflexbox';
-import styled from 'styled-components';
+import { Client } from 'chomex'
+import { Box, Flex } from 'reflexbox'
+import styled from 'styled-components'
 
-import { version } from '../../../package.json';
-import colors from '../themes/colors';
+import { version } from '../../../package.json'
+import colors from '../themes/colors'
 
-import AccessTokenForm from '../components/AccessTokenForm';
-import RateLimit from '../components/RateLimit';
+import AccessTokenForm from '../components/AccessTokenForm'
+import RateLimit from '../components/RateLimit'
 
 const Container = styled(Flex)`
   font-family: 'Roboto', Helvetica, sans-serif;
   font-weight: light;
   max-width: 960px;
-`;
+`
 
 const Header = styled(Box)`
   font-family: 'Roboto Slab', sans-serif;
@@ -28,7 +28,7 @@ const Header = styled(Box)`
   & > h2 {
     font-size: 1rem;
   }
-`;
+`
 
 const Body = styled(Box)`
   margin: 0 0 1rem;
@@ -41,13 +41,13 @@ const Body = styled(Box)`
     line-height: 1.5;
     margin: 0.5rem 0;
   }
-`;
+`
 
 const Footer = styled(Box)`
   font-family: 'Roboto Slab', sans-serif;
   text-align: center;
   line-height: 1.5;
-`;
+`
 
 const ColorList = styled.ul`
   list-style: none;
@@ -59,32 +59,32 @@ const ColorList = styled.ul`
   & > li {
     line-height: 1.618;
   }
-`;
+`
 
 const ColorItem = styled.li`
-  color: ${({ color }) => color || colors.white};
-`;
+  color: ${({color}) => color || colors.white};
+`
 
 const StarsCurve = styled.img`
   margin: -7.5rem 0 0;
-`;
+`
 
 const AlertText = styled.span`
   color: ${colors.red};
-`;
+`
 
 const CapitalizedH3 = styled.h3`
   text-transform: capitalize;
-`;
+`
 
-function capitalize(str) {
-  return str.replace(/\b\w/, l => l.toUpperCase());
+function capitalize (str) {
+  return str.replace(/\b\w/, l => l.toUpperCase())
 }
 
 class OptionPage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.client = new Client(chrome.runtime);
+  constructor (props) {
+    super(props)
+    this.client = new Client(chrome.runtime)
   }
 
   state = {
@@ -92,55 +92,55 @@ class OptionPage extends React.Component {
     invalid: false,
     limit: 0,
     remaining: 0,
-    saving: false,
-  };
+    saving: false
+  }
 
-  componentDidMount() {
-    this.loadInitialDataAsync();
+  componentDidMount () {
+    this.loadInitialDataAsync()
   }
 
   getMessage = (messageName, subsitutions = []) => (
     chrome.i18n.getMessage(messageName, subsitutions)
-  );
+  )
 
   loadAccessTokenAsync = async () => {
-    const { data: accessToken } = await this.client.message('/access-token/get');
-    return { accessToken };
-  };
+    const {data: accessToken} = await this.client.message('/access-token/get')
+    return {accessToken}
+  }
 
   loadInitialDataAsync = async () => {
-    this.setState({ saving: true });
-    const { accessToken } = await this.loadAccessTokenAsync();
-    const { invalid, limit, remaining } = await this.loadRateLimitAsync();
-    this.setState({ accessToken, invalid, limit, remaining, saving: false });
-  };
+    this.setState({saving: true})
+    const {accessToken} = await this.loadAccessTokenAsync()
+    const {invalid, limit, remaining} = await this.loadRateLimitAsync()
+    this.setState({accessToken, invalid, limit, remaining, saving: false})
+  }
 
   loadRateLimitAsync = async () => {
-    const { data: { remaining, limit } } = await this.client.message('/rate-limit');
-    const invalid = remaining === -1 || limit === -1;
-    return { invalid, limit, remaining };
-  };
+    const {data: {remaining, limit}} = await this.client.message('/rate-limit')
+    const invalid = remaining === -1 || limit === -1
+    return {invalid, limit, remaining}
+  }
 
   saveAccessTokenAsync = async (accessToken) => {
-    this.setState({ saving: true, accessToken });
-    await this.client.message('/access-token/set', { accessToken });
-    const { invalid, limit, remaining } = await this.loadRateLimitAsync();
-    this.setState({ saving: false, invalid, limit, remaining });
-  };
+    this.setState({saving: true, accessToken})
+    await this.client.message('/access-token/set', {accessToken})
+    const {invalid, limit, remaining} = await this.loadRateLimitAsync()
+    this.setState({saving: false, invalid, limit, remaining})
+  }
 
-  render() {
+  render () {
     const {
       accessToken,
       invalid,
       remaining,
       limit,
-      saving,
-    } = this.state;
+      saving
+    } = this.state
 
     return (
       <Container column>
         <Header p={2}>
-          <img src="../../images/options-logo.png" alt="Awesome Stars logo" />
+          <img src='../../images/options-logo.png' alt='Awesome Stars logo' />
           <h1>{this.getMessage('appName')}</h1>
           <h2>{this.getMessage('appDescription')}</h2>
         </Header>
@@ -153,31 +153,31 @@ class OptionPage extends React.Component {
                 <ColorItem color={colors.lightBlue}>{
                   this.getMessage('colorForLess', [
                     capitalize(this.getMessage('blue')),
-                    '1,000',
+                    '1,000'
                   ])
                 }</ColorItem>
                 <ColorItem color={colors.white}>{
                   this.getMessage('colorForRange', [
                     capitalize(this.getMessage('white')),
                     '1,000',
-                    '4,999',
+                    '4,999'
                   ])
                 }</ColorItem>
                 <ColorItem color={colors.yellow}>{
                   this.getMessage('colorForRange', [
                     capitalize(this.getMessage('yellow')),
                     '5,000',
-                    '9,999',
+                    '9,999'
                   ])
                 }</ColorItem>
                 <ColorItem color={colors.orange}>{
                   this.getMessage('colorForMore', [
                     capitalize(this.getMessage('orange')),
-                    '10,000',
+                    '10,000'
                   ])
                 }</ColorItem>
               </ColorList>
-              <StarsCurve src="../../images/stars-curve.svg" alt="Stars Curve" width="100%" />
+              <StarsCurve src='../../images/stars-curve.svg' alt='Stars Curve' width='100%' />
             </Box>
             <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
               <CapitalizedH3>{this.getMessage('setupAccessToken')}</CapitalizedH3>
@@ -189,13 +189,13 @@ class OptionPage extends React.Component {
               />
               <p>
                 {this.getMessage('ifYouDontHaveOneYet')}
-                <a href="https://github.com/settings/tokens/new?description=Awesome%20Stars">
+                <a href='https://github.com/settings/tokens/new?description=Awesome%20Stars'>
                   {this.getMessage('getAnAccessToken')}
                 </a>
                 <br />
                 <AlertText>{this.getMessage('pleaseDoNotSelectAnyScopes')}</AlertText>
               </p>
-              <h3>Rate Limit</h3>
+              <h3>{this.getMessage('rateLimit')}</h3>
               <RateLimit inverse remaining={remaining} total={limit} heightInRem={2.5} />
               <p>
                 <small>{this.getMessage('rateLimitDescription')}</small>
@@ -204,7 +204,7 @@ class OptionPage extends React.Component {
               <p>
                 <small>
                   {this.getMessage('whyDoYouNeedAnAccessTokenDescription1')}
-                  <a href="https://developer.github.com/v3/#rate-limiting">
+                  <a href='https://developer.github.com/v3/#rate-limiting'>
                     {this.getMessage('githubDocumentation')}
                   </a>
                   {this.getMessage('whyDoYouNeedAnAccessTokenDescription2')}
@@ -220,8 +220,8 @@ class OptionPage extends React.Component {
           </small>
         </Footer>
       </Container>
-    );
+    )
   }
 }
 
-export default OptionPage;
+export default OptionPage
