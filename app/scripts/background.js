@@ -1,12 +1,13 @@
 import * as awilix from 'awilix'
 
-import { log, updateBadge } from './common'
+import { log } from './common'
 import DIConstants from './constants'
 
 import { version } from '../../package.json'
 import AccessTokenRepository from './background/accessTokenRepository'
 import CacheService from './background/cacheService'
 import ChromeStorageService from './background/chromeStorageService'
+import ContextMenuService from './background/contextMenuService'
 import GithubService from './background/githubService'
 import MessageRouter from './background/messageRouter'
 
@@ -15,8 +16,6 @@ if (process.env.NODE_ENV === 'development') {
   require('chromereload/devonly')
 }
 
-const MENU_APPLY_ON_GITHUB_ISSUES = 'MENU_APPLY_ON_GITHUB_ISSUES'
-
 /** @type {AwilixContainer} */
 const container = awilix.createContainer({
   injectionMode: awilix.InjectionMode.PROXY
@@ -24,11 +23,11 @@ const container = awilix.createContainer({
 
 container.register({
   [DIConstants.LOG]: awilix.asValue(log),
-  [DIConstants.UPDATE_BADGE]: awilix.asValue(updateBadge),
   [DIConstants.MESSAGE_ROUTER]: awilix.asClass(MessageRouter).singleton(),
   [DIConstants.R_ACCESS_TOKEN]: awilix.asClass(AccessTokenRepository).singleton(),
   [DIConstants.S_CACHE]: awilix.asClass(CacheService).singleton(),
   [DIConstants.S_CHROME_STORAGE]: awilix.asClass(ChromeStorageService),
+  [DIConstants.S_CONTEXT_MENU]: awilix.asClass(ContextMenuService).singleton(),
   [DIConstants.S_GITHUB]: awilix.asClass(GithubService)
 })
 
@@ -38,12 +37,13 @@ const storageService = container.resolve(DIConstants.S_CHROME_STORAGE)
 /** @type {MessageRouter} */
 const messageRouter = container.resolve(DIConstants.MESSAGE_ROUTER)
 
+/** @type {ContextMenuService} */
+const contextMenuService = container.resolve(DIConstants.S_CONTEXT_MENU)
+
 async function applyOnGithubIssuesClickListener () {
   const checked = !await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES)
   await storageService.saveAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES, checked)
-  chrome.contextMenus.update(MENU_APPLY_ON_GITHUB_ISSUES, {
-    checked
-  })
+  contextMenuService.upsert(contextMenuService.MENU_APPLY_ON_GITHUB_ISSUES, {checked})
 }
 
 async function initializeExtensionAsync () {
@@ -65,8 +65,15 @@ async function initializeExtensionAsync () {
   })
 
   const checked = !!await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES)
-  chrome.contextMenus.create({
-    id: MENU_APPLY_ON_GITHUB_ISSUES,
+
+  contextMenuService.upsert(contextMenuService.MENU_RATE_LIMIT, {
+    type: 'normal',
+    contexts: ['browser_action'],
+    title: 'Rate Limit: N/A',
+    enabled: false
+  })
+
+  contextMenuService.upsert(contextMenuService.MENU_APPLY_ON_GITHUB_ISSUES, {
     type: 'checkbox',
     title: chrome.i18n.getMessage('applyOnGithubIssues'),
     contexts: ['browser_action'],

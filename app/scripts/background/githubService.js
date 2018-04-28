@@ -13,13 +13,15 @@ class GithubService {
 
   constructor (ctx) {
     this.log = ctx[DIConstants.LOG]
-    this.updateBadge = ctx[DIConstants.UPDATE_BADGE]
 
     /** @type {AccessTokenRepository} */
     this.accessToken = ctx[DIConstants.R_ACCESS_TOKEN]
 
     /** @type {CacheService} */
     this.cache = ctx[DIConstants.S_CACHE]
+
+    /** @type {ContextMenuService} */
+    this.contextMenu = ctx[DIConstants.S_CONTEXT_MENU]
   }
 
   /**
@@ -63,7 +65,8 @@ class GithubService {
   }
 
   async fetchRateLimitAsync () {
-    const formatter = new Intl.NumberFormat('en-US', {style: 'percent'})
+    const numberFormatter = new Intl.NumberFormat('en-US')
+    const percentFormatter = new Intl.NumberFormat('en-US', {style: 'percent'})
     const client = await this.buildClient()
 
     try {
@@ -71,12 +74,16 @@ class GithubService {
       const {rate: {remaining, limit}} = response.data
 
       this.log('rate limit:', {remaining, limit})
-      const badgeText = formatter.format(remaining / limit)
-      this.updateBadge(badgeText)
+
+      const title = chrome.i18n.getMessage('menuRateLimit', [
+        numberFormatter.format(remaining),
+        numberFormatter.format(limit),
+        percentFormatter.format(remaining / limit)
+      ])
+      this.contextMenu.upsert(this.contextMenu.MENU_RATE_LIMIT, {title})
 
       return {remaining, limit}
     } catch (e) {
-      this.updateBadge(null)
       return {remaining: -1, limit: -1}
     }
   }
@@ -104,7 +111,9 @@ class GithubService {
         this.log('🌍 fetch repository from Github', repo)
         this.cache.set(cacheKey, repo)
       } catch (e) {
-        this.updateBadge(null)
+        this.contextMenu.upsert(this.contextMenu.MENU_RATE_LIMIT, {
+          title: chrome.i18n.getMessage('menuRateLimit', ['?', '?', 'N/A'])
+        })
         return -1
       }
     } else {

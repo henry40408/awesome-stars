@@ -195,7 +195,7 @@ class OptionPage extends React.Component {
                 <br />
                 <AlertText>{this.getMessage('pleaseDoNotSelectAnyScopes')}</AlertText>
               </p>
-              <h3>Rate Limit</h3>
+              <h3>{this.getMessage('rateLimit')}</h3>
               <RateLimit inverse remaining={remaining} total={limit} heightInRem={2.5} />
               <p>
                 <small>{this.getMessage('rateLimitDescription')}</small>

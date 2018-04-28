@@ -69,6 +69,24 @@
     "message": "GitHub 文件",
     "description": "Option page string"
   },
+  "menuRateLimit": {
+    "message": "請求配額: $REMAINING$ / $LIMIT$ ($RATIO$)",
+    "description": "Rate limit on context menu",
+    "placeholders": {
+      "remaining": {
+        "content": "$1",
+        "example": "5,000"
+      },
+      "limit": {
+        "content": "$2",
+        "example": "5,000"
+      },
+      "ratio": {
+        "content": "$3",
+        "example": "100%"
+      }
+    }
+  },
   "opHowHotAreThoseStars": {
     "message": "不同顏色的星星代表什麼意思？",
     "description": "Option page string"
@@ -80,6 +98,10 @@
   "orange": {
     "message": "橘色",
     "description": "Color"
+  },
+  "rateLimit": {
+    "message": "請求配額",
+    "description": "Option page string"
   },
   "rateLimitDescription": {
     "message": "透過 Basic Auth 或 OAuth（包括 access token），我們一小時內可以可以對 GitHub 送出 5,000 次請求。",
@@ -106,7 +128,7 @@
     "description": "Option page string"
   },
   "whyDoYouNeedAnAccessTokenDescription2": {
-    "message": "，在沒有經過 Basic Auth 或 OAuth 認證的情況下，同一個 IP、一小時內只能送出 60 次 request。單一 awesome list 表列的專案數量往往超過這個數目，因此 Awesome List 需要一組 access token 才能正常運作。",
+    "message": "，在沒有經過 Basic Auth 或 OAuth 認證的情況下，同一個 IP、一小時內只能發出 60 次請求。一項 awesome list 專案表列的專案數量往往超過這個數目，因此 Awesome Stars 需要一組 access token 才能正常運作。",
     "description": "Option page string"
   },
   "yellow": {
