@@ -28,10 +28,9 @@ gulp.task('scripts', (cb) => {
             'process.env.VENDOR': JSON.stringify(args.vendor)
           })
         ].concat(args.production ? [
-          new BabiliPlugin()
-        ] : [
-          new webpackBundleAnalyzer.BundleAnalyzerPlugin()
-        ]),
+          new BabiliPlugin(),
+          new webpackBundleAnalyzer.BundleAnalyzerPlugin({analyzerMode: 'static'})
+        ] : []),
         module: {
           rules: [{
             test: /\.js$/,
