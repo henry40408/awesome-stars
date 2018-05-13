@@ -88,6 +88,15 @@ class GithubService {
     }
   }
 
+  async fetchMultipleStarCountAsync (tuples) {
+    for (let tuple of tuples) {
+      let { owner, name } = tuple
+      let starCount = await this.fetchStarCountAsync(owner, name)
+      tuple.star = starCount
+    }
+    return tuples
+  }
+
   async fetchStarCountAsync (owner, name) {
     // threshold to prevent the extension use all rate limit
     const {remaining, limit} = await this.fetchRateLimitAsync()

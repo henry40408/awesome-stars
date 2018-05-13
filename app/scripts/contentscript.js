@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom'
 
 import { Client } from 'chomex'
 import chunkize from 'lodash/chunk'
+import find from 'lodash/find'
 import ParseGithubURL from 'parse-github-url'
 
 import { log } from './common'
@@ -15,24 +16,24 @@ const CHUNK_SIZE = 10
 const GITHUB_ISSUES_URL_PATTERN = /https:\/\/github\.com\/(.+?)\/issues\/(\d+)/
 const GITHUB_ISSUES_LINKS_LIMIT = 1000
 
-const messageClient = new Client(chrome.runtime)
+let messageClient = new Client(chrome.runtime)
 
 function parseGithubURL (url) {
-  const parsed = ParseGithubURL(url)
+  let parsed = ParseGithubURL(url)
   if (parsed && parsed.host === 'github.com' && parsed.owner && parsed.name) {
-    const {host, owner, name} = parsed
-    return {valid: true, host, owner, name}
+    let { host, owner, name } = parsed
+    return { valid: true, host, owner, name }
   }
-  return {valid: false}
+  return { valid: false }
 }
 
 function appendStars (tuples) {
   /** @type {[StarHOC]} */
-  const stars = []
+  let stars = []
 
-  for (const tuple of tuples) {
-    const {link, owner, name} = tuple
-    const starNode = document.createElement('span')
+  for (let tuple of tuples) {
+    let { link, owner, name } = tuple
+    let starNode = document.createElement('span')
     link.parentNode.insertBefore(starNode, link.nextSibling)
     ReactDOM.render(<StarHOC ref={star => stars.push(star)} owner={owner} name={name} />, starNode)
   }
@@ -41,26 +42,34 @@ function appendStars (tuples) {
 }
 
 async function batchUpdateCountAsync (stars) {
-  const chunks = chunkize(stars, CHUNK_SIZE)
-  for (const chunk of chunks) {
-    await Promise.all(chunk.map(star => star.updateCountAsync()))
+  let chunks = chunkize(stars, CHUNK_SIZE)
+
+  for (let chunk of chunks) {
+    let tuples = chunk.map(star => star.getTuple())
+    let { data: tuplesWithStar } = await messageClient.message('/stars/get/batch', { tuples })
+
+    for (let star of chunk) {
+      let tuple = find(tuplesWithStar, star.getTuple())
+      star.updateCount(tuple.star)
+    }
+
     await messageClient.message('/rate-limit')
   }
 }
 
 async function isAwesomeListAsync () {
-  const parsed = parseGithubURL(window.location.href)
+  let parsed = parseGithubURL(window.location.href)
   if (!parsed) {
     return false
   }
 
-  const readme = document.querySelector('#readme')
+  let readme = document.querySelector('#readme')
   if (!readme) {
     return false
   }
 
-  const {owner, name} = parsed
-  const {data: isAwesomeList} = await messageClient.message('/awesome-list/check', {owner, name})
+  let { owner, name } = parsed
+  let { data: isAwesomeList } = await messageClient.message('/awesome-list/check', { owner, name })
 
   if (isAwesomeList) {
     log(`awesome list ${owner}/${name} detected`)
@@ -71,42 +80,42 @@ async function isAwesomeListAsync () {
 }
 
 async function attachStarsOnLinksAsync (links) {
-  const tuples = links
+  let tuples = links
     .filter(link => !link.hash)
     .map((link) => {
-      const {valid, owner, name} = parseGithubURL(link.href)
-      return {valid, link, owner, name}
+      let { valid, owner, name } = parseGithubURL(link.href)
+      return { valid, link, owner, name }
     })
     .filter(tuple => tuple.valid)
 
-  const stars = appendStars(tuples)
+  let stars = appendStars(tuples)
   await batchUpdateCountAsync(stars)
 }
 
 async function initForReadmeAsync () {
-  const isAwesomeList = await isAwesomeListAsync()
+  let isAwesomeList = await isAwesomeListAsync()
   if (!isAwesomeList) {
     return
   }
 
   /** @type {Array} */
-  const links = [].slice.call(document.querySelectorAll('#readme li > a'))
+  let links = [].slice.call(document.querySelectorAll('#readme li > a'))
   await attachStarsOnLinksAsync(links)
 }
 
 async function initForGithubIssuesAsync () {
-  const {data: applyOnGithubIssues} = await messageClient.message('/apply-on-github-issues/get')
+  let { data: applyOnGithubIssues } = await messageClient.message('/apply-on-github-issues/get')
   if (!applyOnGithubIssues) {
     return
   }
 
-  const isGithubIssues = !!window.location.href.match(GITHUB_ISSUES_URL_PATTERN)
+  let isGithubIssues = !!window.location.href.match(GITHUB_ISSUES_URL_PATTERN)
   if (!isGithubIssues) {
     return
   }
 
-  const links = [].slice.call(document.querySelectorAll('.comment-body a'))
-  const limitedLinks = links.slice(0, GITHUB_ISSUES_LINKS_LIMIT)
+  let links = [].slice.call(document.querySelectorAll('.comment-body a'))
+  let limitedLinks = links.slice(0, GITHUB_ISSUES_LINKS_LIMIT)
   await attachStarsOnLinksAsync(limitedLinks)
 }
 
@@ -118,14 +127,14 @@ async function initAwesomeStarsAsync () {
 }
 
 function showUpdateNotification () {
-  const $emptyContainer = document.createElement('div')
-  const $jsFlashContainer = document.getElementById('js-flash-container')
+  let $emptyContainer = document.createElement('div')
+  let $jsFlashContainer = document.getElementById('js-flash-container')
   $jsFlashContainer.appendChild($emptyContainer)
   ReactDOM.render(<UpdateNotification />, $emptyContainer)
 }
 
 async function checkUpdateNotificationSentAsync () {
-  const {data: updateNotificationSent} = await messageClient.message(
+  let { data: updateNotificationSent } = await messageClient.message(
     '/update-notification-sent/get'
   )
 

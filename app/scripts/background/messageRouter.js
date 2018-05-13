@@ -33,29 +33,34 @@ class MessageRouter {
     this.register('/access-token/get', async () => this.accessToken.loadAsync())
 
     this.register('/access-token/set', async (message) => {
-      const {accessToken: token} = message
+      let { accessToken: token } = message
       return this.accessToken.saveAsync(token)
     })
 
     this.register('/awesome-list/check', async (message) => {
-      const {owner, name} = message
+      let { owner, name } = message
 
-      const tabs = await this.chromePromise.tabs.query({active: true})
+      let tabs = await this.chromePromise.tabs.query({ active: true })
       if (tabs.length > 0) {
-        const {id} = tabs[0]
+        let { id } = tabs[0]
         chrome.pageAction.show(id)
       }
 
-      return this.github.isAwesomeListAsync({owner, name})
+      return this.github.isAwesomeListAsync({ owner, name })
     })
 
     this.register('/rate-limit', async () => this.github.fetchRateLimitAsync())
 
+    this.register('/stars/get/batch', async (message) => {
+      let { tuples } = message
+      return this.github.fetchMultipleStarCountAsync(tuples)
+    })
+
     this.register('/stars/get', async (message) => {
-      const {owner, name, shouldUpdateRateLimit} = message
+      let { owner, name, shouldUpdateRateLimit } = message
 
       if (owner && name) {
-        return this.github.fetchStarCountAsync(owner, name, {shouldUpdateRateLimit})
+        return this.github.fetchStarCountAsync(owner, name, { shouldUpdateRateLimit })
       }
 
       return -1
@@ -66,7 +71,7 @@ class MessageRouter {
     )
 
     this.register('/update-notification-sent/set', async (message) => {
-      const {updateNotificationSent} = message
+      let { updateNotificationSent } = message
       return this.storage.saveAsync(
         this.storage.KEY_UPDATE_NOTIFICATION_SENT,
         updateNotificationSent
@@ -78,7 +83,7 @@ class MessageRouter {
     )
 
     this.register('/apply-on-github-issues/set', async (message) => {
-      const {applyOnGithubIssues} = message
+      let { applyOnGithubIssues } = message
       return this.storage.saveAsync(
         this.storage.KEY_APPLY_ON_GITHUB_ISSUES,
         applyOnGithubIssues
