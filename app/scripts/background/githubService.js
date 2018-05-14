@@ -8,7 +8,6 @@ class GithubService {
   AWESOME_LIST_URL = 'https://raw.githubusercontent.com/sindresorhus/awesome/master/readme.md'
 
   AWESOME_LIST_KEY = '@@awesome-list'
-  GITHUB_KEY = '@@github'
 
   RATE_LIMIT_THRESHOLD = 0.5
 
@@ -23,31 +22,24 @@ class GithubService {
 
     /** @type {ContextMenuService} */
     this.contextMenu = ctx[DIConstants.S_CONTEXT_MENU]
+
+    /** @type {AxiosInstance} */
+    this.client = null
   }
 
-  /**
-   * @return {Promise<AxiosInstance>}
-   */
   async buildClient () {
     /** @type {string} */
     let token = await this.accessToken.loadAsync()
 
-    /** @type {AxiosInstance} */
-    let client = this.cache.get(this.GITHUB_KEY)
-
-    if (this.accessToken.changed || !client) {
+    if (!this.client || this.accessToken.changed) {
       let headers = {}
       if (token) {
         headers = { Authorization: `Bearer ${token}` }
       }
 
-      client = axios.create({ baseURL: 'https://api.github.com', headers })
-
-      this.cache.set(this.GITHUB_KEY, client)
+      this.client = axios.create({ baseURL: 'https://api.github.com', headers })
       this.accessToken.changed = false
     }
-
-    return client
   }
 
   async fetchAwesomeListAsync () {
@@ -69,13 +61,13 @@ class GithubService {
   }
 
   async fetchRateLimitAsync () {
-    let client = await this.buildClient()
+    await this.buildClient()
 
     let numberFormatter = new Intl.NumberFormat('en-US')
     let percentFormatter = new Intl.NumberFormat('en-US', { style: 'percent' })
 
     try {
-      let response = await client.get('/rate_limit')
+      let response = await this.client.get('/rate_limit')
       let { rate: { remaining, limit } } = response.data
 
       this.log('🚦 rate limit:', { remaining, limit })
@@ -104,7 +96,7 @@ class GithubService {
   }
 
   async fetchStarCountAsync (owner, name) {
-    // threshold to prevent the extension use all rate limit
+    // threshold to prevent the extension to use all rate limit
     let { remaining, limit } = await this.fetchRateLimitAsync()
     if (
       remaining === -1 || limit === -1 ||
@@ -114,14 +106,14 @@ class GithubService {
       return -1
     }
 
-    let client = await this.buildClient()
+    await this.buildClient()
 
     let cacheKey = `/repos/${owner}/${name}`
     let repo = this.cache.get(cacheKey)
 
     if (!repo) {
       try {
-        let response = await client.get(`/repos/${owner}/${name}`)
+        let response = await this.client.get(`/repos/${owner}/${name}`)
         repo = response.data
         this.log('🌍 fetch repository from Github', repo)
         this.cache.set(cacheKey, repo)

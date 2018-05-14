@@ -32,7 +32,7 @@ class ChromeStorageService {
    * @return {Promise<void>}
    */
   async saveAsync (key, value) {
-    let payload = {[key]: value}
+    let payload = { [key]: value }
     this.log('📥 save', key, 'to Chrome storage:', value)
     return this.chromePromise.storage.local.set(payload)
   }
