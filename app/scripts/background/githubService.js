@@ -2,7 +2,6 @@ import axios from 'axios/index'
 import includes from 'lodash/includes'
 
 import DIConstants from '../constants'
-import { logError } from '../common'
 
 class GithubService {
   AWESOME_LIST_URL = 'https://raw.githubusercontent.com/sindresorhus/awesome/master/readme.md'
@@ -49,7 +48,7 @@ class GithubService {
     if (!awesomeList) {
       let response = await axios.get(this.AWESOME_LIST_URL)
 
-      awesomeList = await response.text()
+      awesomeList = response.data
 
       this.cache.set(this.AWESOME_LIST_KEY, awesomeList)
     }
@@ -66,31 +65,25 @@ class GithubService {
     let numberFormatter = new Intl.NumberFormat('en-US')
     let percentFormatter = new Intl.NumberFormat('en-US', { style: 'percent' })
 
-    try {
-      let response = await this.client.get('/rate_limit')
-      let { rate: { remaining, limit } } = response.data
+    let response = await this.client.get('/rate_limit')
+    let { rate: { remaining, limit } } = response.data
 
-      this.log('🚦 rate limit:', { remaining, limit })
+    this.log('🚦 rate limit:', { remaining, limit })
 
-      let title = chrome.i18n.getMessage('menuRateLimit', [
-        numberFormatter.format(remaining),
-        numberFormatter.format(limit),
-        percentFormatter.format(remaining / limit)
-      ])
-      this.contextMenu.upsert(this.contextMenu.MENU_RATE_LIMIT, { title })
+    let title = chrome.i18n.getMessage('menuRateLimit', [
+      numberFormatter.format(remaining),
+      numberFormatter.format(limit),
+      percentFormatter.format(remaining / limit)
+    ])
+    this.contextMenu.upsert(this.contextMenu.MENU_RATE_LIMIT, { title })
 
-      return { remaining, limit }
-    } catch (e) {
-      logError(e)
-      return { remaining: -1, limit: -1 }
-    }
+    return { remaining, limit }
   }
 
   async fetchMultipleStarCountAsync (tuples) {
     for (let tuple of tuples) {
       let { owner, name } = tuple
-      let starCount = await this.fetchStarCountAsync(owner, name)
-      tuple.star = starCount
+      tuple.star = await this.fetchStarCountAsync(owner, name)
     }
     return tuples
   }
@@ -103,7 +96,9 @@ class GithubService {
       limit === 0 ||
       remaining / limit <= this.RATE_LIMIT_THRESHOLD
     ) {
-      return -1
+      throw new Error(
+        `rate limit ${remaining}/${limit} is below threshold ${this.RATE_LIMIT_THRESHOLD}`
+      )
     }
 
     await this.buildClient()
@@ -112,18 +107,10 @@ class GithubService {
     let repo = this.cache.get(cacheKey)
 
     if (!repo) {
-      try {
-        let response = await this.client.get(`/repos/${owner}/${name}`)
-        repo = response.data
-        this.log('🌍 fetch repository from Github', repo)
-        this.cache.set(cacheKey, repo)
-      } catch (e) {
-        logError(e)
-        this.contextMenu.upsert(this.contextMenu.MENU_RATE_LIMIT, {
-          title: chrome.i18n.getMessage('menuRateLimit', ['?', '?', 'N/A'])
-        })
-        return -1
-      }
+      let response = await this.client.get(`/repos/${owner}/${name}`)
+      repo = response.data
+      this.log('🌍 fetch repository from Github', repo)
+      this.cache.set(cacheKey, repo)
     } else {
       this.log('🗄 fetch repository from️ cache', repo)
     }
