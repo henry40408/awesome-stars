@@ -36,7 +36,10 @@ class GithubService {
         headers = { Authorization: `Bearer ${token}` }
       }
 
-      this.client = axios.create({ baseURL: 'https://api.github.com', headers })
+      this.client = axios.create({
+        baseURL: 'https://api.github.com',
+        headers
+      })
       this.accessToken.changed = false
     }
   }
@@ -65,8 +68,14 @@ class GithubService {
     let numberFormatter = new Intl.NumberFormat('en-US')
     let percentFormatter = new Intl.NumberFormat('en-US', { style: 'percent' })
 
-    let response = await this.client.get('/rate_limit')
-    let { rate: { remaining, limit } } = response.data
+    let query = `query {
+      rateLimit {
+        remaining
+        limit
+      }
+    }`
+    let response = await this.client.post('/graphql', { query })
+    let { data: { rateLimit: { remaining, limit } } } = response.data
 
     this.log('🚦 rate limit:', { remaining, limit })
 
@@ -81,14 +90,6 @@ class GithubService {
   }
 
   async fetchMultipleStarCountAsync (tuples) {
-    for (let tuple of tuples) {
-      let { owner, name } = tuple
-      tuple.star = await this.fetchStarCountAsync(owner, name)
-    }
-    return tuples
-  }
-
-  async fetchStarCountAsync (owner, name) {
     // threshold to prevent the extension to use all rate limit
     let { remaining, limit } = await this.fetchRateLimitAsync()
     if (
@@ -101,27 +102,68 @@ class GithubService {
       )
     }
 
-    await this.buildClient()
+    let cues = GithubService.tuplesToCues(tuples)
+    let query = GithubService.cuesToGraphQLQuery(cues)
 
-    let cacheKey = `/repos/${owner}/${name}`
-    let repo = this.cache.get(cacheKey)
+    // unwrap response body from axios result first,
+    // then unwrap data payload from GraphQL result
+    let { data: { data } } = await this.client.post('/graphql', { query })
 
-    if (!repo) {
-      let response = await this.client.get(`/repos/${owner}/${name}`)
-      repo = response.data
-      this.log('🌍 fetch repository from Github', repo)
-      this.cache.set(cacheKey, repo)
-    } else {
-      this.log('🗄 fetch repository from️ cache', repo)
+    if (process.env.NODE_ENV === 'development') {
+      let entries = Object.entries(data).filter(tuple => !!tuple[1])
+      this.log('🌀', entries.length, 'repositorie(s) fetched')
     }
 
-    let { stargazers_count: stargazersCount } = repo
-    return parseInt(stargazersCount, 10)
+    return this.graphQLToTuples(cues, data)
   }
 
   async isAwesomeListAsync ({ owner, name }) {
     let awesomeList = await this.fetchAwesomeListAsync()
     return includes(awesomeList, `${owner}/${name}`)
+  }
+
+  static tuplesToCues (tuples) {
+    return tuples.map((tuple, index) => ({ alias: `repository${index}`, ...tuple }))
+  }
+
+  static cuesToGraphQLQuery (cues) {
+    return `query {
+      ${cues.map(GithubService.cueToGraphQLQuery).join('\n')}
+    }`
+  }
+
+  static cueToGraphQLQuery (cue) {
+    let { alias, owner, name } = cue
+    return `${alias}: repository(owner: "${owner}", name: "${name}") {
+      owner { login }
+      name
+      stargazers { totalCount }
+    }`
+  }
+
+  async graphQLToTuples (cues, data) {
+    return Promise.all(cues.map(async cue => {
+      let { alias, owner, name } = cue
+
+      if (data[alias]) {
+        let { stargazers: { totalCount } } = data[alias]
+        return { owner, name, star: totalCount }
+      }
+
+      // repository not found, possibly renamed
+      return {
+        owner,
+        name,
+        star: await this.fallbackToRESTful(owner, name)
+      }
+    }))
+  }
+
+  async fallbackToRESTful (owner, name) {
+    this.log('🆖 missing repository', owner, name, 'found, fallback to RESTful')
+    let { data } = await this.client.get(`/repos/${owner}/${name}`)
+    let { stargazers_count: stargazersCount } = data
+    return parseInt(stargazersCount, 10)
   }
 }
 

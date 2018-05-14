@@ -12,7 +12,7 @@ import { log, logError } from './common'
 import UpdateNotification from './components/UpdateNotification'
 import StarHOC from './components/StarHOC'
 
-const CHUNK_SIZE = 10
+const CHUNK_SIZE = 100
 const GITHUB_ISSUES_URL_PATTERN = /https:\/\/github\.com\/(.+?)\/issues\/(\d+)/
 const GITHUB_ISSUES_LINKS_LIMIT = 1000
 
