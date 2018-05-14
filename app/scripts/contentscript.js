@@ -8,7 +8,7 @@ import chunkize from 'lodash/chunk'
 import find from 'lodash/find'
 import ParseGithubURL from 'parse-github-url'
 
-import { log } from './common'
+import { log, logError } from './common'
 import UpdateNotification from './components/UpdateNotification'
 import StarHOC from './components/StarHOC'
 
@@ -52,14 +52,18 @@ async function batchUpdateCountAsync (stars) {
   for (let chunk of chunks) {
     let tuples = chunk.map(star => star.getTuple())
 
-    let { data: tuplesWithStar } = await messageClient.message('/stars/get/batch', { tuples })
+    try {
+      let { data: tuplesWithStar } = await messageClient.message('/stars/get/batch', { tuples })
 
-    for (let star of chunk) {
-      let tuple = find(tuplesWithStar, star.getTuple())
-      star.updateCount(tuple.star)
+      for (let star of chunk) {
+        let tuple = find(tuplesWithStar, star.getTuple())
+        star.updateCount(tuple.star)
+      }
+
+      await messageClient.message('/rate-limit')
+    } catch (error) {
+      logError(error)
     }
-
-    await messageClient.message('/rate-limit')
   }
 }
 
@@ -75,14 +79,19 @@ async function isAwesomeListAsync () {
   }
 
   let { owner, name } = parsed
-  let { data: isAwesomeList } = await messageClient.message('/awesome-list/check', { owner, name })
 
-  if (isAwesomeList) {
-    log(`🚨 awesome list ${owner}/${name} detected`)
-    return true
+  try {
+    let { data: isAwesomeList } = await messageClient.message('/awesome-list/check', { owner, name })
+
+    if (isAwesomeList) {
+      log(`🚨 awesome list ${owner}/${name} detected`)
+      return true
+    }
+
+    return false
+  } catch (error) {
+    logError(error)
   }
-
-  return false
 }
 
 async function attachStarsOnLinksAsync (links) {
@@ -107,19 +116,23 @@ async function initForReadmeAsync () {
 }
 
 async function initForGithubIssuesAsync () {
-  let { data: applyOnGithubIssues } = await messageClient.message('/apply-on-github-issues/get')
-  if (!applyOnGithubIssues) {
-    return
-  }
+  try {
+    let { data: applyOnGithubIssues } = await messageClient.message('/apply-on-github-issues/get')
+    if (!applyOnGithubIssues) {
+      return
+    }
 
-  let isGithubIssues = !!window.location.href.match(GITHUB_ISSUES_URL_PATTERN)
-  if (!isGithubIssues) {
-    return
-  }
+    let isGithubIssues = !!window.location.href.match(GITHUB_ISSUES_URL_PATTERN)
+    if (!isGithubIssues) {
+      return
+    }
 
-  let links = [].slice.call(document.querySelectorAll('.comment-body a'))
-  let limitedLinks = links.slice(0, GITHUB_ISSUES_LINKS_LIMIT)
-  await attachStarsOnLinksAsync(limitedLinks)
+    let links = [].slice.call(document.querySelectorAll('.comment-body a'))
+    let limitedLinks = links.slice(0, GITHUB_ISSUES_LINKS_LIMIT)
+    await attachStarsOnLinksAsync(limitedLinks)
+  } catch (error) {
+    logError(error)
+  }
 }
 
 async function initAwesomeStarsAsync () {
@@ -137,15 +150,19 @@ function showUpdateNotification () {
 }
 
 async function checkUpdateNotificationSentAsync () {
-  let { data: updateNotificationSent } = await messageClient.message(
-    '/update-notification-sent/get'
-  )
+  try {
+    let { data: updateNotificationSent } = await messageClient.message(
+      '/update-notification-sent/get'
+    )
 
-  if (!updateNotificationSent) {
-    showUpdateNotification()
-    messageClient.message('/update-notification-sent/set', {
-      updateNotificationSent: true
-    })
+    if (!updateNotificationSent) {
+      showUpdateNotification()
+      messageClient.message('/update-notification-sent/set', {
+        updateNotificationSent: true
+      })
+    }
+  } catch (error) {
+    logError(error)
   }
 }
 

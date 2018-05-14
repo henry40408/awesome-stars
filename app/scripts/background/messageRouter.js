@@ -22,10 +22,14 @@ class MessageRouter {
     this.github.fetchRateLimitAsync()
   }
 
-  register (route, fn) {
+  register (route, fnAsync) {
     return this.messageRouter.on(route, async (message) => {
       this.log('📣', route, 'called with', message)
-      return fn(message)
+      try {
+        return { status: 200, data: await fnAsync(message) }
+      } catch (error) {
+        return { status: 500, error: error.message }
+      }
     })
   }
 
