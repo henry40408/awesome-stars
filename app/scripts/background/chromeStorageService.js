@@ -20,9 +20,9 @@ class ChromeStorageService {
    * @return {Promise<*>}
    */
   async loadAsync (key, defaultValue = null) {
-    const valueInStorage = await this.chromePromise.storage.local.get(key)
-    const valueOrDefaultValue = get(valueInStorage, key, defaultValue)
-    this.log('load', key, 'from Chrome storage:', valueOrDefaultValue)
+    let valueInStorage = await this.chromePromise.storage.local.get(key)
+    let valueOrDefaultValue = get(valueInStorage, key, defaultValue)
+    this.log('📤 load', key, 'from Chrome storage:', valueOrDefaultValue)
     return valueOrDefaultValue
   }
 
@@ -32,8 +32,8 @@ class ChromeStorageService {
    * @return {Promise<void>}
    */
   async saveAsync (key, value) {
-    const payload = {[key]: value}
-    this.log('save', key, 'to Chrome storage:', value)
+    let payload = {[key]: value}
+    this.log('📥 save', key, 'to Chrome storage:', value)
     return this.chromePromise.storage.local.set(payload)
   }
 }

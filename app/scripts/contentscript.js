@@ -21,8 +21,8 @@ let messageClient = new Client(chrome.runtime)
 function parseGithubURL (url) {
   let parsed = ParseGithubURL(url)
   if (parsed && parsed.host === 'github.com' && parsed.owner && parsed.name) {
-    let { host, owner, name } = parsed
-    return { valid: true, host, owner, name }
+    let { owner, name } = parsed
+    return { valid: true, owner, name }
   }
   return { valid: false }
 }
@@ -34,8 +34,13 @@ function appendStars (tuples) {
   for (let tuple of tuples) {
     let { link, owner, name } = tuple
     let starNode = document.createElement('span')
+
     link.parentNode.insertBefore(starNode, link.nextSibling)
-    ReactDOM.render(<StarHOC ref={star => stars.push(star)} owner={owner} name={name} />, starNode)
+
+    ReactDOM.render(<StarHOC
+      ref={star => stars.push(star)}
+      owner={owner} name={name}
+    />, starNode)
   }
 
   return stars
@@ -46,6 +51,7 @@ async function batchUpdateCountAsync (stars) {
 
   for (let chunk of chunks) {
     let tuples = chunk.map(star => star.getTuple())
+
     let { data: tuplesWithStar } = await messageClient.message('/stars/get/batch', { tuples })
 
     for (let star of chunk) {
@@ -72,7 +78,7 @@ async function isAwesomeListAsync () {
   let { data: isAwesomeList } = await messageClient.message('/awesome-list/check', { owner, name })
 
   if (isAwesomeList) {
-    log(`awesome list ${owner}/${name} detected`)
+    log(`🚨 awesome list ${owner}/${name} detected`)
     return true
   }
 
@@ -81,11 +87,8 @@ async function isAwesomeListAsync () {
 
 async function attachStarsOnLinksAsync (links) {
   let tuples = links
-    .filter(link => !link.hash)
-    .map((link) => {
-      let { valid, owner, name } = parseGithubURL(link.href)
-      return { valid, link, owner, name }
-    })
+    .filter(link => !link.hash) // filter out anchors: such as <a href="#foobar" />
+    .map(link => ({ link, ...parseGithubURL(link.href) }))
     .filter(tuple => tuple.valid)
 
   let stars = appendStars(tuples)
@@ -120,7 +123,7 @@ async function initForGithubIssuesAsync () {
 }
 
 async function initAwesomeStarsAsync () {
-  await Promise.all([
+  return Promise.all([
     initForReadmeAsync(),
     initForGithubIssuesAsync()
   ])

@@ -10,13 +10,13 @@ import colors from '../themes/colors'
 import AccessTokenForm from '../components/AccessTokenForm'
 import RateLimit from '../components/RateLimit'
 
-const Container = styled(Flex)`
+let Container = styled(Flex)`
   font-family: 'Roboto', Helvetica, sans-serif;
   font-weight: light;
   max-width: 960px;
 `
 
-const Header = styled(Box)`
+let Header = styled(Box)`
   font-family: 'Roboto Slab', sans-serif;
   letter-spacing: 0.0625rem;
   text-align: center;
@@ -30,7 +30,7 @@ const Header = styled(Box)`
   }
 `
 
-const Body = styled(Box)`
+let Body = styled(Box)`
   margin: 0 0 1rem;
   h3,
   h4 {
@@ -43,13 +43,13 @@ const Body = styled(Box)`
   }
 `
 
-const Footer = styled(Box)`
+let Footer = styled(Box)`
   font-family: 'Roboto Slab', sans-serif;
   text-align: center;
   line-height: 1.5;
 `
 
-const ColorList = styled.ul`
+let ColorList = styled.ul`
   list-style: none;
   padding: 0;
   & > li::before {
@@ -61,19 +61,19 @@ const ColorList = styled.ul`
   }
 `
 
-const ColorItem = styled.li`
-  color: ${({color}) => color || colors.white};
+let ColorItem = styled.li`
+  color: ${({ color }) => color || colors.white};
 `
 
-const StarsCurve = styled.img`
+let StarsCurve = styled.img`
   margin: -7.5rem 0 0;
 `
 
-const AlertText = styled.span`
+let AlertText = styled.span`
   color: ${colors.red};
 `
 
-const CapitalizedH3 = styled.h3`
+let CapitalizedH3 = styled.h3`
   text-transform: capitalize;
 `
 
@@ -104,32 +104,32 @@ class OptionPage extends React.Component {
   )
 
   loadAccessTokenAsync = async () => {
-    const {data: accessToken} = await this.client.message('/access-token/get')
-    return {accessToken}
+    let { data: accessToken } = await this.client.message('/access-token/get')
+    return { accessToken }
   }
 
   loadInitialDataAsync = async () => {
-    this.setState({saving: true})
-    const {accessToken} = await this.loadAccessTokenAsync()
-    const {invalid, limit, remaining} = await this.loadRateLimitAsync()
-    this.setState({accessToken, invalid, limit, remaining, saving: false})
+    this.setState({ saving: true })
+    let { accessToken } = await this.loadAccessTokenAsync()
+    let { invalid, limit, remaining } = await this.loadRateLimitAsync()
+    this.setState({ accessToken, invalid, limit, remaining, saving: false })
   }
 
   loadRateLimitAsync = async () => {
-    const {data: {remaining, limit}} = await this.client.message('/rate-limit')
-    const invalid = remaining === -1 || limit === -1
-    return {invalid, limit, remaining}
+    let { data: { remaining, limit } } = await this.client.message('/rate-limit')
+    let invalid = remaining === -1 || limit === -1
+    return { invalid, limit, remaining }
   }
 
   saveAccessTokenAsync = async (accessToken) => {
-    this.setState({saving: true, accessToken})
-    await this.client.message('/access-token/set', {accessToken})
-    const {invalid, limit, remaining} = await this.loadRateLimitAsync()
-    this.setState({saving: false, invalid, limit, remaining})
+    this.setState({ saving: true, accessToken })
+    await this.client.message('/access-token/set', { accessToken })
+    let { invalid, limit, remaining } = await this.loadRateLimitAsync()
+    this.setState({ saving: false, invalid, limit, remaining })
   }
 
   render () {
-    const {
+    let {
       accessToken,
       invalid,
       remaining,

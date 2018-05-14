@@ -1,9 +1,10 @@
 import * as awilix from 'awilix'
 
+import { version } from '../../package.json'
+
 import { log } from './common'
 import DIConstants from './constants'
 
-import { version } from '../../package.json'
 import AccessTokenRepository from './background/accessTokenRepository'
 import CacheService from './background/cacheService'
 import ChromeStorageService from './background/chromeStorageService'
@@ -17,7 +18,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 /** @type {AwilixContainer} */
-const container = awilix.createContainer({
+let container = awilix.createContainer({
   injectionMode: awilix.InjectionMode.PROXY
 })
 
@@ -32,26 +33,26 @@ container.register({
 })
 
 /** @type {ChromeStorageService} */
-const storageService = container.resolve(DIConstants.S_CHROME_STORAGE)
+let storageService = container.resolve(DIConstants.S_CHROME_STORAGE)
 
 /** @type {MessageRouter} */
-const messageRouter = container.resolve(DIConstants.MESSAGE_ROUTER)
+let messageRouter = container.resolve(DIConstants.MESSAGE_ROUTER)
 
 /** @type {ContextMenuService} */
-const contextMenuService = container.resolve(DIConstants.S_CONTEXT_MENU)
+let contextMenuService = container.resolve(DIConstants.S_CONTEXT_MENU)
 
 async function applyOnGithubIssuesClickListener () {
-  const checked = !await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES)
+  let checked = !await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES)
   await storageService.saveAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES, checked)
-  contextMenuService.upsert(contextMenuService.MENU_APPLY_ON_GITHUB_ISSUES, {checked})
+  contextMenuService.upsert(contextMenuService.MENU_APPLY_ON_GITHUB_ISSUES, { checked })
 }
 
 async function initializeExtensionAsync () {
   chrome.runtime.onInstalled.addListener(async (reason, previousVersion) => {
-    const isUpdate = reason === 'update' && previousVersion !== version
+    let isUpdate = reason === 'update' && previousVersion !== version
 
     if (process.env.NODE_ENV === 'development') {
-      chrome.runtime.openOptionsPage()
+      // chrome.runtime.openOptionsPage()
     }
 
     // reset update notification state...
@@ -64,7 +65,7 @@ async function initializeExtensionAsync () {
     return true
   })
 
-  const checked = !!await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES)
+  let checked = !!await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES)
 
   contextMenuService.upsert(contextMenuService.MENU_RATE_LIMIT, {
     type: 'normal',

@@ -24,14 +24,14 @@ if (chrome && chrome.extension && chrome.extension.getURL) {
   yellowStar = require('../../images/star-yellow.svg')
 }
 
-const starIcons = {
+let starIcons = {
   [colors.blue]: blueStar,
   [colors.orange]: orangeStar,
   [colors.white]: whiteStar,
   [colors.yellow]: yellowStar
 }
 
-const StarBadge = styled.span`
+let StarBadge = styled.span`
   background-color: ${colors.gray};
   border-radius: 0.75rem;
   font-size: 0.75rem;
@@ -39,13 +39,13 @@ const StarBadge = styled.span`
   padding: 0.25rem 0.5rem;
 `
 
-const StarIcon = styled.img`
+let StarIcon = styled.img`
   background-color: transparent !important;
   margin: 0 0.25rem 0 0;
 `
 
-const StarText = styled.span`
-  color: ${({color}) => color};
+let StarText = styled.span`
+  color: ${({ color }) => color};
 `
 
 class Star extends React.Component {
@@ -62,21 +62,21 @@ class Star extends React.Component {
   colorsFromCount = (count) => {
     switch (true) {
       case count >= 10000:
-        return {star: colors.orange, text: colors.orange}
+        return { star: colors.orange, text: colors.orange }
       case count < 10000 && count >= 5000:
-        return {star: colors.yellow, text: colors.yellow}
+        return { star: colors.yellow, text: colors.yellow }
       case count < 5000 && count >= 1000:
-        return {star: colors.white, text: colors.white}
+        return { star: colors.white, text: colors.white }
       default:
-        return {star: colors.blue, text: colors.lightBlue}
+        return { star: colors.blue, text: colors.lightBlue }
     }
   }
 
   render () {
-    const formatter = new Intl.NumberFormat('en-US')
+    let formatter = new Intl.NumberFormat('en-US')
 
-    const {count, loading} = this.props
-    const {star: starColor, text: textColor} = this.colorsFromCount(count)
+    let { count, loading } = this.props
+    let { star: starColor, text: textColor } = this.colorsFromCount(count)
 
     let countText
     if (loading) {

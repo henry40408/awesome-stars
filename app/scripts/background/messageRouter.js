@@ -24,7 +24,7 @@ class MessageRouter {
 
   register (route, fn) {
     return this.messageRouter.on(route, async (message) => {
-      this.log(route, 'called with', message)
+      this.log('📣', route, 'called with', message)
       return fn(message)
     })
   }
@@ -54,16 +54,6 @@ class MessageRouter {
     this.register('/stars/get/batch', async (message) => {
       let { tuples } = message
       return this.github.fetchMultipleStarCountAsync(tuples)
-    })
-
-    this.register('/stars/get', async (message) => {
-      let { owner, name, shouldUpdateRateLimit } = message
-
-      if (owner && name) {
-        return this.github.fetchStarCountAsync(owner, name, { shouldUpdateRateLimit })
-      }
-
-      return -1
     })
 
     this.register('/update-notification-sent/get', async () =>

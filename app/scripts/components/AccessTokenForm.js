@@ -5,32 +5,32 @@ import { Box, Flex, reflex } from 'reflexbox'
 
 import colors from '../themes/colors'
 
-const ATFContainer = styled(Flex)`
+let ATFContainer = styled(Flex)`
   border: 1px solid ${colors.darkGray};
 `
 
-const ATFField = styled.input`
-  border: 2px ${({invalid}) => (invalid ? colors.red : 'transparent')} solid;
+let ATFField = styled.input`
+  border: 2px ${({ invalid }) => (invalid ? colors.red : 'transparent')} solid;
   box-sizing: border-box;
-  font-size: ${({heightInRem}) => heightInRem * 1.1}rem;
-  padding: ${({heightInRem}) => heightInRem * 0.5}rem;
+  font-size: ${({ heightInRem }) => heightInRem * 1.1}rem;
+  padding: ${({ heightInRem }) => heightInRem * 0.5}rem;
   width: 100%;
 `
 
-const BaseATFButtonContainer = styled.div`
+let BaseATFButtonContainer = styled.div`
   background: ${colors.white};
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: ${({heightInRem}) => heightInRem * 0.25}rem;
+  padding: ${({ heightInRem }) => heightInRem * 0.25}rem;
 `
 
-const ATFButtonContainer = reflex(BaseATFButtonContainer)
+let ATFButtonContainer = reflex(BaseATFButtonContainer)
 
-const ATFButton = styled.button`
+let ATFButton = styled.button`
   box-sizing: border-box;
-  background-color: ${({disabled}) => (disabled ? colors.lightGray : colors.darkGray)};
-  border: 1px solid ${({disabled}) => (disabled ? colors.lightGray : colors.darkGray)};
+  background-color: ${({ disabled }) => (disabled ? colors.lightGray : colors.darkGray)};
+  border: 1px solid ${({ disabled }) => (disabled ? colors.lightGray : colors.darkGray)};
   color: ${colors.white};
   font-size: ${props => props.heightInRem}rem;
   height: 100%;
@@ -40,19 +40,19 @@ const ATFButton = styled.button`
 `
 
 class AccessTokenForm extends React.Component {
-  state = {accessToken: ''}
+  state = { accessToken: '' }
 
-  componentWillReceiveProps ({accessToken}) {
-    this.setState({accessToken})
+  componentWillReceiveProps ({ accessToken }) {
+    this.setState({ accessToken })
   }
 
   updateAccessToken = (accessToken) => {
-    this.setState({accessToken})
+    this.setState({ accessToken })
   }
 
   render () {
-    const {heightInRem, invalid, saving, onSubmit} = this.props
-    const {accessToken} = this.state
+    let { heightInRem, invalid, saving, onSubmit } = this.props
+    let { accessToken } = this.state
     return (
       <ATFContainer>
         <Box w={3 / 4}>

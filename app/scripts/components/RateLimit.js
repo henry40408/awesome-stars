@@ -5,7 +5,7 @@ import { Flex, reflex } from 'reflexbox'
 
 import colors from '../themes/colors'
 
-const RLFillColor = ({percentage}) => {
+let RLFillColor = ({ percentage }) => {
   if (percentage >= 50) {
     return colors.green
   } else if (percentage > 2 && percentage < 50) {
@@ -14,46 +14,46 @@ const RLFillColor = ({percentage}) => {
   return colors.red
 }
 
-const RLFilling = ({percentage}) => keyframes`
+let RLFilling = ({ percentage }) => keyframes`
   from {
     background-color: ${colors.red};
     width: 0%;
   }
 
   to {
-    background-color: ${RLFillColor({percentage})};
+    background-color: ${RLFillColor({ percentage })};
     width: ${percentage}%;
   }
 `
 
-const BaseRLMeterContainer = styled.div`
+let BaseRLMeterContainer = styled.div`
   border: 1px white solid;
-  height: ${({heightInRem}) => heightInRem}rem;
+  height: ${({ heightInRem }) => heightInRem}rem;
 `
 
-const RLMeterContainer = reflex(BaseRLMeterContainer)
+let RLMeterContainer = reflex(BaseRLMeterContainer)
 
-const BaseRLMeter = styled.div`
+let BaseRLMeter = styled.div`
   animation: 1.618s ease 0s 1 normal forwards running
-    ${({percentage}) => RLFilling({percentage})};
+    ${({ percentage }) => RLFilling({ percentage })};
   height: 100%;
-  width: ${({percentage}) => percentage}%;
+  width: ${({ percentage }) => percentage}%;
 `
 
-const RLMeter = reflex(BaseRLMeter)
+let RLMeter = reflex(BaseRLMeter)
 
-const BaseRLNumber = styled.div`
-  color: ${({inverse}) => (inverse ? colors.white : colors.darkGray)};
-  font-size: ${({heightInRem}) => heightInRem * (heightInRem > 1 ? 0.5 : 0.9)}rem;
+let BaseRLNumber = styled.div`
+  color: ${({ inverse }) => (inverse ? colors.white : colors.darkGray)};
+  font-size: ${({ heightInRem }) => heightInRem * (heightInRem > 1 ? 0.5 : 0.9)}rem;
   display: flex;
   align-items: center;
   justify-content: center;
 `
 
-const RLNumber = reflex(BaseRLNumber)
+let RLNumber = reflex(BaseRLNumber)
 
-const RateLimit = ({heightInRem, inverse, remaining, total}) => {
-  const formatter = new Intl.NumberFormat('en-US')
+let RateLimit = ({ heightInRem, inverse, remaining, total }) => {
+  let formatter = new Intl.NumberFormat('en-US')
 
   let ratio = total === 0 ? 0 : remaining / total
   let formatted
