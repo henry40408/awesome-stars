@@ -1,5 +1,7 @@
 import axios from 'axios/index'
 import includes from 'lodash/includes'
+import ApolloClient from 'apollo-boost'
+import gql from 'graphql-tag'
 
 import DIConstants from '../constants'
 
@@ -31,14 +33,16 @@ class GithubService {
     let token = await this.accessToken.loadAsync()
 
     if (!this.client || this.accessToken.changed) {
-      let headers = {}
+      let request = async () => {}
       if (token) {
-        headers = { Authorization: `Bearer ${token}` }
+        request = async operation => operation.setContext({
+          headers: { Authorization: `Bearer ${token}` }
+        })
       }
 
-      this.client = axios.create({
-        baseURL: 'https://api.github.com',
-        headers
+      this.client = new ApolloClient({
+        uri: 'https://api.github.com/graphql',
+        request
       })
       this.accessToken.changed = false
     }
@@ -68,14 +72,14 @@ class GithubService {
     let numberFormatter = new Intl.NumberFormat('en-US')
     let percentFormatter = new Intl.NumberFormat('en-US', { style: 'percent' })
 
-    let query = `query {
+    let query = gql`query RateLimit {
       rateLimit {
         remaining
         limit
       }
     }`
-    let response = await this.client.post('/graphql', { query })
-    let { data: { rateLimit: { remaining, limit } } } = response.data
+    let response = await this.client.query({ query })
+    let { rateLimit: { remaining, limit } } = response.data
 
     this.log('🚦 rate limit:', { remaining, limit })
 
@@ -105,9 +109,7 @@ class GithubService {
     let cues = GithubService.tuplesToCues(tuples)
     let query = GithubService.cuesToGraphQLQuery(cues)
 
-    // unwrap response body from axios result first,
-    // then unwrap data payload from GraphQL result
-    let { data: { data } } = await this.client.post('/graphql', { query })
+    let { data } = await this.client.query({ query })
 
     if (process.env.NODE_ENV === 'development') {
       let entries = Object.entries(data).filter(tuple => !!tuple[1])
@@ -127,7 +129,7 @@ class GithubService {
   }
 
   static cuesToGraphQLQuery (cues) {
-    return `query Repositories {
+    return gql`query Repositories {
       ${cues.map(GithubService.cueToGraphQLQuery).join('\n')}
     }`
   }
