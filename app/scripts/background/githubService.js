@@ -127,7 +127,7 @@ class GithubService {
   }
 
   static cuesToGraphQLQuery (cues) {
-    return `query {
+    return `query Repositories {
       ${cues.map(GithubService.cueToGraphQLQuery).join('\n')}
     }`
   }
