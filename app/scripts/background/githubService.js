@@ -1,4 +1,5 @@
 import axios from 'axios/index'
+import { cacheAdapterEnhancer } from 'axios-extensions'
 import includes from 'lodash/includes'
 import ApolloClient from 'apollo-boost'
 import gql from 'graphql-tag'
@@ -8,8 +9,6 @@ import DIConstants from '../constants'
 class GithubService {
   AWESOME_LIST_URL = 'https://raw.githubusercontent.com/sindresorhus/awesome/master/readme.md'
 
-  AWESOME_LIST_KEY = '@@awesome-list'
-
   RATE_LIMIT_THRESHOLD = 0.5
 
   constructor (ctx) {
@@ -17,9 +16,6 @@ class GithubService {
 
     /** @type {AccessTokenRepository} */
     this.accessToken = ctx[DIConstants.R_ACCESS_TOKEN]
-
-    /** @type {CacheService} */
-    this.cache = ctx[DIConstants.S_CACHE]
 
     /** @type {ContextMenuService} */
     this.contextMenu = ctx[DIConstants.S_CONTEXT_MENU]
@@ -29,6 +25,12 @@ class GithubService {
 
     /** @type {AxiosInstance} */
     this.restfulClient = null
+
+    /** @type {AxiosInstance} */
+    this.rawRestfulClient = axios.create({
+      baseURL: `https://api.github.com`,
+      adapter: cacheAdapterEnhancer(axios.defaults.adapter)
+    })
   }
 
   async buildClient () {
@@ -38,8 +40,9 @@ class GithubService {
     if (!this.apolloClient || !this.restfulClient || this.accessToken.changed) {
       let headers = {}
       let request = async () => {}
+
       if (token) {
-        headers = { Authorization: `Bearer ${token}` }
+        headers = { ...headers, Authorization: `Bearer ${token}` }
         request = async operation => operation.setContext({ headers })
       }
 
@@ -54,7 +57,8 @@ class GithubService {
 
       this.restfulClient = axios.create({
         baseURL: 'https://api.github.com',
-        headers
+        headers,
+        adapter: cacheAdapterEnhancer(axios.defaults.adapter)
       })
 
       this.accessToken.changed = false
@@ -62,18 +66,9 @@ class GithubService {
   }
 
   async fetchAwesomeListAsync () {
-    /** @type {string} */
-    let awesomeList = this.cache.get(this.AWESOME_LIST_KEY)
-
-    if (!awesomeList) {
-      let response = await axios.get(this.AWESOME_LIST_URL)
-      awesomeList = response.data
-      this.cache.set(this.AWESOME_LIST_KEY, awesomeList)
-    }
-
+    let { data: awesomeList } = await this.rawRestfulClient.get(this.AWESOME_LIST_URL)
     let awesomeListSize = (awesomeList.length / 1024).toFixed(3)
-    this.log('📄 fetch awesome list', awesomeListSize, 'KB(s) from cache')
-
+    this.log('📄 fetch awesome list', awesomeListSize, 'KB(s)')
     return awesomeList
   }
 
@@ -83,15 +78,7 @@ class GithubService {
     let numberFormatter = new Intl.NumberFormat('en-US')
     let percentFormatter = new Intl.NumberFormat('en-US', { style: 'percent' })
 
-    let [graphqlRateLimit, restfulRateLimit] = await Promise.all([
-      this.fetchGraphQLRateLimitAsync(),
-      this.fetchRESTfulRateLimitAsync()
-    ])
-
-    let { remaining: restfulRemaining } = restfulRateLimit
-    let { remaining: graphqlRemaining } = graphqlRateLimit
-    let { remaining, limit } = restfulRemaining < graphqlRemaining ? restfulRateLimit : graphqlRateLimit
-
+    let { remaining, limit } = await this.selectRateLimitAsync()
     this.log('🚦 rate limit:', { remaining, limit })
 
     let title = chrome.i18n.getMessage('menuRateLimit', [
@@ -104,7 +91,20 @@ class GithubService {
     return { remaining, limit }
   }
 
-  async fetchGraphQLRateLimitAsync () {
+  async selectRateLimitAsync () {
+    let [graphql, restful] = await Promise.all([
+      this._fetchGraphQLRateLimitAsync(),
+      this._fetchRESTfulRateLimitAsync()
+    ])
+
+    let { remaining: restfulRemaining } = restful
+    let { remaining: graphqlRemaining } = graphql
+    let { remaining, limit } = restfulRemaining < graphqlRemaining ? restful : graphql
+
+    return { remaining, limit }
+  }
+
+  async _fetchGraphQLRateLimitAsync () {
     let query = gql`query RateLimit {
       rateLimit {
         remaining
@@ -116,7 +116,7 @@ class GithubService {
     return { remaining, limit }
   }
 
-  async fetchRESTfulRateLimitAsync () {
+  async _fetchRESTfulRateLimitAsync () {
     let response = await this.restfulClient.get('/rate_limit')
     let { rate: { remaining, limit } } = response.data
     return { remaining, limit }
@@ -135,8 +135,8 @@ class GithubService {
       )
     }
 
-    let cues = GithubService.tuplesToCues(tuples)
-    let query = GithubService.cuesToGraphQLQuery(cues)
+    let cues = GithubService._buildCuesFromTuples(tuples)
+    let query = GithubService._buildGraphQLQueryFromCues(cues)
 
     let { data } = await this.apolloClient.query({ query })
 
@@ -145,7 +145,7 @@ class GithubService {
       this.log('🌀', entries.length, 'repositorie(s) fetched')
     }
 
-    return this.graphQLToTuples(cues, data)
+    return this._tuplesFromGraphQLResponseAsync(cues, data)
   }
 
   async isAwesomeListAsync ({ owner, name }) {
@@ -153,17 +153,17 @@ class GithubService {
     return includes(awesomeList, `${owner}/${name}`)
   }
 
-  static tuplesToCues (tuples) {
+  static _buildCuesFromTuples (tuples) {
     return tuples.map((tuple, index) => ({ alias: `repository${index}`, ...tuple }))
   }
 
-  static cuesToGraphQLQuery (cues) {
+  static _buildGraphQLQueryFromCues (cues) {
     return gql`query Repositories {
-      ${cues.map(GithubService.cueToGraphQLQuery).join('\n')}
+      ${cues.map(GithubService._buildGraphQLFromCue).join('\n')}
     }`
   }
 
-  static cueToGraphQLQuery (cue) {
+  static _buildGraphQLFromCue (cue) {
     let { alias, owner, name } = cue
     return `${alias}: repository(owner: "${owner}", name: "${name}") {
       owner { login }
@@ -172,7 +172,7 @@ class GithubService {
     }`
   }
 
-  async graphQLToTuples (cues, data) {
+  async _tuplesFromGraphQLResponseAsync (cues, data) {
     return Promise.all(cues.map(async cue => {
       let { alias, owner, name } = cue
 
@@ -185,12 +185,12 @@ class GithubService {
       return {
         owner,
         name,
-        star: await this.fallbackToRESTful(owner, name)
+        star: await this._fetchStarCountFromRESTfulAPIAsync(owner, name)
       }
     }))
   }
 
-  async fallbackToRESTful (owner, name) {
+  async _fetchStarCountFromRESTfulAPIAsync (owner, name) {
     this.log('🆖 missing repository', owner, name, 'found, fallback to RESTful')
     let response = await this.restfulClient.get(`https://api.github.com/repos/${owner}/${name}`)
     let { data } = response
