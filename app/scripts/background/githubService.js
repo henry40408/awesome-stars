@@ -24,26 +24,39 @@ class GithubService {
     /** @type {ContextMenuService} */
     this.contextMenu = ctx[DIConstants.S_CONTEXT_MENU]
 
+    /** @type {ApolloClient} */
+    this.apolloClient = null
+
     /** @type {AxiosInstance} */
-    this.client = null
+    this.restfulClient = null
   }
 
   async buildClient () {
     /** @type {string} */
     let token = await this.accessToken.loadAsync()
 
-    if (!this.client || this.accessToken.changed) {
+    if (!this.apolloClient || !this.restfulClient || this.accessToken.changed) {
+      let headers = {}
       let request = async () => {}
       if (token) {
-        request = async operation => operation.setContext({
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        headers = { Authorization: `Bearer ${token}` }
+        request = async operation => operation.setContext({ headers })
       }
 
-      this.client = new ApolloClient({
+      // suppress any GraphQL errors
+      let onError = ({ response }) => { response.errors = [] }
+
+      this.apolloClient = new ApolloClient({
         uri: 'https://api.github.com/graphql',
-        request
+        request,
+        onError
       })
+
+      this.restfulClient = axios.create({
+        baseURL: 'https://api.github.com',
+        headers
+      })
+
       this.accessToken.changed = false
     }
   }
@@ -54,9 +67,7 @@ class GithubService {
 
     if (!awesomeList) {
       let response = await axios.get(this.AWESOME_LIST_URL)
-
       awesomeList = response.data
-
       this.cache.set(this.AWESOME_LIST_KEY, awesomeList)
     }
 
@@ -72,14 +83,14 @@ class GithubService {
     let numberFormatter = new Intl.NumberFormat('en-US')
     let percentFormatter = new Intl.NumberFormat('en-US', { style: 'percent' })
 
-    let query = gql`query RateLimit {
-      rateLimit {
-        remaining
-        limit
-      }
-    }`
-    let response = await this.client.query({ query })
-    let { rateLimit: { remaining, limit } } = response.data
+    let [graphqlRateLimit, restfulRateLimit] = await Promise.all([
+      this.fetchGraphQLRateLimitAsync(),
+      this.fetchRESTfulRateLimitAsync()
+    ])
+
+    let { remaining: restfulRemaining } = restfulRateLimit
+    let { remaining: graphqlRemaining } = graphqlRateLimit
+    let { remaining, limit } = restfulRemaining < graphqlRemaining ? restfulRateLimit : graphqlRateLimit
 
     this.log('🚦 rate limit:', { remaining, limit })
 
@@ -90,6 +101,24 @@ class GithubService {
     ])
     this.contextMenu.upsert(this.contextMenu.MENU_RATE_LIMIT, { title })
 
+    return { remaining, limit }
+  }
+
+  async fetchGraphQLRateLimitAsync () {
+    let query = gql`query RateLimit {
+      rateLimit {
+        remaining
+        limit
+      }
+    }`
+    let response = await this.apolloClient.query({ query })
+    let { rateLimit: { remaining, limit } } = response.data
+    return { remaining, limit }
+  }
+
+  async fetchRESTfulRateLimitAsync () {
+    let response = await this.restfulClient.get('/rate_limit')
+    let { rate: { remaining, limit } } = response.data
     return { remaining, limit }
   }
 
@@ -109,7 +138,7 @@ class GithubService {
     let cues = GithubService.tuplesToCues(tuples)
     let query = GithubService.cuesToGraphQLQuery(cues)
 
-    let { data } = await this.client.query({ query })
+    let { data } = await this.apolloClient.query({ query })
 
     if (process.env.NODE_ENV === 'development') {
       let entries = Object.entries(data).filter(tuple => !!tuple[1])
@@ -163,7 +192,8 @@ class GithubService {
 
   async fallbackToRESTful (owner, name) {
     this.log('🆖 missing repository', owner, name, 'found, fallback to RESTful')
-    let { data } = await this.client.get(`/repos/${owner}/${name}`)
+    let response = await this.restfulClient.get(`https://api.github.com/repos/${owner}/${name}`)
+    let { data } = response
     let { stargazers_count: stargazersCount } = data
     return parseInt(stargazersCount, 10)
   }
