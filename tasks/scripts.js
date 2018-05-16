@@ -9,6 +9,7 @@ import plumber from 'gulp-plumber'
 import livereload from 'gulp-livereload'
 import args from './lib/args'
 import * as webpackBundleAnalyzer from 'webpack-bundle-analyzer'
+import LodashModuleReplacementPlugin from 'lodash-webpack-plugin'
 
 const ENV = args.production ? 'production' : 'development'
 
@@ -29,7 +30,8 @@ gulp.task('scripts', (cb) => {
           })
         ].concat(args.production ? [
           new BabiliPlugin(),
-          new webpackBundleAnalyzer.BundleAnalyzerPlugin({analyzerMode: 'static'})
+          new LodashModuleReplacementPlugin(),
+          new webpackBundleAnalyzer.BundleAnalyzerPlugin({ analyzerMode: 'static' })
         ] : []),
         module: {
           rules: [{

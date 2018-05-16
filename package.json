@@ -67,6 +67,7 @@
     "gulp-tag-version": "1.x.x",
     "gulp-util": "3.x.x",
     "gulp-zip": "4.x.x",
+    "lodash-webpack-plugin": "^0.11.5",
     "require-dir": "0.x.x",
     "standard": "10.x.x",
     "vinyl-named": "1.x.x",
