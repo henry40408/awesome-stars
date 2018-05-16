@@ -4,11 +4,11 @@ import { log, colors } from 'gulp-util'
 import named from 'vinyl-named'
 import webpack from 'webpack'
 import gulpWebpack from 'webpack-stream'
-import BabiliPlugin from 'babili-webpack-plugin'
 import plumber from 'gulp-plumber'
 import livereload from 'gulp-livereload'
 import args from './lib/args'
 import * as webpackBundleAnalyzer from 'webpack-bundle-analyzer'
+import LodashModuleReplacementPlugin from 'lodash-webpack-plugin'
 
 const ENV = args.production ? 'production' : 'development'
 
@@ -20,6 +20,7 @@ gulp.task('scripts', (cb) => {
     }))
     .pipe(named())
     .pipe(gulpWebpack({
+        mode: args.production ? 'production' : 'development',
         devtool: args.sourcemaps ? 'inline-source-map' : false,
         watch: args.watch,
         plugins: [
@@ -28,8 +29,8 @@ gulp.task('scripts', (cb) => {
             'process.env.VENDOR': JSON.stringify(args.vendor)
           })
         ].concat(args.production ? [
-          new BabiliPlugin(),
-          new webpackBundleAnalyzer.BundleAnalyzerPlugin({analyzerMode: 'static'})
+          new LodashModuleReplacementPlugin(),
+          new webpackBundleAnalyzer.BundleAnalyzerPlugin({ analyzerMode: 'static' })
         ] : []),
         module: {
           rules: [{
