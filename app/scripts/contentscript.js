@@ -28,7 +28,7 @@ function parseGithubURL (url) {
 }
 
 function appendStars (tuples) {
-  /** @type {[StarHOC]} */
+  /** @type {Array<StarHOC>} */
   let stars = []
 
   for (let tuple of tuples) {
@@ -114,7 +114,7 @@ async function initForReadmeAsync () {
     return
   }
 
-  /** @type {Array} */
+  /** @type {Array<HTMLElement>} */
   let links = [].slice.call(document.querySelectorAll('#readme li > a'))
   await attachStarsOnLinksAsync(links)
 }
@@ -131,7 +131,9 @@ async function initForGithubIssuesAsync () {
       return
     }
 
+    /** @type {Array<HTMLElement>} */
     let links = [].slice.call(document.querySelectorAll('.comment-body a'))
+
     let limitedLinks = links.slice(0, GITHUB_ISSUES_LINKS_LIMIT)
     await attachStarsOnLinksAsync(limitedLinks)
   } catch (error) {
