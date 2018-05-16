@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import styled from 'styled-components'
+
 import { Box, Flex, reflex } from 'reflexbox'
+import styled from 'styled-components'
 
 import colors from '../themes/colors'
 

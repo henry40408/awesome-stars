@@ -1,14 +1,15 @@
-import axios from 'axios/index'
-import { cacheAdapterEnhancer } from 'axios-extensions'
-import includes from 'lodash/includes'
 import ApolloClient from 'apollo-boost'
+import { cacheAdapterEnhancer } from 'axios-extensions'
+import axios from 'axios/index'
 import gql from 'graphql-tag'
+import includes from 'lodash/includes'
+import LRU from 'lru-cache'
 
 import DIConstants from '../constants'
 
 class GithubService {
   AWESOME_LIST_URL = 'https://raw.githubusercontent.com/sindresorhus/awesome/master/readme.md'
-
+  LRU_MAX_AGE = 60 * 60 * 1000 // = 1 hour
   RATE_LIMIT_THRESHOLD = 0.5
 
   constructor (ctx) {
@@ -26,10 +27,12 @@ class GithubService {
     /** @type {AxiosInstance} */
     this.restfulClient = null
 
+    let defaultCache = LRU({ maxAge: this.LRU_MAX_AGE })
+
     /** @type {AxiosInstance} */
     this.rawRestfulClient = axios.create({
       baseURL: `https://api.github.com`,
-      adapter: cacheAdapterEnhancer(axios.defaults.adapter)
+      adapter: cacheAdapterEnhancer(axios.defaults.adapter, { defaultCache })
     })
   }
 
@@ -49,16 +52,20 @@ class GithubService {
       // suppress any GraphQL errors
       let onError = ({ response }) => { response.errors = [] }
 
+      /** @type {ApolloClient} */
       this.apolloClient = new ApolloClient({
         uri: 'https://api.github.com/graphql',
         request,
         onError
       })
 
+      let defaultCache = LRU({ maxAge: this.LRU_MAX_AGE })
+
+      /** @type {AxiosInstance} */
       this.restfulClient = axios.create({
         baseURL: 'https://api.github.com',
         headers,
-        adapter: cacheAdapterEnhancer(axios.defaults.adapter)
+        adapter: cacheAdapterEnhancer(axios.defaults.adapter, { defaultCache })
       })
 
       this.accessToken.changed = false

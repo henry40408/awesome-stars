@@ -9,6 +9,7 @@ import find from 'lodash/find'
 import ParseGithubURL from 'parse-github-url'
 
 import { log, logError } from './common'
+
 import UpdateNotification from './components/UpdateNotification'
 import StarHOC from './components/StarHOC'
 
