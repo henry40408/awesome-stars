@@ -33,7 +33,7 @@ class GithubService {
     })
   }
 
-  async buildClient () {
+  async _buildClients () {
     /** @type {string} */
     let token = await this.accessToken.loadAsync()
 
@@ -73,7 +73,7 @@ class GithubService {
   }
 
   async fetchRateLimitAsync () {
-    await this.buildClient()
+    await this._buildClients()
 
     let numberFormatter = new Intl.NumberFormat('en-US')
     let percentFormatter = new Intl.NumberFormat('en-US', { style: 'percent' })
@@ -105,12 +105,7 @@ class GithubService {
   }
 
   async _fetchGraphQLRateLimitAsync () {
-    let query = gql`query RateLimit {
-      rateLimit {
-        remaining
-        limit
-      }
-    }`
+    let query = gql`query RateLimit { rateLimit { remaining limit } }`
     let response = await this.apolloClient.query({ query })
     let { rateLimit: { remaining, limit } } = response.data
     return { remaining, limit }
@@ -123,17 +118,7 @@ class GithubService {
   }
 
   async fetchMultipleStarCountAsync (tuples) {
-    // threshold to prevent the extension to use all rate limit
-    let { remaining, limit } = await this.fetchRateLimitAsync()
-    if (
-      remaining === -1 || limit === -1 ||
-      limit === 0 ||
-      remaining / limit <= this.RATE_LIMIT_THRESHOLD
-    ) {
-      throw new Error(
-        `rate limit ${remaining}/${limit} is below threshold ${this.RATE_LIMIT_THRESHOLD}`
-      )
-    }
+    await this._checkRateLimitAsync()
 
     let cues = GithubService._buildCuesFromTuples(tuples)
     let query = GithubService._buildGraphQLQueryFromCues(cues)
@@ -145,12 +130,17 @@ class GithubService {
       this.log('🌀', entries.length, 'repositorie(s) fetched')
     }
 
-    return this._tuplesFromGraphQLResponseAsync(cues, data)
+    return this._buildTuplesFromGraphQLResponseAsync(cues, data)
   }
 
-  async isAwesomeListAsync ({ owner, name }) {
-    let awesomeList = await this.fetchAwesomeListAsync()
-    return includes(awesomeList, `${owner}/${name}`)
+  async _checkRateLimitAsync () {
+    // threshold to prevent the extension to use all rate limit
+    let { remaining, limit } = await this.fetchRateLimitAsync()
+    if (limit === 0 || remaining / limit <= this.RATE_LIMIT_THRESHOLD) {
+      throw new Error(
+        `rate limit ${remaining}/${limit} is below threshold ${this.RATE_LIMIT_THRESHOLD}`
+      )
+    }
   }
 
   static _buildCuesFromTuples (tuples) {
@@ -172,7 +162,7 @@ class GithubService {
     }`
   }
 
-  async _tuplesFromGraphQLResponseAsync (cues, data) {
+  async _buildTuplesFromGraphQLResponseAsync (cues, data) {
     return Promise.all(cues.map(async cue => {
       let { alias, owner, name } = cue
 
@@ -182,20 +172,26 @@ class GithubService {
       }
 
       // repository not found, possibly renamed
-      return {
-        owner,
-        name,
-        star: await this._fetchStarCountFromRESTfulAPIAsync(owner, name)
-      }
+      let maybeStar = await this._fetchStarCountFromRESTfulAPIAsync(owner, name)
+      return { owner, name, ...maybeStar }
     }))
   }
 
   async _fetchStarCountFromRESTfulAPIAsync (owner, name) {
-    this.log('🆖 missing repository', owner, name, 'found, fallback to RESTful')
-    let response = await this.restfulClient.get(`https://api.github.com/repos/${owner}/${name}`)
-    let { data } = response
-    let { stargazers_count: stargazersCount } = data
-    return parseInt(stargazersCount, 10)
+    try {
+      this.log('🆖 missing repository', owner, name, 'found, fallback to RESTful')
+      let response = await this.restfulClient.get(`https://api.github.com/repos/${owner}/${name}`)
+      let { data } = response
+      let { stargazers_count: stargazersCount } = data
+      return { star: parseInt(stargazersCount, 10) }
+    } catch (error) {
+      return { error: error.message }
+    }
+  }
+
+  async isAwesomeListAsync ({ owner, name }) {
+    let awesomeList = await this.fetchAwesomeListAsync()
+    return includes(awesomeList, `${owner}/${name}`)
   }
 }
 

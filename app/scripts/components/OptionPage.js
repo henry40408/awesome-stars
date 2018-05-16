@@ -30,7 +30,7 @@ let Header = styled(Box)`
   }
 `
 
-let Body = styled(Box)`
+let Main = styled(Box)`
   margin: 0 0 1rem;
   h3,
   h4 {
@@ -128,15 +128,81 @@ class OptionPage extends React.Component {
     this.setState({ saving: false, invalid, limit, remaining })
   }
 
-  render () {
-    let {
-      accessToken,
-      invalid,
-      remaining,
-      limit,
-      saving
-    } = this.state
+  renderLeftPane = () => (
+    <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
+      <h3>{this.getMessage('opHowHotAreThoseStars')}</h3>
+      <p>{this.getMessage('opHowHotAreThoseStarsDescription')}</p>
+      <ColorList>
+        <ColorItem color={colors.lightBlue}>{
+          this.getMessage('colorForLess', [
+            capitalize(this.getMessage('blue')),
+            '1,000'
+          ])
+        }</ColorItem>
+        <ColorItem color={colors.white}>{
+          this.getMessage('colorForRange', [
+            capitalize(this.getMessage('white')),
+            '1,000',
+            '4,999'
+          ])
+        }</ColorItem>
+        <ColorItem color={colors.yellow}>{
+          this.getMessage('colorForRange', [
+            capitalize(this.getMessage('yellow')),
+            '5,000',
+            '9,999'
+          ])
+        }</ColorItem>
+        <ColorItem color={colors.orange}>{
+          this.getMessage('colorForMore', [
+            capitalize(this.getMessage('orange')),
+            '10,000'
+          ])
+        }</ColorItem>
+      </ColorList>
+      <StarsCurve src='../../images/stars-curve.svg' alt='Stars Curve' width='100%' />
+    </Box>
+  )
 
+  renderRightPane = () => {
+    let { accessToken, invalid, remaining, limit, saving } = this.state
+    return (
+      <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
+        <CapitalizedH3>{this.getMessage('setupAccessToken')}</CapitalizedH3>
+        <AccessTokenForm
+          accessToken={accessToken}
+          invalid={invalid}
+          onSubmit={this.saveAccessTokenAsync}
+          saving={saving}
+        />
+        <p>
+          {this.getMessage('ifYouDontHaveOneYet')}
+          <a href='https://github.com/settings/tokens/new?description=Awesome%20Stars'>
+            {this.getMessage('getAnAccessToken')}
+          </a>
+          <br />
+          <AlertText>{this.getMessage('pleaseDoNotSelectAnyScopes')}</AlertText>
+        </p>
+        <h3>{this.getMessage('rateLimit')}</h3>
+        <RateLimit inverse remaining={remaining} total={limit} heightInRem={2.5} />
+        <p>
+          <small>{this.getMessage('rateLimitDescription')}</small>
+        </p>
+        <h4>{this.getMessage('whyDoYouNeedAnAccessToken')}</h4>
+        <p>
+          <small>
+            {this.getMessage('whyDoYouNeedAnAccessTokenDescription1')}
+            <a href='https://developer.github.com/v3/#rate-limiting'>
+              {this.getMessage('githubDocumentation')}
+            </a>
+            {this.getMessage('whyDoYouNeedAnAccessTokenDescription2')}
+          </small>
+        </p>
+      </Box>
+    )
+  }
+
+  render () {
     return (
       <Container column>
         <Header p={2}>
@@ -144,75 +210,12 @@ class OptionPage extends React.Component {
           <h1>{this.getMessage('appName')}</h1>
           <h2>{this.getMessage('appDescription')}</h2>
         </Header>
-        <Body>
+        <Main>
           <Flex wrap w={1}>
-            <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
-              <h3>{this.getMessage('opHowHotAreThoseStars')}</h3>
-              <p>{this.getMessage('opHowHotAreThoseStarsDescription')}</p>
-              <ColorList>
-                <ColorItem color={colors.lightBlue}>{
-                  this.getMessage('colorForLess', [
-                    capitalize(this.getMessage('blue')),
-                    '1,000'
-                  ])
-                }</ColorItem>
-                <ColorItem color={colors.white}>{
-                  this.getMessage('colorForRange', [
-                    capitalize(this.getMessage('white')),
-                    '1,000',
-                    '4,999'
-                  ])
-                }</ColorItem>
-                <ColorItem color={colors.yellow}>{
-                  this.getMessage('colorForRange', [
-                    capitalize(this.getMessage('yellow')),
-                    '5,000',
-                    '9,999'
-                  ])
-                }</ColorItem>
-                <ColorItem color={colors.orange}>{
-                  this.getMessage('colorForMore', [
-                    capitalize(this.getMessage('orange')),
-                    '10,000'
-                  ])
-                }</ColorItem>
-              </ColorList>
-              <StarsCurve src='../../images/stars-curve.svg' alt='Stars Curve' width='100%' />
-            </Box>
-            <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
-              <CapitalizedH3>{this.getMessage('setupAccessToken')}</CapitalizedH3>
-              <AccessTokenForm
-                accessToken={accessToken}
-                invalid={invalid}
-                onSubmit={this.saveAccessTokenAsync}
-                saving={saving}
-              />
-              <p>
-                {this.getMessage('ifYouDontHaveOneYet')}
-                <a href='https://github.com/settings/tokens/new?description=Awesome%20Stars'>
-                  {this.getMessage('getAnAccessToken')}
-                </a>
-                <br />
-                <AlertText>{this.getMessage('pleaseDoNotSelectAnyScopes')}</AlertText>
-              </p>
-              <h3>{this.getMessage('rateLimit')}</h3>
-              <RateLimit inverse remaining={remaining} total={limit} heightInRem={2.5} />
-              <p>
-                <small>{this.getMessage('rateLimitDescription')}</small>
-              </p>
-              <h4>{this.getMessage('whyDoYouNeedAnAccessToken')}</h4>
-              <p>
-                <small>
-                  {this.getMessage('whyDoYouNeedAnAccessTokenDescription1')}
-                  <a href='https://developer.github.com/v3/#rate-limiting'>
-                    {this.getMessage('githubDocumentation')}
-                  </a>
-                  {this.getMessage('whyDoYouNeedAnAccessTokenDescription2')}
-                </small>
-              </p>
-            </Box>
+            {this.renderLeftPane()}
+            {this.renderRightPane()}
           </Flex>
-        </Body>
+        </Main>
         <Footer p={2}>
           <small>
             {new Date().getFullYear()} All rights reserved. Made by Henry Wu with &#x2764;.<br />

@@ -50,14 +50,18 @@ async function batchUpdateCountAsync (stars) {
   let chunks = chunkize(stars, CHUNK_SIZE)
 
   for (let chunk of chunks) {
-    let tuples = chunk.map(star => star.getTuple())
+    let tuples = chunk.map(star => star.tuple)
 
     try {
       let { data: tuplesWithStar } = await messageClient.message('/stars/get/batch', { tuples })
 
       for (let star of chunk) {
-        let tuple = find(tuplesWithStar, star.getTuple())
-        star.updateCount(tuple.star)
+        let tuple = find(tuplesWithStar, star.tuple)
+        if (tuple.error) {
+          star.updateError(true)
+        } else {
+          star.updateCount(tuple.star)
+        }
       }
 
       await messageClient.message('/rate-limit')

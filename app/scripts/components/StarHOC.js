@@ -9,9 +9,9 @@ class StarHOC extends React.Component {
     name: PropTypes.string.isRequired
   }
 
-  state = { count: 0, loading: true }
+  state = { count: 0, hasError: false, loading: true }
 
-  getTuple () {
+  get tuple () {
     return {
       owner: this.props.owner,
       name: this.props.name
@@ -22,9 +22,13 @@ class StarHOC extends React.Component {
     this.setState({ count, loading: false })
   }
 
+  updateError = hasError => {
+    this.setState({ hasError, loading: false })
+  }
+
   render () {
-    let { count, loading } = this.state
-    return <Star count={count} loading={loading} />
+    let { count, hasError, loading } = this.state
+    return <Star count={count} hasError={hasError} loading={loading} />
   }
 }
 
