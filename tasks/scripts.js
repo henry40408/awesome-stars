@@ -9,6 +9,7 @@ import livereload from 'gulp-livereload'
 import args from './lib/args'
 import * as webpackBundleAnalyzer from 'webpack-bundle-analyzer'
 import LodashModuleReplacementPlugin from 'lodash-webpack-plugin'
+import UglifyJsPlugin from 'uglifyjs-webpack-plugin'
 
 const ENV = args.production ? 'production' : 'development'
 
@@ -20,16 +21,24 @@ gulp.task('scripts', (cb) => {
     }))
     .pipe(named())
     .pipe(gulpWebpack({
-        mode: args.production ? 'production' : 'development',
+        mode: 'none',
         devtool: args.sourcemaps ? 'inline-source-map' : false,
         watch: args.watch,
-        plugins: [
+        plugins: (
+          args.production ? [
+            new UglifyJsPlugin(),
+            new LodashModuleReplacementPlugin()
+          ] : [
+            new webpack.NamedModulesPlugin()
+          ]
+        ).concat([
           new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(ENV),
             'process.env.VENDOR': JSON.stringify(args.vendor)
           })
-        ].concat(args.production ? [
-          new LodashModuleReplacementPlugin(),
+        ], args.production ? [
+          new webpack.optimize.ModuleConcatenationPlugin(),
+          new webpack.NoEmitOnErrorsPlugin(),
           new webpackBundleAnalyzer.BundleAnalyzerPlugin({ analyzerMode: 'static' })
         ] : []),
         module: {
