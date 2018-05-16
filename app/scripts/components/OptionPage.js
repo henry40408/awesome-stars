@@ -10,13 +10,13 @@ import colors from '../themes/colors'
 import AccessTokenForm from '../components/AccessTokenForm'
 import RateLimit from '../components/RateLimit'
 
-const Container = styled(Flex)`
+let Container = styled(Flex)`
   font-family: 'Roboto', Helvetica, sans-serif;
   font-weight: light;
   max-width: 960px;
 `
 
-const Header = styled(Box)`
+let Header = styled(Box)`
   font-family: 'Roboto Slab', sans-serif;
   letter-spacing: 0.0625rem;
   text-align: center;
@@ -30,7 +30,7 @@ const Header = styled(Box)`
   }
 `
 
-const Body = styled(Box)`
+let Main = styled(Box)`
   margin: 0 0 1rem;
   h3,
   h4 {
@@ -43,13 +43,13 @@ const Body = styled(Box)`
   }
 `
 
-const Footer = styled(Box)`
+let Footer = styled(Box)`
   font-family: 'Roboto Slab', sans-serif;
   text-align: center;
   line-height: 1.5;
 `
 
-const ColorList = styled.ul`
+let ColorList = styled.ul`
   list-style: none;
   padding: 0;
   & > li::before {
@@ -61,19 +61,19 @@ const ColorList = styled.ul`
   }
 `
 
-const ColorItem = styled.li`
-  color: ${({color}) => color || colors.white};
+let ColorItem = styled.li`
+  color: ${({ color }) => color || colors.white};
 `
 
-const StarsCurve = styled.img`
+let StarsCurve = styled.img`
   margin: -7.5rem 0 0;
 `
 
-const AlertText = styled.span`
+let AlertText = styled.span`
   color: ${colors.red};
 `
 
-const CapitalizedH3 = styled.h3`
+let CapitalizedH3 = styled.h3`
   text-transform: capitalize;
 `
 
@@ -104,39 +104,105 @@ class OptionPage extends React.Component {
   )
 
   loadAccessTokenAsync = async () => {
-    const {data: accessToken} = await this.client.message('/access-token/get')
-    return {accessToken}
+    let { data: accessToken } = await this.client.message('/access-token/get')
+    return { accessToken }
   }
 
   loadInitialDataAsync = async () => {
-    this.setState({saving: true})
-    const {accessToken} = await this.loadAccessTokenAsync()
-    const {invalid, limit, remaining} = await this.loadRateLimitAsync()
-    this.setState({accessToken, invalid, limit, remaining, saving: false})
+    this.setState({ saving: true })
+    let { accessToken } = await this.loadAccessTokenAsync()
+    let { invalid, limit, remaining } = await this.loadRateLimitAsync()
+    this.setState({ accessToken, invalid, limit, remaining, saving: false })
   }
 
   loadRateLimitAsync = async () => {
-    const {data: {remaining, limit}} = await this.client.message('/rate-limit')
-    const invalid = remaining === -1 || limit === -1
-    return {invalid, limit, remaining}
+    let { data: { remaining, limit } } = await this.client.message('/rate-limit')
+    let invalid = remaining === -1 || limit === -1
+    return { invalid, limit, remaining }
   }
 
   saveAccessTokenAsync = async (accessToken) => {
-    this.setState({saving: true, accessToken})
-    await this.client.message('/access-token/set', {accessToken})
-    const {invalid, limit, remaining} = await this.loadRateLimitAsync()
-    this.setState({saving: false, invalid, limit, remaining})
+    this.setState({ saving: true, accessToken })
+    await this.client.message('/access-token/set', { accessToken })
+    let { invalid, limit, remaining } = await this.loadRateLimitAsync()
+    this.setState({ saving: false, invalid, limit, remaining })
+  }
+
+  renderLeftPane = () => (
+    <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
+      <h3>{this.getMessage('opHowHotAreThoseStars')}</h3>
+      <p>{this.getMessage('opHowHotAreThoseStarsDescription')}</p>
+      <ColorList>
+        <ColorItem color={colors.lightBlue}>{
+          this.getMessage('colorForLess', [
+            capitalize(this.getMessage('blue')),
+            '1,000'
+          ])
+        }</ColorItem>
+        <ColorItem color={colors.white}>{
+          this.getMessage('colorForRange', [
+            capitalize(this.getMessage('white')),
+            '1,000',
+            '4,999'
+          ])
+        }</ColorItem>
+        <ColorItem color={colors.yellow}>{
+          this.getMessage('colorForRange', [
+            capitalize(this.getMessage('yellow')),
+            '5,000',
+            '9,999'
+          ])
+        }</ColorItem>
+        <ColorItem color={colors.orange}>{
+          this.getMessage('colorForMore', [
+            capitalize(this.getMessage('orange')),
+            '10,000'
+          ])
+        }</ColorItem>
+      </ColorList>
+      <StarsCurve src='../../images/stars-curve.svg' alt='Stars Curve' width='100%' />
+    </Box>
+  )
+
+  renderRightPane = () => {
+    let { accessToken, invalid, remaining, limit, saving } = this.state
+    return (
+      <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
+        <CapitalizedH3>{this.getMessage('setupAccessToken')}</CapitalizedH3>
+        <AccessTokenForm
+          accessToken={accessToken}
+          invalid={invalid}
+          onSubmit={this.saveAccessTokenAsync}
+          saving={saving}
+        />
+        <p>
+          {this.getMessage('ifYouDontHaveOneYet')}
+          <a href='https://github.com/settings/tokens/new?description=Awesome%20Stars'>
+            {this.getMessage('getAnAccessToken')}
+          </a>
+          <br />
+          <AlertText>{this.getMessage('pleaseDoNotSelectAnyScopes')}</AlertText>
+        </p>
+        <h3>{this.getMessage('rateLimit')}</h3>
+        <RateLimit inverse remaining={remaining} total={limit} heightInRem={2.5} />
+        <p>
+          <small>{this.getMessage('rateLimitDescription')}</small>
+        </p>
+        <h4>{this.getMessage('whyDoYouNeedAnAccessToken')}</h4>
+        <p>
+          <small>
+            {this.getMessage('whyDoYouNeedAnAccessTokenDescription1')}
+            <a href='https://developer.github.com/v3/#rate-limiting'>
+              {this.getMessage('githubDocumentation')}
+            </a>
+            {this.getMessage('whyDoYouNeedAnAccessTokenDescription2')}
+          </small>
+        </p>
+      </Box>
+    )
   }
 
   render () {
-    const {
-      accessToken,
-      invalid,
-      remaining,
-      limit,
-      saving
-    } = this.state
-
     return (
       <Container column>
         <Header p={2}>
@@ -144,75 +210,12 @@ class OptionPage extends React.Component {
           <h1>{this.getMessage('appName')}</h1>
           <h2>{this.getMessage('appDescription')}</h2>
         </Header>
-        <Body>
+        <Main>
           <Flex wrap w={1}>
-            <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
-              <h3>{this.getMessage('opHowHotAreThoseStars')}</h3>
-              <p>{this.getMessage('opHowHotAreThoseStarsDescription')}</p>
-              <ColorList>
-                <ColorItem color={colors.lightBlue}>{
-                  this.getMessage('colorForLess', [
-                    capitalize(this.getMessage('blue')),
-                    '1,000'
-                  ])
-                }</ColorItem>
-                <ColorItem color={colors.white}>{
-                  this.getMessage('colorForRange', [
-                    capitalize(this.getMessage('white')),
-                    '1,000',
-                    '4,999'
-                  ])
-                }</ColorItem>
-                <ColorItem color={colors.yellow}>{
-                  this.getMessage('colorForRange', [
-                    capitalize(this.getMessage('yellow')),
-                    '5,000',
-                    '9,999'
-                  ])
-                }</ColorItem>
-                <ColorItem color={colors.orange}>{
-                  this.getMessage('colorForMore', [
-                    capitalize(this.getMessage('orange')),
-                    '10,000'
-                  ])
-                }</ColorItem>
-              </ColorList>
-              <StarsCurve src='../../images/stars-curve.svg' alt='Stars Curve' width='100%' />
-            </Box>
-            <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
-              <CapitalizedH3>{this.getMessage('setupAccessToken')}</CapitalizedH3>
-              <AccessTokenForm
-                accessToken={accessToken}
-                invalid={invalid}
-                onSubmit={this.saveAccessTokenAsync}
-                saving={saving}
-              />
-              <p>
-                {this.getMessage('ifYouDontHaveOneYet')}
-                <a href='https://github.com/settings/tokens/new?description=Awesome%20Stars'>
-                  {this.getMessage('getAnAccessToken')}
-                </a>
-                <br />
-                <AlertText>{this.getMessage('pleaseDoNotSelectAnyScopes')}</AlertText>
-              </p>
-              <h3>{this.getMessage('rateLimit')}</h3>
-              <RateLimit inverse remaining={remaining} total={limit} heightInRem={2.5} />
-              <p>
-                <small>{this.getMessage('rateLimitDescription')}</small>
-              </p>
-              <h4>{this.getMessage('whyDoYouNeedAnAccessToken')}</h4>
-              <p>
-                <small>
-                  {this.getMessage('whyDoYouNeedAnAccessTokenDescription1')}
-                  <a href='https://developer.github.com/v3/#rate-limiting'>
-                    {this.getMessage('githubDocumentation')}
-                  </a>
-                  {this.getMessage('whyDoYouNeedAnAccessTokenDescription2')}
-                </small>
-              </p>
-            </Box>
+            {this.renderLeftPane()}
+            {this.renderRightPane()}
           </Flex>
-        </Body>
+        </Main>
         <Footer p={2}>
           <small>
             {new Date().getFullYear()} All rights reserved. Made by Henry Wu with &#x2764;.<br />

@@ -5,7 +5,6 @@
 export default {
   MESSAGE_ROUTER: Symbol('router'),
   R_ACCESS_TOKEN: Symbol('access token repository'),
-  S_CACHE: Symbol('cache service'),
   S_CHROME_STORAGE: Symbol('chrome storage service'),
   S_COMMON: Symbol('common service'),
   S_CONTEXT_MENU: Symbol('context menu service'),

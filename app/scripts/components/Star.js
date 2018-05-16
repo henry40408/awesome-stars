@@ -24,14 +24,14 @@ if (chrome && chrome.extension && chrome.extension.getURL) {
   yellowStar = require('../../images/star-yellow.svg')
 }
 
-const starIcons = {
+let starIcons = {
   [colors.blue]: blueStar,
   [colors.orange]: orangeStar,
   [colors.white]: whiteStar,
   [colors.yellow]: yellowStar
 }
 
-const StarBadge = styled.span`
+let StarBadge = styled.span`
   background-color: ${colors.gray};
   border-radius: 0.75rem;
   font-size: 0.75rem;
@@ -39,56 +39,68 @@ const StarBadge = styled.span`
   padding: 0.25rem 0.5rem;
 `
 
-const StarIcon = styled.img`
+let StarIcon = styled.img`
   background-color: transparent !important;
   margin: 0 0.25rem 0 0;
 `
 
-const StarText = styled.span`
-  color: ${({color}) => color};
+let StarText = styled.span`
+  color: ${({ color }) => color};
 `
 
 class Star extends React.Component {
   static propTypes = {
     count: PropTypes.number,
+    hasError: PropTypes.bool,
     loading: PropTypes.bool
   }
 
   static defaultProps = {
     count: 0,
+    hasError: false,
     loading: false
   }
 
   colorsFromCount = (count) => {
     switch (true) {
       case count >= 10000:
-        return {star: colors.orange, text: colors.orange}
+        return { star: colors.orange, text: colors.orange }
       case count < 10000 && count >= 5000:
-        return {star: colors.yellow, text: colors.yellow}
+        return { star: colors.yellow, text: colors.yellow }
       case count < 5000 && count >= 1000:
-        return {star: colors.white, text: colors.white}
+        return { star: colors.white, text: colors.white }
       default:
-        return {star: colors.blue, text: colors.lightBlue}
+        return { star: colors.blue, text: colors.lightBlue }
     }
   }
 
-  render () {
-    const formatter = new Intl.NumberFormat('en-US')
-
-    const {count, loading} = this.props
-    const {star: starColor, text: textColor} = this.colorsFromCount(count)
-
-    let countText
-    if (loading) {
-      countText = '...'
-    } else {
-      countText = count === -1 ? '\u26A0' : formatter.format(count)
+  renderAlt = (starColor) => {
+    let { hasError } = this.props
+    if (hasError) {
+      return 'something went wrong'
     }
+    return `${starColor} star`
+  }
 
+  renderText = () => {
+    let formatter = new Intl.NumberFormat('en-US')
+    let { count, hasError, loading } = this.props
+    if (loading) {
+      return '...'
+    }
+    if (hasError) {
+      return '\u26A0'
+    }
+    return formatter.format(count)
+  }
+
+  render () {
+    let { count } = this.props
+    let { star: starColor, text: textColor } = this.colorsFromCount(count)
     return (
       <StarBadge>
-        <StarIcon src={starIcons[starColor]} alt={`${starColor} star`} />
-        <StarText color={textColor}>{countText}</StarText>
+        <StarIcon src={starIcons[starColor]} alt={this.renderAlt(starColor)} />
+        <StarText color={textColor}>{this.renderText()}</StarText>
       </StarBadge>
     )
   }

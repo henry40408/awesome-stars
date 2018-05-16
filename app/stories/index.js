@@ -15,7 +15,7 @@ const MAXIMUM = 5000
 addDecorator(withKnobs)
 
 const RateLimitContainer = styled.div`
-  background-color: ${({inverse}) => (inverse ? 'black' : 'white')};
+  background-color: ${({ inverse }) => (inverse ? 'black' : 'white')};
   padding: 1rem 0;
 `
 
@@ -36,7 +36,7 @@ storiesOf('RateLimit', module).add('default', () => {
 
 storiesOf('AccessTokenForm', module).add('default', () => (
   <AccessTokenForm
-    accessToken="accessToken"
+    accessToken='accessToken'
     heightInRem={number('Height in rem', 1)}
     invalid={boolean('Invalid', false)}
     onSubmit={accessToken => action(`access token submitted: ${accessToken}`)}
@@ -45,7 +45,11 @@ storiesOf('AccessTokenForm', module).add('default', () => (
 ))
 
 storiesOf('Star', module).add('default', () => (
-  <Star count={number('Count', 1000)} loading={boolean('Loading', false)} />
+  <Star
+    count={number('Count', 1000)}
+    hasError={boolean('Has error?', false)}
+    loading={boolean('Loading', false)}
+  />
 ))
 
 storiesOf('UpdateNotification', module).add('default', () => <UpdateNotification />)
