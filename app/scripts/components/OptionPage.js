@@ -9,6 +9,7 @@ import colors from '../themes/colors'
 
 import AccessTokenForm from '../components/AccessTokenForm'
 import RateLimit from '../components/RateLimit'
+import { logError } from '../common'
 
 let Container = styled(Flex)`
   font-family: 'Roboto', Helvetica, sans-serif;
@@ -89,73 +90,87 @@ class OptionPage extends React.Component {
 
   state = {
     accessToken: '',
-    invalid: false,
+    hasError: false,
     limit: 0,
     remaining: 0,
     saving: false
   }
 
   componentDidMount () {
-    this.loadInitialDataAsync()
+    this._loadInitialDataAsync()
   }
 
-  getMessage = (messageName, subsitutions = []) => (
+  _getMessage = (messageName, subsitutions = []) => (
     chrome.i18n.getMessage(messageName, subsitutions)
   )
 
-  loadAccessTokenAsync = async () => {
+  _loadAccessTokenAsync = async () => {
     let { data: accessToken } = await this.client.message('/access-token/get')
     return { accessToken }
   }
 
-  loadInitialDataAsync = async () => {
-    this.setState({ saving: true })
-    let { accessToken } = await this.loadAccessTokenAsync()
-    let { invalid, limit, remaining } = await this.loadRateLimitAsync()
-    this.setState({ accessToken, invalid, limit, remaining, saving: false })
+  _loadInitialDataAsync = async () => {
+    try {
+      this.setState({ saving: true })
+      let { accessToken } = await this._loadAccessTokenAsync()
+      let { limit, remaining } = await this._loadRateLimitAsync()
+      this.setState({ accessToken, hasError: false, limit, remaining, saving: false })
+    } catch (error) {
+      logError(error)
+      this.setState({ hasError: true })
+    } finally {
+      this.setState({ saving: false })
+    }
   }
 
-  loadRateLimitAsync = async () => {
+  _loadRateLimitAsync = async () => {
     let { data: { remaining, limit } } = await this.client.message('/rate-limit')
-    let invalid = remaining === -1 || limit === -1
-    return { invalid, limit, remaining }
+    return { limit, remaining }
   }
 
-  saveAccessTokenAsync = async (accessToken) => {
-    this.setState({ saving: true, accessToken })
-    await this.client.message('/access-token/set', { accessToken })
-    let { invalid, limit, remaining } = await this.loadRateLimitAsync()
-    this.setState({ saving: false, invalid, limit, remaining })
+  _saveAccessTokenAsync = async (accessToken) => {
+    try {
+      this.setState({ saving: true })
+      await this.client.message('/access-token/set', { accessToken })
+      this.setState({ accessToken })
+      let { invalid, limit, remaining } = await this._loadRateLimitAsync()
+      this.setState({ hasError: false, invalid, limit, remaining, saving: false })
+    } catch (error) {
+      logError(error)
+      this.setState({ hasError: true })
+    } finally {
+      this.setState({ saving: false })
+    }
   }
 
   renderLeftPane = () => (
     <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
-      <h3>{this.getMessage('opHowHotAreThoseStars')}</h3>
-      <p>{this.getMessage('opHowHotAreThoseStarsDescription')}</p>
+      <h3>{this._getMessage('opHowHotAreThoseStars')}</h3>
+      <p>{this._getMessage('opHowHotAreThoseStarsDescription')}</p>
       <ColorList>
         <ColorItem color={colors.lightBlue}>{
-          this.getMessage('colorForLess', [
-            capitalize(this.getMessage('blue')),
+          this._getMessage('colorForLess', [
+            capitalize(this._getMessage('blue')),
             '1,000'
           ])
         }</ColorItem>
         <ColorItem color={colors.white}>{
-          this.getMessage('colorForRange', [
-            capitalize(this.getMessage('white')),
+          this._getMessage('colorForRange', [
+            capitalize(this._getMessage('white')),
             '1,000',
             '4,999'
           ])
         }</ColorItem>
         <ColorItem color={colors.yellow}>{
-          this.getMessage('colorForRange', [
-            capitalize(this.getMessage('yellow')),
+          this._getMessage('colorForRange', [
+            capitalize(this._getMessage('yellow')),
             '5,000',
             '9,999'
           ])
         }</ColorItem>
         <ColorItem color={colors.orange}>{
-          this.getMessage('colorForMore', [
-            capitalize(this.getMessage('orange')),
+          this._getMessage('colorForMore', [
+            capitalize(this._getMessage('orange')),
             '10,000'
           ])
         }</ColorItem>
@@ -165,37 +180,43 @@ class OptionPage extends React.Component {
   )
 
   renderRightPane = () => {
-    let { accessToken, invalid, remaining, limit, saving } = this.state
+    let { accessToken, hasError, remaining, limit, saving } = this.state
     return (
       <Box w={[58 / 60, 26 / 60, 28 / 60]} p={2}>
-        <CapitalizedH3>{this.getMessage('setupAccessToken')}</CapitalizedH3>
+        <CapitalizedH3>{this._getMessage('setupAccessToken')}</CapitalizedH3>
         <AccessTokenForm
           accessToken={accessToken}
-          invalid={invalid}
-          onSubmit={this.saveAccessTokenAsync}
+          hasError={hasError}
+          onSubmit={this._saveAccessTokenAsync}
           saving={saving}
         />
         <p>
-          {this.getMessage('ifYouDontHaveOneYet')}
+          {this._getMessage('ifYouDontHaveOneYet')}
           <a href='https://github.com/settings/tokens/new?description=Awesome%20Stars'>
-            {this.getMessage('getAnAccessToken')}
+            {this._getMessage('getAnAccessToken')}
           </a>
           <br />
-          <AlertText>{this.getMessage('pleaseDoNotSelectAnyScopes')}</AlertText>
+          <AlertText>{this._getMessage('pleaseDoNotSelectAnyScopes')}</AlertText>
         </p>
-        <h3>{this.getMessage('rateLimit')}</h3>
-        <RateLimit inverse remaining={remaining} total={limit} heightInRem={2.5} />
+        <h3>{this._getMessage('rateLimit')}</h3>
+        <RateLimit
+          inverse
+          hasError={hasError}
+          remaining={remaining}
+          total={limit}
+          heightInRem={2.5}
+        />
         <p>
-          <small>{this.getMessage('rateLimitDescription')}</small>
+          <small>{this._getMessage('rateLimitDescription')}</small>
         </p>
-        <h4>{this.getMessage('whyDoYouNeedAnAccessToken')}</h4>
+        <h4>{this._getMessage('whyDoYouNeedAnAccessToken')}</h4>
         <p>
           <small>
-            {this.getMessage('whyDoYouNeedAnAccessTokenDescription1')}
+            {this._getMessage('whyDoYouNeedAnAccessTokenDescription1')}
             <a href='https://developer.github.com/v3/#rate-limiting'>
-              {this.getMessage('githubDocumentation')}
+              {this._getMessage('githubDocumentation')}
             </a>
-            {this.getMessage('whyDoYouNeedAnAccessTokenDescription2')}
+            {this._getMessage('whyDoYouNeedAnAccessTokenDescription2')}
           </small>
         </p>
       </Box>
@@ -207,8 +228,8 @@ class OptionPage extends React.Component {
       <Container column>
         <Header p={2}>
           <img src='../../images/options-logo.png' alt='Awesome Stars logo' />
-          <h1>{this.getMessage('appName')}</h1>
-          <h2>{this.getMessage('appDescription')}</h2>
+          <h1>{this._getMessage('appName')}</h1>
+          <h2>{this._getMessage('appDescription')}</h2>
         </Header>
         <Main>
           <Flex wrap w={1}>

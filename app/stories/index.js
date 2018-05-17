@@ -26,6 +26,7 @@ storiesOf('RateLimit', module).add('default', () => {
   return (
     <RateLimitContainer inverse={inverse}>
       <RateLimit
+        hasError={boolean('Has error?',false)}
         inverse={inverse}
         remaining={number('Remaining', MAXIMUM)}
         total={number('Total', MAXIMUM)}
@@ -39,7 +40,7 @@ storiesOf('AccessTokenForm', module).add('default', () => (
   <AccessTokenForm
     accessToken='accessToken'
     heightInRem={number('Height in rem', 1)}
-    invalid={boolean('Invalid', false)}
+    hasError={boolean('Has error?', false)}
     onSubmit={accessToken => action(`access token submitted: ${accessToken}`)}
     saving={boolean('Saving', false)}
   />

@@ -3,6 +3,7 @@ import { cacheAdapterEnhancer } from 'axios-extensions'
 import axios from 'axios/index'
 import gql from 'graphql-tag'
 import includes from 'lodash/includes'
+import set from 'lodash/set'
 import LRU from 'lru-cache'
 
 import DIConstants from '../constants'
@@ -50,7 +51,7 @@ class GithubService {
       }
 
       // suppress any GraphQL errors
-      let onError = ({ response }) => { response.errors = [] }
+      let onError = ({ response }) => set(response, 'errors', [])
 
       /** @type {ApolloClient} */
       this.apolloClient = new ApolloClient({
