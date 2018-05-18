@@ -1,11 +1,19 @@
-import format from 'date-fns/format';
+import format from 'date-fns/format'
 
-exports.ERROR = '@@ERROR';
+function currentTimestamp () {
+  return format(new Date(), 'YYYY-MM-DDTHH:mm:ssZ')
+}
 
-exports.log = function log(...args) {
+export function log (...args) {
   if (process.env.NODE_ENV === 'development') {
-    const timestamp = format(new Date(), 'YYYY-MM-DDTHH:mm:ssZ');
     // eslint-disable-next-line no-console
-    console.log.apply(null, [`[${timestamp}]`, ...args]);
+    console.log(currentTimestamp(), ...args)
   }
-};
+}
+
+export function logError (...args) {
+  if (process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line no-console
+    console.error(currentTimestamp(), '❌', ...args)
+  }
+}

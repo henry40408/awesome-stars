@@ -1,9 +1,8 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/awesome-stars
     docker:
-      - image: circleci/node:boron
+      - image: circleci/node:carbon
     steps:
       - checkout
       - run: sudo npm install gulp --global
