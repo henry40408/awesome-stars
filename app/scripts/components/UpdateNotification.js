@@ -28,10 +28,10 @@ export default () => (
         <strong>{'Awesome Stars'}</strong>
         {' has been updated to '}
         <strong>{version}</strong>
-        {'! For more information, please check out '}
+        {'! For more information, please check out CHANGELOG at '}
         <strong>
-          <a href='https://github.com/henry40408/awesome-stars/blob/master/CHANGELOG.md'>
-            {'CHANGELOG'}
+          <a href='https://github.com/henry40408/awesome-stars/releases'>
+            {'GitHub Releases'}
           </a>
         </strong>
         {'.'}
