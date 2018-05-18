@@ -1,5 +1,11 @@
 # CHANGELOG
 
+> Since 3.0.0, changelog is automatically updated to GitHub releases with [conventional release bot](https://github.com/hahow/probot-conventional-release).
+
+## 3.0.0
+
+* Please check out [GitHub Releases](https://github.com/henry40408/awesome-stars/releases)
+
 ## 2.3.0
 
 * Upgrade to React 16.x
