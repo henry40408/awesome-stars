@@ -8,7 +8,6 @@ import plumber from 'gulp-plumber'
 import livereload from 'gulp-livereload'
 import args from './lib/args'
 import * as webpackBundleAnalyzer from 'webpack-bundle-analyzer'
-import LodashModuleReplacementPlugin from 'lodash-webpack-plugin'
 import UglifyJsPlugin from 'uglifyjs-webpack-plugin'
 
 const ENV = args.production ? 'production' : 'development'
@@ -27,7 +26,6 @@ gulp.task('scripts', (cb) => {
         plugins: (
           args.production ? [
             new UglifyJsPlugin(),
-            new LodashModuleReplacementPlugin()
           ] : [
             new webpack.NamedModulesPlugin()
           ]
