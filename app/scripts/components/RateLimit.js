@@ -53,16 +53,13 @@ let BaseRLNumber = styled.div`
 
 let RLNumber = reflex(BaseRLNumber)
 
-let RateLimit = ({ heightInRem, inverse, remaining, total }) => {
+let RateLimit = ({ heightInRem, hasError, inverse, remaining, total }) => {
   let formatter = new Intl.NumberFormat('en-US')
+  let ratio = 0
+  let formatted = 'N/A'
 
-  let ratio = total === 0 ? 0 : remaining / total
-  let formatted
-
-  if (remaining === -1 || total === -1) {
-    ratio = 0
-    formatted = 'N/A'
-  } else {
+  if (!hasError) {
+    ratio = total === 0 ? 0 : remaining / total
     formatted = formatter.format(remaining)
   }
 
@@ -80,6 +77,7 @@ let RateLimit = ({ heightInRem, inverse, remaining, total }) => {
 
 RateLimit.propTypes = {
   heightInRem: PropTypes.number,
+  hasError: PropTypes.bool,
   inverse: PropTypes.bool,
   remaining: PropTypes.number,
   total: PropTypes.number
@@ -87,6 +85,7 @@ RateLimit.propTypes = {
 
 RateLimit.defaultProps = {
   heightInRem: 1,
+  hasError: false,
   inverse: false,
   remaining: 0,
   total: 0

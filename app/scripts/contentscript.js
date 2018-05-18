@@ -47,27 +47,33 @@ function appendStars (tuples) {
   return stars
 }
 
-async function batchUpdateCountAsync (stars) {
+async function batchUpdateChunkAsync (chunk) {
+  let tuples = chunk.map(star => star.tuple)
+
+  let { data: tuplesWithStar } = await messageClient.message('/stars/get/batch', { tuples })
+
+  for (let star of chunk) {
+    let tuple = find(tuplesWithStar, star.tuple)
+    if (tuple.error) {
+      star.updateError(true)
+    } else {
+      star.updateCount(tuple.star)
+    }
+  }
+}
+
+async function batchUpdateStarsAsync (stars) {
   let chunks = chunkize(stars, CHUNK_SIZE)
 
   for (let chunk of chunks) {
-    let tuples = chunk.map(star => star.tuple)
-
     try {
-      let { data: tuplesWithStar } = await messageClient.message('/stars/get/batch', { tuples })
-
-      for (let star of chunk) {
-        let tuple = find(tuplesWithStar, star.tuple)
-        if (tuple.error) {
-          star.updateError(true)
-        } else {
-          star.updateCount(tuple.star)
-        }
-      }
-
+      await batchUpdateChunkAsync(chunk)
       await messageClient.message('/rate-limit')
     } catch (error) {
       logError(error)
+      for (let star of chunk) {
+        star.updateError(true)
+      }
     }
   }
 }
@@ -106,7 +112,7 @@ async function attachStarsOnLinksAsync (links) {
     .filter(tuple => tuple.valid)
 
   let stars = appendStars(tuples)
-  await batchUpdateCountAsync(stars)
+  await batchUpdateStarsAsync(stars)
 }
 
 async function initForReadmeAsync () {

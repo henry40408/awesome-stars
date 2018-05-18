@@ -11,7 +11,7 @@ let ATFContainer = styled(Flex)`
 `
 
 let ATFField = styled.input`
-  border: 2px ${({ invalid }) => (invalid ? colors.red : 'transparent')} solid;
+  border: 2px ${({ hasError }) => (hasError ? colors.red : 'transparent')} solid;
   box-sizing: border-box;
   font-size: ${({ heightInRem }) => heightInRem * 1.1}rem;
   padding: ${({ heightInRem }) => heightInRem * 0.5}rem;
@@ -52,7 +52,7 @@ class AccessTokenForm extends React.Component {
   }
 
   render () {
-    let { heightInRem, invalid, saving, onSubmit } = this.props
+    let { heightInRem, hasError, saving, onSubmit } = this.props
     let { accessToken } = this.state
     return (
       <ATFContainer>
@@ -62,7 +62,7 @@ class AccessTokenForm extends React.Component {
             value={accessToken}
             onChange={e => this.updateAccessToken(e.target.value)}
             heightInRem={heightInRem}
-            invalid={invalid}
+            hasError={hasError}
           />
         </Box>
         <ATFButtonContainer w={1 / 4} heightInRem={heightInRem}>
@@ -80,7 +80,7 @@ class AccessTokenForm extends React.Component {
 AccessTokenForm.propTypes = {
   accessToken: PropTypes.string,
   heightInRem: PropTypes.number,
-  invalid: PropTypes.bool,
+  hasError: PropTypes.bool,
   onSubmit: PropTypes.func,
   saving: PropTypes.bool
 }
@@ -88,7 +88,7 @@ AccessTokenForm.propTypes = {
 AccessTokenForm.defaultProps = {
   accessToken: '',
   heightInRem: 1,
-  invalid: false,
+  hasError: false,
   onSubmit: () => {},
   saving: false
 }
