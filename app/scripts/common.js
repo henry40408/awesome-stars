@@ -12,8 +12,6 @@ export function log (...args) {
 }
 
 export function logError (...args) {
-  if (process.env.NODE_ENV === 'development') {
-    // eslint-disable-next-line no-console
-    console.error(currentTimestamp(), '❌', ...args)
-  }
+  // eslint-disable-next-line no-console
+  console.error(currentTimestamp(), '❌', ...args)
 }
