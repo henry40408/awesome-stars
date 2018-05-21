@@ -107,6 +107,10 @@
     "message": "透過 Basic Auth 或 OAuth（包括 access token），我們一小時內可以可以對 GitHub 送出 5,000 次請求。",
     "description": "Option page string"
   },
+  "placeAccessTokenHere": {
+    "message": "在這裡輸入 access token",
+    "description": "Option page string"
+  },
   "pleaseDoNotSelectAnyScopes": {
     "message": "產生時請不要選擇任何的 scope！",
     "description": "Option page string"

@@ -63,6 +63,7 @@ class AccessTokenForm extends React.Component {
             onChange={e => this.updateAccessToken(e.target.value)}
             heightInRem={heightInRem}
             hasError={hasError}
+            placeholder={chrome.i18n.getMessage('placeAccessTokenHere')}
           />
         </Box>
         <ATFButtonContainer w={1 / 4} heightInRem={heightInRem}>

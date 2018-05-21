@@ -111,6 +111,10 @@
     "message": "orange",
     "description": "Color"
   },
+  "placeAccessTokenHere": {
+    "message": "Place access token here",
+    "description": "Option page string"
+  },
   "rateLimit": {
     "message": "Rate Limit",
     "description": "Option page string"
