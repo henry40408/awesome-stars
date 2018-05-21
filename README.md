@@ -15,30 +15,39 @@
 
 1. [Create a access token](https://github.com/settings/tokens/new?description=Awesome%20Stars) at GitHub settings. **DO NOT select any scopes**!
    * For more information, checkout [GitHub documentation](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token).
-1. Click Awesome Stars icon to open Options page. It locates near the icon to open Chrome menu.
+1. Right click Awesome Stars icon to open menu, then click <kbd>Options</kbd> / <kbd>選項</kbd>.
 
    ![Awesome Stars Icon](assets/awesome-stars-icon.png)
 
-1. Paste access token into the field, which has placeholder `Paste access token here`.
+1. Paste access token into the field, which has placeholder `Paste access token here` / `在這裡輸入 access token`.
 
    ![Awesome Options Page](assets/field-and-progress-bar.png)
 
-1. Click `Save`.
+1. Click <kbd>Save</kbd>.
+
 1. That's it!
 
 # Screenshots
 
-## Awesome Node.js
+## [sorrycc/awesome-javascript](https://github.com/sorrycc/awesome-javascript)
 
-![Awesome Node.js](assets/nodejs.png)
+![sorrycc/awesome-javascript](assets/screenshots/javascript.png)
 
-## Awesome PHP
+## [sindresorhus/awesome-nodejs](https://github.com/sindresorhus/awesome-nodejs)
 
-![Awesome PHP](assets/php.png)
+![sindresorhus/awesome-nodejs](assets/screenshots/nodejs.png)
 
-## Awesome Swift
+## [ziadoz/awesome-php](https://github.com/ziadoz/awesome-php)
 
-![Awesome Swift](assets/swift.png)
+![ziadoz/awesome-php](assets/screenshots/php.png)
+
+## [matteocrippa/awesome-swift](https://github.com/matteocrippa/awesome-swift)
+
+![matteocrippa/awesome-swift](assets/screenshots/swift.png)
+
+##[avelino/awesome-go](https://github.com/avelino/awesome-go)
+
+![avelino/awesome-go](assets/screenshots/go.png)
 
 # Thanks to Contributors
 
