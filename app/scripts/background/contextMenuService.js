@@ -3,6 +3,7 @@ import includes from 'lodash/includes'
 class ContextMenuService {
   MENU_RATE_LIMIT = 'rateLimit'
   MENU_APPLY_ON_GITHUB_ISSUES = 'applyOnGithubIssues'
+  MENU_APPLY_ON_ALL_AWESOME_LIST = 'applyOnAllAwesomeList'
 
   constructor (ctx) {
     this.menuIds = []

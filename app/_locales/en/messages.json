@@ -15,6 +15,10 @@
     "message": "Apply on GitHub Issues",
     "description": "Content menu item"
   },
+  "applyOnAllAwesomeList": {
+    "message": "Apply on all awesome lists",
+    "description": "Content menu item for all awesome lists"
+  },
   "pageActionTitle": {
     "message": "Awesome Stars",
     "description": "The title of the browser action button"

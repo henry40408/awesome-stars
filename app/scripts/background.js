@@ -45,6 +45,12 @@ async function applyOnGithubIssuesClickListener () {
   contextMenuService.upsert(contextMenuService.MENU_APPLY_ON_GITHUB_ISSUES, { checked })
 }
 
+async function applyOnAllAwesomeListClickListener () {
+  let checked = !await storageService.loadAsync(storageService.KEY_APPLY_ON_ALL_AWESOME_LIST)
+  await storageService.saveAsync(storageService.KEY_APPLY_ON_ALL_AWESOME_LIST, checked)
+  contextMenuService.upsert(contextMenuService.MENU_APPLY_ON_ALL_AWESOME_LIST, { checked })
+}
+
 async function initializeExtensionAsync () {
   chrome.runtime.onInstalled.addListener(async (reason, previousVersion) => {
     let isUpdate = reason === 'update' && previousVersion !== version
@@ -63,7 +69,8 @@ async function initializeExtensionAsync () {
     return true
   })
 
-  let checked = !!await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES)
+  let applyOnGithubIssuesIsChecked = !!await storageService.loadAsync(storageService.KEY_APPLY_ON_GITHUB_ISSUES)
+  let applyOnAllAwesomeListIsChecked = !!await storageService.loadAsync(storageService.KEY_APPLY_ON_ALL_AWESOME_LIST)
 
   contextMenuService.upsert(contextMenuService.MENU_RATE_LIMIT, {
     type: 'normal',
@@ -77,7 +84,15 @@ async function initializeExtensionAsync () {
     title: chrome.i18n.getMessage('applyOnGithubIssues'),
     contexts: ['page_action'],
     onclick: applyOnGithubIssuesClickListener,
-    checked
+    checked: applyOnGithubIssuesIsChecked
+  })
+
+  contextMenuService.upsert(contextMenuService.MENU_APPLY_ON_ALL_AWESOME_LIST, {
+    type: 'checkbox',
+    title: chrome.i18n.getMessage('applyOnAllAwesomeList'),
+    contexts: ['page_action'],
+    onclick: applyOnAllAwesomeListClickListener,
+    checked: applyOnAllAwesomeListIsChecked
   })
 }
 
