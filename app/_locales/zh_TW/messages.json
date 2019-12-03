@@ -7,6 +7,10 @@
     "message": "在 GitHub Issues 上顯示星星",
     "description": "Content menu item"
   },
+  "applyOnAllAwesomeList": {
+    "message": "申请所有很棒的清单",
+    "description": "Content menu item for all awesome list"
+  },
   "blue": {
     "message": "藍色",
     "description": "Color"

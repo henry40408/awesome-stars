@@ -22,6 +22,9 @@ class GithubService {
     /** @type {ContextMenuService} */
     this.contextMenu = ctx[DIConstants.S_CONTEXT_MENU]
 
+    /** @type {ChromeStorageService} */
+    this.storage = ctx[DIConstants.S_CHROME_STORAGE]
+
     /** @type {ApolloClient} */
     this.apolloClient = null
 
@@ -198,6 +201,10 @@ class GithubService {
   }
 
   async isAwesomeListAsync ({ owner, name }) {
+    const applyOnAllAwesomeList = await this.storage.loadAsync(this.storage.KEY_APPLY_ON_ALL_AWESOME_LIST)
+    if (applyOnAllAwesomeList) {
+      return name.toLowerCase().includes('awesome')
+    }
     let awesomeList = await this.fetchAwesomeListAsync()
     return includes(awesomeList, `${owner}/${name}`)
   }

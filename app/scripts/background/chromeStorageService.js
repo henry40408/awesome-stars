@@ -6,6 +6,7 @@ import DIConstants from '../constants'
 class ChromeStorageService {
   KEY_UPDATE_NOTIFICATION_SENT = 'UPDATE_NOTIFICATION_SENT'
   KEY_APPLY_ON_GITHUB_ISSUES = 'APPLY_ON_GITHUB_ISSUES'
+  KEY_APPLY_ON_ALL_AWESOME_LIST = 'APPLY_ON_ALL_AWESOME_LIST'
 
   /**
    * @param {AwilixContainer.cradle} ctx
