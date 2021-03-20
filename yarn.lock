@@ -218,7 +218,7 @@
 
 "@types/graphql@0.12.6":
   version "0.12.6"
-  resolved "http://registry.npmjs.org/@types/graphql/-/graphql-0.12.6.tgz#3d619198585fcabe5f4e1adfb5cf5f3388c66c13"
+  resolved "https://registry.npmjs.org/@types/graphql/-/graphql-0.12.6.tgz#3d619198585fcabe5f4e1adfb5cf5f3388c66c13"
 
 "@types/inline-style-prefixer@^3.0.0":
   version "3.0.1"
@@ -8930,11 +8930,15 @@ rx-lite@*, rx-lite@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/rx-lite/-/rx-lite-4.0.8.tgz#0b1e11af8bc44836f04a6407e92da42467b79444"
 
-safe-buffer@5.1.1, safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
+safe-buffer@5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.1.tgz#893312af69b2123def71f57889001671eeb2c853"
 
-safe-buffer@^5.1.2:
+safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@^5.1.2:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.2.1.tgz#1eaf9fa9bdb1fdd4ec75f58f9cdb4e6b7827eec6"
+
+safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
 
@@ -9311,13 +9315,7 @@ sshpk@^1.7.0:
     jsbn "~0.1.0"
     tweetnacl "~0.14.0"
 
-ssri@^5.0.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/ssri/-/ssri-5.1.0.tgz#2cbf1df36b74d0fc91fcf89640a4b3e1d10b1899"
-  dependencies:
-    safe-buffer "^5.1.0"
-
-ssri@^5.2.4:
+ssri@^5.0.0, ssri@^5.2.4:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/ssri/-/ssri-5.3.0.tgz#ba3872c9c6d33a0704a7d71ff045e5ec48999d06"
   dependencies:
