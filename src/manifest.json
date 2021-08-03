@@ -1,0 +1,12 @@
+{
+  "manifest_version": 2,
+  "name": "Awesome Stars",
+  "version": "4.0.0",
+  "description": "A Chrome extension that reveals star count of repositories on awesome list",
+  "icons": {
+    "128": "icons/128.png"
+  },
+  "options_ui": {
+    "page": "options.html"
+  }
+}
