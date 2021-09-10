@@ -26,20 +26,29 @@ const OptionForm = () => {
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="input-group mt-4">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="GitHub token"
-          defaultValue={accessToken}
-          {...register("accessToken")}
-        />
-        <input
-          type="submit"
-          value="Update"
-          className="btn btn-primary"
-          disabled={loading}
-        />
+      <div className="mt-4">
+        <div className="input-group">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="GitHub token"
+            defaultValue={accessToken}
+            {...register("accessToken")}
+          />
+          <input
+            type="submit"
+            value="Update"
+            className="btn btn-primary"
+            disabled={loading}
+          />
+        </div>
+        <div className="form-text">
+          You can{" "}
+          <a href="https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token">
+            create a personal token on GitHub
+          </a>
+          .
+        </div>
       </div>
     </form>
   );
