@@ -10,6 +10,8 @@ enum State {
   ERROR,
 }
 
+const formatter = new Intl.NumberFormat("en-US");
+
 export const RateLimit = () => {
   const { accessToken } = useContext(AccessTokenContext);
 
@@ -39,43 +41,17 @@ export const RateLimit = () => {
   }, [accessToken]);
 
   const pending = State.PENDING === state;
-  const ready = State.READY === state;
   const error = State.ERROR === state;
 
-  let classes = ["progress-bar"];
-  if (pending) {
-    classes = [
-      ...classes,
-      "bg-info",
-      "progress-bar-striped",
-      "progress-bar-animated",
-    ];
-  } else if (ready) {
-    classes = [...classes, "bg-success"];
-  } else if (error) {
-    classes = [...classes, "bg-danger"];
-  }
-
-  const percent = Math.floor((remaining / limit) * 100.0);
-  const style = { width: ready ? `${percent}%` : "100%" };
+  const remainingF = formatter.format(remaining);
+  const limitF = formatter.format(limit);
   return (
-    <div className="mt-4">
-      <div className="progress" onClick={fetchRateLimitAsync}>
-        <div
-          className={classes.join(" ")}
-          style={style}
-          role="progressbar"
-          aria-valuenow={ready ? percent : 100}
-          aria-valuemin={0}
-          aria-valuemax={100}
-        >
-          {error
-            ? "error"
-            : pending
-            ? "loading..."
-            : `${remaining} / ${limit} (click to refresh)`}
-        </div>
-      </div>
-    </div>
+    <p>
+      <strong>Rate limit</strong>{" "}
+      {error ? "error" : pending ? "loading..." : `${remainingF} / ${limitF}`}{" "}
+      <a href="#" onClick={fetchRateLimitAsync}>
+        refresh
+      </a>
+    </p>
   );
 };
